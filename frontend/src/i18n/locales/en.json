@@ -1,0 +1,189 @@
+{
+  "common": {
+    "appName": "MigrateRight",
+    "tagline": "Safe Migration and Overseas Worker Support Network",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "clear": "Clear",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "comingSoon": "Coming Soon",
+    "noResults": "No results found",
+    "tryAgain": "Try Again"
+  },
+  "navigation": {
+    "home": "Home",
+    "agencies": "Agencies",
+    "searchAgencies": "Search Agencies",
+    "profile": "My Profile",
+    "savedAgencies": "Saved Agencies",
+    "documents": "My Documents",
+    "help": "Help Center",
+    "about": "About Us",
+    "contact": "Contact",
+    "settings": "Settings",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember Me",
+    "createAccount": "Create Account",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "welcomeBack": "Welcome Back!",
+    "getStarted": "Get Started"
+  },
+  "home": {
+    "welcome": "Welcome to MigrateRight",
+    "hero": {
+      "title": "Your Trusted Partner for Safe Migration",
+      "subtitle": "Find verified recruitment agencies and get support throughout your journey",
+      "cta": "Search Agencies"
+    },
+    "features": {
+      "title": "How We Help",
+      "verifiedAgencies": {
+        "title": "Verified Agencies",
+        "description": "Access a database of government-verified recruitment agencies"
+      },
+      "documentSupport": {
+        "title": "Document Support",
+        "description": "Get help with passport, visa, and work permit documentation"
+      },
+      "realTimeHelp": {
+        "title": "Real-time Help",
+        "description": "24/7 support hotline for migrant workers and their families"
+      }
+    }
+  },
+  "agencies": {
+    "title": "Recruitment Agencies",
+    "searchPlaceholder": "Search by name or license number...",
+    "filterByCountry": "Filter by Country",
+    "filterByStatus": "Filter by Status",
+    "allCountries": "All Countries",
+    "verified": "Verified",
+    "pending": "Pending",
+    "suspended": "Suspended",
+    "licenseNumber": "License Number",
+    "phoneNumber": "Phone Number",
+    "emailAddress": "Email Address",
+    "address": "Address",
+    "specializations": "Specializations",
+    "rating": "Rating",
+    "reviews": "Reviews",
+    "viewDetails": "View Details",
+    "saveAgency": "Save Agency",
+    "unsaveAgency": "Remove from Saved",
+    "contactAgency": "Contact Agency",
+    "reportAgency": "Report Agency",
+    "noAgenciesFound": "No agencies found. Try adjusting your search."
+  },
+  "profile": {
+    "title": "My Profile",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information",
+    "accountSettings": "Account Settings",
+    "updateProfile": "Update Profile",
+    "changePassword": "Change Password",
+    "languagePreference": "Language Preference",
+    "notifications": "Notifications",
+    "privacy": "Privacy Settings",
+    "deleteAccount": "Delete Account"
+  },
+  "documents": {
+    "title": "My Documents",
+    "description": "Manage your important migration documents securely",
+    "features": {
+      "passport": "Passport Management",
+      "visa": "Visa Tracking",
+      "workPermit": "Work Permit",
+      "medical": "Medical Certificates",
+      "contracts": "Employment Contracts"
+    },
+    "comingSoonMessage": "This feature is under development. Soon you'll be able to upload, store, and manage all your migration documents in one secure place."
+  },
+  "savedAgencies": {
+    "title": "Saved Agencies",
+    "description": "Quick access to agencies you've bookmarked for future reference",
+    "features": {
+      "bookmarks": "Bookmarked Agencies",
+      "compare": "Compare Agencies",
+      "notes": "Personal Notes",
+      "export": "Export List"
+    },
+    "comingSoonMessage": "This feature is coming soon! You'll be able to save and organize your favorite recruitment agencies for easy access.",
+    "noSavedAgencies": "You haven't saved any agencies yet"
+  },
+  "help": {
+    "title": "Help Center",
+    "description": "Find answers to common questions and get support",
+    "searchPlaceholder": "Search for help...",
+    "faq": "Frequently Asked Questions",
+    "hotline": "Support Hotline",
+    "hotlineNumber": "+880-1234-567890",
+    "hotlineHours": "Available 24/7",
+    "email": "Email Support",
+    "emailAddress": "support@migrateright.org",
+    "commonTopics": {
+      "title": "Common Topics",
+      "gettingStarted": "Getting Started",
+      "findingAgencies": "Finding Agencies",
+      "documents": "Document Requirements",
+      "visaProcess": "Visa Process",
+      "rights": "Worker Rights",
+      "complaints": "Filing Complaints"
+    }
+  },
+  "language": {
+    "english": "English",
+    "bengali": "বাংলা",
+    "switchTo": "Switch to {{language}}",
+    "current": "Current Language"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "unauthorized": "You need to log in to access this page.",
+    "notFound": "Page not found.",
+    "serverError": "Server error. Please try again later.",
+    "validationError": "Please check your input and try again."
+  },
+  "validation": {
+    "required": "This field is required",
+    "emailInvalid": "Please enter a valid email address",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "phoneInvalid": "Please enter a valid phone number"
+  },
+  "footer": {
+    "aboutUs": "About Us",
+    "contactUs": "Contact Us",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "copyright": "© {{year}} MigrateRight. All rights reserved.",
+    "followUs": "Follow Us",
+    "newsletter": "Subscribe to our newsletter"
+  }
+}

@@ -1,0 +1,322 @@
+/* 
+ * Mobile-First Navigation Styles
+ * Optimized for low-end devices:
+ * - Minimal animations (use transform for GPU acceleration)
+ * - Large touch targets (minimum 44px)
+ * - High contrast for outdoor visibility
+ * - Reduced motion for accessibility
+ */
+
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Top Bar */
+.mobile-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  height: 56px; /* Standard mobile header height */
+}
+
+.mobile-nav-logo {
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+  font-size: 1.125rem;
+  display: flex;
+  align-items: center;
+}
+
+.logo-text {
+  margin-left: 0.5rem;
+}
+
+/* Language Toggle Button */
+.lang-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 44px; /* Minimum touch target */
+  min-height: 44px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.lang-btn:hover,
+.lang-btn:focus {
+  background-color: rgba(255, 255, 255, 0.3);
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* Hamburger Menu Button */
+.menu-btn {
+  background: none;
+  border: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.menu-btn:focus {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* Hamburger Icon (CSS only - no SVG for performance) */
+.menu-icon,
+.menu-icon::before,
+.menu-icon::after {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: white;
+  border-radius: 2px;
+  transition: transform 0.2s ease;
+}
+
+.menu-icon::before,
+.menu-icon::after {
+  content: '';
+  position: absolute;
+}
+
+.menu-icon::before {
+  transform: translateY(-7px);
+}
+
+.menu-icon::after {
+  transform: translateY(7px);
+}
+
+/* Hamburger to X animation */
+.menu-btn.open .menu-icon {
+  background-color: transparent;
+}
+
+.menu-btn.open .menu-icon::before {
+  transform: rotate(45deg);
+}
+
+.menu-btn.open .menu-icon::after {
+  transform: rotate(-45deg);
+}
+
+/* Full Screen Menu Overlay */
+.menu-overlay {
+  position: fixed;
+  top: 56px; /* Below header */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.2s ease;
+  z-index: 999;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.menu-content {
+  background-color: white;
+  min-height: 100%;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Menu List */
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Menu Items - Large Touch Targets */
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  min-height: 56px; /* Large touch target */
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  border-bottom: 1px solid var(--border-color);
+  background-color: white;
+  transition: background-color 0.15s ease;
+  width: 100%;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-item:hover,
+.menu-item:focus {
+  background-color: #f8f9fa;
+  outline: none;
+}
+
+.menu-item.active {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.menu-item .menu-icon {
+  font-size: 1.25rem;
+  margin-right: 1rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Logout Button */
+.logout-btn {
+  color: var(--danger-color);
+  margin-top: 1rem;
+}
+
+.logout-btn:hover,
+.logout-btn:focus {
+  background-color: #fee2e2;
+}
+
+/* Menu Footer - User Info */
+.menu-footer {
+  padding: 1.5rem;
+  border-top: 2px solid var(--border-color);
+  background-color: #f8f9fa;
+  margin-top: auto;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0; /* Allow text truncation */
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 0.9375rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .menu-overlay,
+  .menu-content,
+  .menu-icon,
+  .menu-icon::before,
+  .menu-icon::after,
+  .menu-item {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Tablet and Desktop - Hide on larger screens */
+@media (min-width: 768px) {
+  .mobile-nav {
+    display: none;
+  }
+}
+
+/* High Contrast Mode for Accessibility */
+@media (prefers-contrast: high) {
+  .menu-item {
+    border-bottom: 2px solid var(--text-primary);
+  }
+  
+  .lang-btn {
+    border: 2px solid white;
+  }
+}
+
+/* Dark Mode Support (for future) */
+@media (prefers-color-scheme: dark) {
+  .menu-content {
+    background-color: #1a1a1a;
+  }
+  
+  .menu-item {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    border-bottom-color: #333;
+  }
+  
+  .menu-item:hover,
+  .menu-item:focus {
+    background-color: #2a2a2a;
+  }
+  
+  .menu-footer {
+    background-color: #0f0f0f;
+    border-top-color: #333;
+  }
+}

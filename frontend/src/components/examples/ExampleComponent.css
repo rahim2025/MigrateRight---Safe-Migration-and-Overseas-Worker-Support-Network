@@ -1,0 +1,59 @@
+/* ================================================
+   Example Component CSS
+   Demonstrates styling for i18n components
+   ================================================ */
+
+.example-component {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-xl, 32px);
+}
+
+.example-component h1 {
+  color: var(--primary-color, #2563eb);
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.example-component h2 {
+  color: var(--text-primary, #1a1a1a);
+  margin-top: var(--spacing-lg, 24px);
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.example-component p {
+  color: var(--text-secondary, #6b7280);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.example-component button {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  min-height: 44px;
+  background-color: var(--primary-color, #2563eb);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.example-component button:hover {
+  background-color: var(--primary-dark, #1d4ed8);
+}
+
+.lang-buttons {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+  margin-top: var(--spacing-md, 16px);
+}
+
+.lang-buttons button {
+  background-color: white;
+  color: var(--primary-color, #2563eb);
+  border: 1px solid var(--primary-color, #2563eb);
+}
+
+.lang-buttons button:hover {
+  background-color: var(--primary-color, #2563eb);
+  color: white;
+}

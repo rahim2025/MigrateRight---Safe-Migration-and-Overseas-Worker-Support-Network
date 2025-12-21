@@ -1,0 +1,32 @@
+/* 
+ * Responsive Layout Styles
+ * Mobile: Top nav + bottom nav
+ * Desktop: Standard navbar
+ */
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content {
+  flex: 1;
+  min-height: calc(100vh - 300px);
+}
+
+/* Mobile First - Account for mobile nav spacing */
+@media (max-width: 767px) {
+  .app-content {
+    /* Space for MobileNav (56px) and BottomNav (56px + safe area) */
+    padding-top: 56px;
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
+  }
+}
+
+/* Desktop - Account for standard navbar */
+@media (min-width: 768px) {
+  .app-content {
+    padding-top: 70px; /* Account for fixed navbar */
+  }
+}

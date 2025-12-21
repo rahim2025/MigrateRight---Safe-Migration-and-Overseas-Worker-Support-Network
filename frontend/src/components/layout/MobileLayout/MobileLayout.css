@@ -1,0 +1,27 @@
+/* 
+ * Mobile Layout Styles
+ * Accounts for fixed top and bottom navigation
+ */
+
+.mobile-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-main {
+  flex: 1;
+  /* Space for fixed top nav (56px) and bottom nav (56px + safe area) */
+  padding-top: 56px;
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
+  min-height: calc(100vh - 112px);
+  overflow-x: hidden;
+}
+
+/* Tablet and Desktop */
+@media (min-width: 768px) {
+  .mobile-main {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}

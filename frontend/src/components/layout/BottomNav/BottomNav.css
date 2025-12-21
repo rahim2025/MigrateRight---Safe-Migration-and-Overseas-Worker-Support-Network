@@ -1,0 +1,116 @@
+/* 
+ * Bottom Navigation Styles
+ * Optimized for mobile thumb reach
+ */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.5rem 0;
+  z-index: 100;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  /* Safe area for iPhone notch */
+  padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text-secondary);
+  min-width: 64px;
+  min-height: 56px; /* Large touch target */
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  flex: 1;
+  max-width: 120px;
+}
+
+.bottom-nav-item:hover,
+.bottom-nav-item:focus {
+  background-color: #f0f0f0;
+  outline: none;
+}
+
+.bottom-nav-item.active {
+  color: var(--primary-color);
+}
+
+.bottom-nav-item.active .bottom-nav-icon {
+  transform: scale(1.1);
+}
+
+.bottom-nav-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+  transition: transform 0.2s ease;
+}
+
+.bottom-nav-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1;
+}
+
+/* Tablet and Desktop - Hide */
+@media (min-width: 768px) {
+  .bottom-nav {
+    display: none;
+  }
+}
+
+/* Accessibility: Focus Visible */
+.bottom-nav-item:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav-item,
+  .bottom-nav-icon {
+    transition: none;
+  }
+}
+
+/* High Contrast */
+@media (prefers-contrast: high) {
+  .bottom-nav {
+    border-top-width: 2px;
+  }
+  
+  .bottom-nav-item.active {
+    font-weight: 700;
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .bottom-nav {
+    background-color: #1a1a1a;
+    border-top-color: #333;
+  }
+  
+  .bottom-nav-item {
+    color: #b0b0b0;
+  }
+  
+  .bottom-nav-item:hover,
+  .bottom-nav-item:focus {
+    background-color: #2a2a2a;
+  }
+  
+  .bottom-nav-item.active {
+    color: var(--primary-color);
+  }
+}

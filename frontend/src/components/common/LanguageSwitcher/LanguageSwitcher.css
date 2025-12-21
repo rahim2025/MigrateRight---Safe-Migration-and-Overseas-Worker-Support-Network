@@ -1,0 +1,316 @@
+/* ================================================
+   Language Switcher Component Styles
+   ================================================ */
+
+/* Base Styles */
+.language-switcher {
+  display: flex;
+  gap: var(--spacing-xs, 4px);
+  align-items: center;
+}
+
+/* Screen Reader Only (for accessibility) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ================================================
+   Button Mode
+   ================================================ */
+.language-switcher--buttons {
+  flex-wrap: wrap;
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  min-width: 44px;
+  min-height: 44px;
+  
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  
+  background-color: transparent;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: var(--radius-md, 8px);
+  
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  /* Prevent text selection */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lang-btn:hover {
+  background-color: var(--bg-secondary, #f9fafb);
+  border-color: var(--primary-color, #2563eb);
+  color: var(--primary-color, #2563eb);
+}
+
+.lang-btn:focus {
+  outline: 2px solid var(--primary-color, #2563eb);
+  outline-offset: 2px;
+}
+
+.lang-btn:active {
+  transform: scale(0.98);
+}
+
+.lang-btn--active {
+  background-color: var(--primary-color, #2563eb);
+  border-color: var(--primary-color, #2563eb);
+  color: white;
+}
+
+.lang-btn--active:hover {
+  background-color: var(--primary-dark, #1d4ed8);
+  border-color: var(--primary-dark, #1d4ed8);
+  color: white;
+}
+
+.lang-btn__text {
+  line-height: 1;
+}
+
+/* ================================================
+   Dropdown Mode
+   ================================================ */
+.language-switcher--dropdown {
+  position: relative;
+}
+
+.lang-select {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  min-height: 44px;
+  
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary, #1a1a1a);
+  
+  background-color: white;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: var(--radius-md, 8px);
+  
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  /* Remove default select arrow on some browsers */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  
+  /* Add custom arrow */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.lang-select:hover {
+  border-color: var(--primary-color, #2563eb);
+}
+
+.lang-select:focus {
+  outline: 2px solid var(--primary-color, #2563eb);
+  outline-offset: 2px;
+  border-color: var(--primary-color, #2563eb);
+}
+
+/* ================================================
+   Toggle Mode
+   ================================================ */
+.language-switcher--toggle {
+  /* No special container styles needed */
+}
+
+.lang-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  min-height: 44px;
+  
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  
+  background-color: white;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: var(--radius-md, 8px);
+  
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lang-toggle:hover {
+  background-color: var(--bg-secondary, #f9fafb);
+  border-color: var(--primary-color, #2563eb);
+  color: var(--primary-color, #2563eb);
+}
+
+.lang-toggle:focus {
+  outline: 2px solid var(--primary-color, #2563eb);
+  outline-offset: 2px;
+}
+
+.lang-toggle:active {
+  transform: scale(0.98);
+}
+
+.lang-toggle__current {
+  font-weight: 600;
+  color: var(--primary-color, #2563eb);
+}
+
+.lang-toggle__arrow {
+  font-size: 1rem;
+  opacity: 0.6;
+}
+
+.lang-toggle__next {
+  opacity: 0.5;
+  font-size: 0.8125rem;
+}
+
+/* ================================================
+   Flag Icons (Optional)
+   ================================================ */
+.flag {
+  width: 20px;
+  height: 15px;
+  display: inline-block;
+  border-radius: 2px;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Placeholder flag styles - replace with actual flag images */
+.flag--en {
+  background-color: #012169;
+  background-image: linear-gradient(45deg, transparent 40%, white 40%, white 60%, transparent 60%);
+}
+
+.flag--bn {
+  background-color: #006a4e;
+  position: relative;
+}
+
+.flag--bn::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #f42a41;
+  border-radius: 50%;
+  top: 50%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+}
+
+/* ================================================
+   Dark Mode Support
+   ================================================ */
+@media (prefers-color-scheme: dark) {
+  .lang-btn {
+    color: #d1d5db;
+    border-color: #374151;
+    background-color: transparent;
+  }
+  
+  .lang-btn:hover {
+    background-color: #1f2937;
+    border-color: #3b82f6;
+    color: #3b82f6;
+  }
+  
+  .lang-btn--active {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+  }
+  
+  .lang-select {
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #f3f4f6;
+  }
+  
+  .lang-toggle {
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #d1d5db;
+  }
+  
+  .lang-toggle__current {
+    color: #3b82f6;
+  }
+}
+
+/* ================================================
+   High Contrast Mode
+   ================================================ */
+@media (prefers-contrast: high) {
+  .lang-btn,
+  .lang-select,
+  .lang-toggle {
+    border-width: 2px;
+  }
+  
+  .lang-btn:focus,
+  .lang-select:focus,
+  .lang-toggle:focus {
+    outline-width: 3px;
+  }
+}
+
+/* ================================================
+   Reduced Motion
+   ================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .lang-btn,
+  .lang-select,
+  .lang-toggle {
+    transition: none;
+  }
+  
+  .lang-btn:active {
+    transform: none;
+  }
+  
+  .lang-toggle:active {
+    transform: none;
+  }
+}
+
+/* ================================================
+   Responsive
+   ================================================ */
+@media (max-width: 480px) {
+  .lang-btn {
+    font-size: 0.8125rem;
+    padding: var(--spacing-xs, 4px) var(--spacing-xs, 4px);
+  }
+  
+  .lang-select {
+    font-size: 0.8125rem;
+  }
+  
+  .lang-toggle {
+    font-size: 0.8125rem;
+  }
+}

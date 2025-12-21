@@ -1,0 +1,36 @@
+{
+  "name": "migrateright-backend",
+  "version": "1.0.0",
+  "description": "Backend server for MigrateRight - Safe Migration and Overseas Worker Support Network",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "seed": "node utils/seeder.js",
+    "seed:delete": "node utils/seeder.js -d",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "migration",
+    "recruitment",
+    "worker-support",
+    "express",
+    "nodejs"
+  ],
+  "author": "MigrateRight Team",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "express-async-handler": "^1.2.0",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "mongoose": "^9.0.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
