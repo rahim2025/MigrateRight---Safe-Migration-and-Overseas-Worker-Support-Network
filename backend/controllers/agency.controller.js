@@ -271,10 +271,99 @@ const getAgencyStats = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Get agencies nearby a location
+ * @route   GET /api/agencies/nearby
+ * @access  Public
+ * @query   latitude - Latitude of the location
+ * @query   longitude - Longitude of the location
+ * @query   maxDistance - Maximum distance in kilometers (default: 50)
+ * @query   limit - Maximum number of results (default: 20)
+ */
+const getNearbyAgencies = asyncHandler(async (req, res) => {
+  const { latitude, longitude, maxDistance = 50, limit = 20 } = req.query;
+
+  // Validate coordinates
+  const lat = parseFloat(latitude);
+  const lng = parseFloat(longitude);
+  const maxDist = parseFloat(maxDistance);
+  const limitNum = parseInt(limit);
+
+  if (isNaN(lat) || isNaN(lng)) {
+    throw new BadRequestError('Valid latitude and longitude are required');
+  }
+
+  if (lat < -90 || lat > 90) {
+    throw new BadRequestError('Latitude must be between -90 and 90');
+  }
+
+  if (lng < -180 || lng > 180) {
+    throw new BadRequestError('Longitude must be between -180 and 180');
+  }
+
+  if (isNaN(maxDist) || maxDist < 0) {
+    throw new BadRequestError('maxDistance must be a positive number');
+  }
+
+  if (limitNum < 1 || limitNum > 100) {
+    throw new BadRequestError('limit must be between 1 and 100');
+  }
+
+  // MongoDB geospatial query
+  // $near must be the first operator, so use separate query
+  const agencies = await Agency.find({
+    isVerified: true,
+    isActive: true,
+    'location.coordinates': {
+      $near: {
+        $geometry: {
+          type: 'Point',
+          coordinates: [lng, lat], // MongoDB uses [longitude, latitude]
+        },
+        $maxDistance: maxDist * 1000, // Convert km to meters
+      },
+    },
+  })
+    .select('name license.number location rating isVerified destinationCountries specialization description')
+    .limit(limitNum)
+    .lean();
+
+  // Calculate distance for each agency (optional - MongoDB doesn't return distance by default)
+  const agenciesWithDistance = agencies.map((agency) => {
+    if (agency.location?.coordinates) {
+      // Calculate distance using Haversine formula (simplified)
+      const [lng2, lat2] = agency.location.coordinates;
+      const R = 6371; // Earth's radius in km
+      const dLat = ((lat2 - lat) * Math.PI) / 180;
+      const dLng = ((lng2 - lng) * Math.PI) / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos((lat * Math.PI) / 180) *
+          Math.cos((lat2 * Math.PI) / 180) *
+          Math.sin(dLng / 2) *
+          Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = R * c;
+      return { ...agency, distance: Math.round(distance * 10) / 10 }; // Round to 1 decimal
+    }
+    return agency;
+  });
+
+  res.status(200).json({
+    success: true,
+    message: 'Nearby agencies retrieved successfully',
+    count: agenciesWithDistance.length,
+    data: agenciesWithDistance,
+    location: { latitude: lat, longitude: lng },
+    maxDistance: maxDist,
+  });
+});
+
 module.exports = {
   getAgencies,
   getAgencyById,
   getTopRatedAgencies,
   getAgenciesByCity,
   getAgencyStats,
+  getNearbyAgencies,
 };

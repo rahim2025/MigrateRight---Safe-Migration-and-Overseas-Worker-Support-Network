@@ -90,10 +90,6 @@ const userSchema = new mongoose.Schema({
   location: {
     // Bangladesh location
     bangladeshAddress: {
-      division: {
-        type: String,
-        enum: ['Dhaka', 'Chattogram', 'Rajshahi', 'Khulna', 'Barishal', 'Sylhet', 'Rangpur', 'Mymensingh']
-      },
       district: {
         type: String,
         required: function() {
@@ -114,12 +110,10 @@ const userSchema = new mongoose.Schema({
       coordinates: {
         type: {
           type: String,
-          enum: ['Point'],
-          default: 'Point'
+          enum: ['Point']
         },
         coordinates: {
-          type: [Number], // [longitude, latitude]
-          index: '2dsphere'
+          type: [Number] // [longitude, latitude]
         }
       }
     },
@@ -206,7 +200,7 @@ const userSchema = new mongoose.Schema({
     default: null
   },
   
-  language: {
+  preferredLanguage: {
     type: String,
     enum: ['bn', 'en'],
     default: 'bn'
@@ -272,7 +266,7 @@ userSchema.index({
   'fullName.firstName': 'text',
   'fullName.lastName': 'text',
   email: 'text'
-});
+}, { default_language: 'english', language_override: 'none' });
 
 // ==================== Virtual Properties ====================
 userSchema.virtual('fullNameString').get(function() {
@@ -302,25 +296,19 @@ userSchema.virtual('isAccountLocked').get(function() {
 
 // ==================== Pre-save Middleware ====================
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function() {
   // Only hash password if it has been modified
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password')) return;
   
-  try {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error);
-  }
+  const salt = await bcrypt.genSalt(12);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Update passwordChangedAt when password is modified
-userSchema.pre('save', function(next) {
-  if (!this.isModified('password') || this.isNew) return next();
+userSchema.pre('save', function() {
+  if (!this.isModified('password') || this.isNew) return;
   
   this.passwordChangedAt = Date.now() - 1000; // Subtract 1s to ensure token is created after password change
-  next();
 });
 
 // ==================== Instance Methods ====================

@@ -11,10 +11,15 @@ const authService = {
   register: async (userData) => {
     try {
       const response = await api.post('/auth/register', userData);
-      if (response.data.token) {
+      // API interceptor returns response.data, so response is already the data object
+      // Backend returns: { success: true, message: '...', data: { user, token, refreshToken } }
+      if (response?.data?.token) {
         localStorage.setItem('authToken', response.data.token);
+        if (response.data.refreshToken) {
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+        }
       }
-      return response.data;
+      return response;
     } catch (error) {
       throw error;
     }
@@ -26,10 +31,15 @@ const authService = {
   login: async (credentials) => {
     try {
       const response = await api.post('/auth/login', credentials);
-      if (response.data.token) {
+      // API interceptor returns response.data, so response is already the data object
+      // Backend returns: { success: true, message: '...', data: { user, token, refreshToken } }
+      if (response?.data?.token) {
         localStorage.setItem('authToken', response.data.token);
+        if (response.data.refreshToken) {
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+        }
       }
-      return response.data;
+      return response;
     } catch (error) {
       throw error;
     }

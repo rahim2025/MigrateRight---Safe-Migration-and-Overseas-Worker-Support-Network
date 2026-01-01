@@ -84,6 +84,11 @@ const agencySchema = new mongoose.Schema(
         type: String,
         default: 'Bangladesh',
       },
+      // Geospatial coordinates [longitude, latitude] for MongoDB 2dsphere index
+      coordinates: {
+        type: [Number],
+        index: '2dsphere',
+      },
     },
 
     // Destination Countries
@@ -393,8 +398,8 @@ agencySchema.index({ name: 'text', description: 'text' });
 // Index for location-based queries
 agencySchema.index({ 'location.city': 1 });
 
-// Index for approval workflow status
-agencySchema.index({ 'approvalWorkflow.status': 1 });
+// Note: Geospatial index for 'location.coordinates' is already defined inline in the schema
+// Note: Index for 'approvalWorkflow.status' is already defined inline in the schema
 
 // Compound index for compliance score
 agencySchema.index({ 'complianceScore.score': -1, 'rating.average': -1 });
@@ -430,7 +435,16 @@ agencySchema.virtual('reviews', {
 agencySchema.virtual('approvalStatusBadge').get(function () {
   const statusMap = {
     Pending: '🟡 Pending',
-  
+    'Under Review': '🔵 Under Review',
+    Approved: '✅ Approved',
+    Rejected: '❌ Rejected',
+    Suspended: '⚠️ Suspended',
+    Revoked: '🔴 Revoked',
+  };
+  return statusMap[this.approvalWorkflow?.status] || this.approvalWorkflow?.status || 'Unknown';
+});
+
+// ==================== INSTANCE METHODS ====================
 
 /**
  * Add compliance record
@@ -695,14 +709,7 @@ agencySchema.methods.suspend = async function (adminId, reason) {
   });
 
   return this.save();
-};  'Under Review': '🔵 Under Review',
-    Approved: '✅ Approved',
-    Rejected: '❌ Rejected',
-    Suspended: '⚠️ Suspended',
-    Revoked: '🔴 Revoked',
-  };
-  return statusMap[this.approvalWorkflow.status] || this.approvalWorkflow.status;
-});
+};
 
 // Virtual for compliance status badge
 agencySchema.virtual('complianceStatusBadge').get(function () {

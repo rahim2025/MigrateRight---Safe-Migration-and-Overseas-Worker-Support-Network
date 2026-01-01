@@ -11,6 +11,8 @@ const { connectDB } = require('./config/database');
 const logger = require('./utils/logger');
 const healthRoutes = require('./routes/health.routes');
 const agencyRoutes = require('./routes/agency.routes');
+const authRoutes = require('./routes/auth.routes');
+const userRoutes = require('./routes/user.routes');
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 const {
   requestLogger,
@@ -30,17 +32,65 @@ connectDB();
 
 // ==================== MIDDLEWARE ====================
 
+// CORS Configuration - Handle OPTIONS requests FIRST
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      process.env.FRONTEND_URL || 'http://localhost:3000',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow for development
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept-Language'],
+  exposedHeaders: ['Authorization'],
+  optionsSuccessStatus: 200,
+};
+
+// Handle OPTIONS requests FIRST - before any other middleware
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    const origin = req.headers.origin;
+    const allowedOrigins = [
+      process.env.FRONTEND_URL || 'http://localhost:3000',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+    ];
+    if (origin && allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+    } else if (allowedOrigins.length > 0) {
+      res.header('Access-Control-Allow-Origin', allowedOrigins[0]);
+    }
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept-Language');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Max-Age', '86400');
+    return res.status(200).end();
+  }
+  next();
+});
+
+// Apply CORS to all routes
+app.use(cors(corsOptions));
+
 // Request ID - Add unique ID to each request
 app.use(requestId);
 
-// Security Headers - Helmet protects against common web vulnerabilities
-app.use(helmet());
-
-// CORS - Allow cross-origin requests from frontend
+// Security Headers - Helmet configured for CORS
 app.use(
-  cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials: true,
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginEmbedderPolicy: false,
   })
 );
 
@@ -62,6 +112,12 @@ app.use(requestSizeMonitor);
 // Health Check Route
 app.use('/api/health', healthRoutes);
 
+// Auth Routes
+app.use('/api/auth', authRoutes);
+
+// User Routes
+app.use('/api/users', userRoutes);
+
 // Agency Routes
 app.use('/api/agencies', agencyRoutes);
 
@@ -74,6 +130,8 @@ app.get('/', (req, res) => {
     documentation: '/api/health',
     endpoints: {
       health: '/api/health',
+      auth: '/api/auth',
+      users: '/api/users',
       agencies: '/api/agencies',
     },
   });

@@ -11,6 +11,7 @@ const {
   getTopRatedAgencies,
   getAgenciesByCity,
   getAgencyStats,
+  getNearbyAgencies,
 } = require('../controllers/agency.controller');
 
 // ==================== PUBLIC ROUTES ====================
@@ -44,6 +45,17 @@ router.get('/stats', getAgencyStats);
  * @query   limit - Number of agencies to return (default: 10)
  */
 router.get('/top-rated', getTopRatedAgencies);
+
+/**
+ * @route   GET /api/agencies/nearby
+ * @desc    Get agencies nearby a location using geospatial search
+ * @access  Public
+ * @query   latitude - Latitude of the location
+ * @query   longitude - Longitude of the location
+ * @query   maxDistance - Maximum distance in kilometers (default: 50)
+ * @query   limit - Maximum number of results (default: 20)
+ */
+router.get('/nearby', getNearbyAgencies);
 
 /**
  * @route   GET /api/agencies/city/:city

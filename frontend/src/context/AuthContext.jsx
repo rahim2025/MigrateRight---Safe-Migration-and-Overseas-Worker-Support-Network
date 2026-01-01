@@ -37,8 +37,11 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await authService.login(credentials);
-      setUser(response.user);
-      setIsAuthenticated(true);
+      // Response structure: { success: true, message: '...', data: { user, token, refreshToken } }
+      if (response?.data?.user) {
+        setUser(response.data.user);
+        setIsAuthenticated(true);
+      }
       return response;
     } catch (error) {
       throw error;
@@ -48,8 +51,11 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await authService.register(userData);
-      setUser(response.user);
-      setIsAuthenticated(true);
+      // Response structure: { success: true, message: '...', data: { user, token, refreshToken } }
+      if (response?.data?.user) {
+        setUser(response.data.user);
+        setIsAuthenticated(true);
+      }
       return response;
     } catch (error) {
       throw error;

@@ -27,7 +27,6 @@ const Register = () => {
     gender: 'male',
     location: {
       bangladeshAddress: {
-        division: 'Dhaka',
         district: '',
       },
     },
@@ -38,22 +37,37 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const keys = name.split('.');
 
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setFormData({
-        ...formData,
-        [parent]: {
-          ...formData[parent],
-          [child]: value,
-        },
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+    setFormData((prev) => {
+      if (keys.length === 1) {
+        return { ...prev, [name]: value };
+      }
+      if (keys.length === 2) {
+        const [parent, child] = keys;
+        return {
+          ...prev,
+          [parent]: {
+            ...(prev[parent] || {}),
+            [child]: value,
+          },
+        };
+      }
+      if (keys.length === 3) {
+        const [parent, child, grandchild] = keys;
+        return {
+          ...prev,
+          [parent]: {
+            ...(prev[parent] || {}),
+            [child]: {
+              ...(prev[parent]?.[child] || {}),
+              [grandchild]: value,
+            },
+          },
+        };
+      }
+      return prev;
+    });
 
     setError('');
   };
@@ -100,7 +114,7 @@ const Register = () => {
                   type="text"
                   id="fullName.firstName"
                   name="fullName.firstName"
-                  value={formData.fullName.firstName}
+                  value={formData.fullName?.firstName || ''}
                   onChange={handleChange}
                   required
                   className="form-input"
@@ -113,7 +127,7 @@ const Register = () => {
                   type="text"
                   id="fullName.lastName"
                   name="fullName.lastName"
-                  value={formData.fullName.lastName}
+                  value={formData.fullName?.lastName || ''}
                   onChange={handleChange}
                   required
                   className="form-input"
@@ -215,7 +229,7 @@ const Register = () => {
                 type="text"
                 id="location.bangladeshAddress.district"
                 name="location.bangladeshAddress.district"
-                value={formData.location.bangladeshAddress.district}
+                value={formData.location?.bangladeshAddress?.district || ''}
                 onChange={handleChange}
                 required
                 placeholder="e.g., Dhaka"

@@ -4,6 +4,8 @@ import Layout from '@components/layout/Layout';
 import Home from '@pages/Home/Home';
 import Login from '@pages/Auth/Login';
 import Register from '@pages/Auth/Register';
+import ForgotPassword from '@pages/Auth/ForgotPassword';
+import ResetPassword from '@pages/Auth/ResetPassword';
 import SearchAgencies from '@pages/Agencies/SearchAgencies';
 import AgencyDetails from '@pages/Agencies/AgencyDetails';
 import UserProfile from '@pages/Profile/UserProfile';
@@ -28,6 +30,8 @@ const AppRoutes = () => {
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password/:token" element={<ResetPassword />} />
         <Route path="agencies" element={<SearchAgencies />} />
         <Route path="agencies/:id" element={<AgencyDetails />} />
 

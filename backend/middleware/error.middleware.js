@@ -25,6 +25,11 @@ const {
  * It creates a NotFoundError and passes it to the error handler
  */
 const notFound = (req, res, next) => {
+  // Skip OPTIONS requests (CORS preflight) - they should be handled by CORS middleware
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
   const error = new NotFoundError('Route', `Route ${req.originalUrl} not found`);
   
   // Log the 404 attempt

@@ -28,6 +28,8 @@ frontend/dist/
 frontend/coverage/
 
 # Misc
+Group2_Project_Proposal*.pdf
+*.pdf
 .DS_Store
 .env.local
 .env.development.local

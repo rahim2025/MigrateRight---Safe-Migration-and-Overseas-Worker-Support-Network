@@ -243,32 +243,23 @@ const UserProfile = () => {
               <section className="form-section">
                 <h3>Location</h3>
 
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Division</label>
+                <div className="form-group">
+                  <label>District</label>
+                  {editing ? (
+                    <input
+                      type="text"
+                      name="location.bangladeshAddress.district"
+                      value={
+                        formData.location?.bangladeshAddress?.district || ''
+                      }
+                      onChange={handleChange}
+                      className="form-input"
+                    />
+                  ) : (
                     <p className="form-value">
-                      {profile.location?.bangladeshAddress?.division || 'Not specified'}
+                      {profile.location?.bangladeshAddress?.district || 'Not specified'}
                     </p>
-                  </div>
-
-                  <div className="form-group">
-                    <label>District</label>
-                    {editing ? (
-                      <input
-                        type="text"
-                        name="location.bangladeshAddress.district"
-                        value={
-                          formData.location?.bangladeshAddress?.district || ''
-                        }
-                        onChange={handleChange}
-                        className="form-input"
-                      />
-                    ) : (
-                      <p className="form-value">
-                        {profile.location?.bangladeshAddress?.district || 'Not specified'}
-                      </p>
-                    )}
-                  </div>
+                  )}
                 </div>
               </section>
 
