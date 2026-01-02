@@ -1,12 +1,12 @@
 /**
  * Authentication Controller
- * Handles register, login, password reset, email verification
+ * Handles register, login, logout, password reset, email verification
  */
 
 const crypto = require('crypto');
 const { asyncHandler } = require('../middleware/error.middleware');
 const { BadRequestError, UnauthorizedError } = require('../utils/errors');
-const { generateTokenPair, verifyRefreshToken, generateAccessToken } = require('../utils/jwt.utils');
+const { generateTokenPair, verifyRefreshToken, generateAccessToken, blacklistToken } = require('../utils/jwt.utils');
 const User = require('../models/User');
 const emailService = require('../services/email.service');
 const config = require('../config/env');
@@ -221,9 +221,44 @@ const refreshToken = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Logout user (blacklist current token)
+ * @route   POST /api/auth/logout
+ * @access  Private
+ */
+const logout = asyncHandler(async (req, res) => {
+  const token = req.token; // Set by authenticate middleware
+
+  if (token) {
+    blacklistToken(token);
+    logger.info('User logged out', { userId: req.user._id });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Logout successful',
+  });
+});
+
+/**
+ * @desc    Get current authenticated user
+ * @route   GET /api/auth/me
+ * @access  Private
+ */
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select('-password');
+
+  res.status(200).json({
+    success: true,
+    data: { user },
+  });
+});
+
 module.exports = {
   register,
   login,
+  logout,
+  getCurrentUser,
   forgotPassword,
   resetPassword,
   verifyEmail,
