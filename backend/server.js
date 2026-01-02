@@ -14,6 +14,7 @@ const agencyRoutes = require('./routes/agency.routes');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const calculatorRoutes = require('./routes/calculator.routes');
+const countryGuideRoutes = require('./routes/countryGuide.routes');
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 const {
   requestLogger,
@@ -125,6 +126,9 @@ app.use('/api/agencies', agencyRoutes);
 // Calculator Routes
 app.use('/api/calculator', calculatorRoutes);
 
+// Country Guide Routes
+app.use('/api/country-guides', countryGuideRoutes);
+
 // Welcome Route
 app.get('/', (req, res) => {
   res.json({
@@ -138,6 +142,7 @@ app.get('/', (req, res) => {
       users: '/api/users',
       agencies: '/api/agencies',
       calculator: '/api/calculator',
+      countryGuides: '/api/country-guides',
     },
   });
 });
