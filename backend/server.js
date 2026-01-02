@@ -15,6 +15,7 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const calculatorRoutes = require('./routes/calculator.routes');
 const countryGuideRoutes = require('./routes/countryGuide.routes');
+const emergencyRoutes = require('./routes/emergency.routes');
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 const {
   requestLogger,
@@ -129,6 +130,9 @@ app.use('/api/calculator', calculatorRoutes);
 // Country Guide Routes
 app.use('/api/country-guides', countryGuideRoutes);
 
+// Emergency SOS Routes
+app.use('/api/emergency', emergencyRoutes);
+
 // Welcome Route
 app.get('/', (req, res) => {
   res.json({
@@ -143,6 +147,7 @@ app.get('/', (req, res) => {
       agencies: '/api/agencies',
       calculator: '/api/calculator',
       countryGuides: '/api/country-guides',
+      emergency: '/api/emergency',
     },
   });
 });
