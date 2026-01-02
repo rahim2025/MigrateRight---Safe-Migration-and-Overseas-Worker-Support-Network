@@ -13,6 +13,7 @@ const healthRoutes = require('./routes/health.routes');
 const agencyRoutes = require('./routes/agency.routes');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
+const calculatorRoutes = require('./routes/calculator.routes');
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 const {
   requestLogger,
@@ -121,6 +122,9 @@ app.use('/api/users', userRoutes);
 // Agency Routes
 app.use('/api/agencies', agencyRoutes);
 
+// Calculator Routes
+app.use('/api/calculator', calculatorRoutes);
+
 // Welcome Route
 app.get('/', (req, res) => {
   res.json({
@@ -133,6 +137,7 @@ app.get('/', (req, res) => {
       auth: '/api/auth',
       users: '/api/users',
       agencies: '/api/agencies',
+      calculator: '/api/calculator',
     },
   });
 });
