@@ -1,0 +1,620 @@
+/* Country Guide Detail Styles */
+
+.country-detail-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Loading & Error States */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #3182ce;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-container {
+  text-align: center;
+  padding: 3rem;
+  background-color: #fff5f5;
+  border-radius: 8px;
+  border: 1px solid #fc8181;
+}
+
+.error-container h2 {
+  color: #c53030;
+  margin-bottom: 1rem;
+}
+
+.error-container p {
+  color: #742a2a;
+  margin-bottom: 2rem;
+}
+
+.error-container button {
+  background-color: #3182ce;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.error-container button:hover {
+  background-color: #2c5aa0;
+}
+
+/* Header */
+.detail-header {
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #3182ce;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  display: inline-block;
+  transition: color 0.2s;
+}
+
+.back-button:hover {
+  color: #2c5aa0;
+  text-decoration: underline;
+}
+
+.header-content {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.header-flag {
+  font-size: 4rem;
+}
+
+.header-title h1 {
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.header-region {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.update-warning {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+
+/* Navigation Tabs */
+.section-nav {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  background-color: #f7fafc;
+  padding: 0.5rem;
+  border-radius: 8px;
+  /* scrollbar styling handled via ::-webkit-scrollbar */
+}
+
+.section-nav button {
+  background-color: transparent;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.section-nav button:hover {
+  background-color: #e2e8f0;
+}
+
+.section-nav button.active {
+  background-color: #3182ce;
+  color: white;
+}
+
+/* Content Sections */
+.detail-content {
+  background-color: white;
+}
+
+.content-section {
+  padding: 2rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.content-section:last-child {
+  border-bottom: none;
+}
+
+.content-section h2 {
+  font-size: 2rem;
+  color: #1a202c;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid #3182ce;
+}
+
+.content-section h3 {
+  font-size: 1.5rem;
+  color: #2d3748;
+  margin: 1.5rem 0 1rem;
+}
+
+.content-section h4 {
+  font-size: 1.2rem;
+  color: #4a5568;
+  margin: 1rem 0 0.5rem;
+}
+
+.overview-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a5568;
+}
+
+/* Salary Section */
+.salary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.salary-card {
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.salary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.salary-card h3 {
+  font-size: 1.2rem;
+  color: #2d3748;
+  margin: 0 0 0.75rem 0;
+}
+
+.salary-amount {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #3182ce;
+  margin-bottom: 0.75rem;
+}
+
+.salary-notes {
+  font-size: 0.9rem;
+  color: #718096;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Culture Section */
+.culture-subsection {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #f7fafc;
+  border-radius: 8px;
+}
+
+.culture-subsection h3 {
+  margin-top: 0;
+}
+
+.custom-item {
+  margin-bottom: 1.5rem;
+}
+
+.custom-item h4 {
+  color: #3182ce;
+  margin-top: 0;
+}
+
+.custom-item p {
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+.info-text {
+  background-color: #ebf8ff;
+  padding: 1rem;
+  border-left: 4px solid #3182ce;
+  border-radius: 4px;
+  color: #2c5aa0;
+  line-height: 1.6;
+}
+
+.dos-donts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.dos-section,
+.donts-section {
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.dos-section {
+  background-color: #f0fff4;
+  border: 1px solid #9ae6b4;
+}
+
+.donts-section {
+  background-color: #fff5f5;
+  border: 1px solid #fc8181;
+}
+
+.dos-section h3 {
+  color: #22543d;
+  margin-top: 0;
+}
+
+.donts-section h3 {
+  color: #742a2a;
+  margin-top: 0;
+}
+
+.dos-section ul,
+.donts-section ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.dos-section li,
+.donts-section li {
+  padding: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.dos-section li {
+  color: #22543d;
+}
+
+.donts-section li {
+  color: #742a2a;
+}
+
+/* Legal Section */
+.legal-subsection {
+  margin-bottom: 2rem;
+}
+
+.legal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.legal-card {
+  background-color: #ebf8ff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #3182ce;
+}
+
+.legal-card h4 {
+  color: #2c5aa0;
+  margin: 0 0 1rem 0;
+}
+
+.legal-card p {
+  color: #2d3748;
+  margin: 0.5rem 0;
+}
+
+.legal-card .note {
+  font-size: 0.9rem;
+  color: #718096;
+  font-style: italic;
+  margin-top: 0.75rem;
+}
+
+.protections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.protection-item {
+  background-color: #f7fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #48bb78;
+}
+
+.protection-item h4 {
+  color: #22543d;
+  margin: 0 0 0.75rem 0;
+}
+
+.protection-item p {
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Emergency Section */
+.emergency-section {
+  background-color: #fff5f5;
+  padding: 2rem !important;
+  border-radius: 8px;
+}
+
+.emergency-card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.emergency-card.highlight {
+  background: linear-gradient(135deg, #fef5e7 0%, #fadbd8 100%);
+  border: 2px solid #e53e3e;
+}
+
+.emergency-card h3 {
+  margin-top: 0;
+  color: #2d3748;
+}
+
+.emergency-card p {
+  margin: 0.75rem 0;
+  color: #4a5568;
+}
+
+.emergency-card strong {
+  color: #1a202c;
+}
+
+.emergency-card a {
+  color: #3182ce;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.emergency-card a:hover {
+  text-decoration: underline;
+}
+
+.phone-link {
+  display: inline-block;
+  margin-right: 1rem;
+}
+
+.emergency-hotline {
+  background-color: #c53030;
+  color: white;
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 1.1rem;
+}
+
+.emergency-hotline a {
+  color: white;
+  font-size: 1.2rem;
+}
+
+.emergency-numbers p {
+  padding: 0.75rem;
+  background-color: #f7fafc;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.helpline-item {
+  padding: 1rem;
+  background-color: #f7fafc;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.helpline-item h4 {
+  margin: 0 0 0.5rem 0;
+  color: #2d3748;
+}
+
+.helpline-item .availability {
+  font-size: 0.9rem;
+  color: #718096;
+  font-style: italic;
+}
+
+/* Living Costs Section */
+.living-costs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.cost-card {
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.cost-card h3 {
+  margin: 0 0 1rem 0;
+  color: #2d3748;
+}
+
+.cost-amount {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #48bb78;
+  margin-bottom: 0.75rem;
+}
+
+.cost-card .highlight {
+  background-color: #c6f6d5;
+  color: #22543d;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.cost-card .note {
+  font-size: 0.9rem;
+  color: #718096;
+  font-style: italic;
+  margin-top: 0.75rem;
+}
+
+/* Footer */
+.last-verified {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  background-color: #f7fafc;
+  border-radius: 8px;
+  border-left: 4px solid #ed8936;
+}
+
+.last-verified p {
+  margin: 0.5rem 0;
+  color: #4a5568;
+}
+
+.disclaimer {
+  font-style: italic;
+  color: #718096;
+  font-size: 0.95rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .country-detail-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .header-flag {
+    font-size: 3rem;
+  }
+
+  .header-title h1 {
+    font-size: 2rem;
+  }
+
+  .section-nav {
+    gap: 0.25rem;
+  }
+
+  .section-nav button {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .content-section h2 {
+    font-size: 1.6rem;
+  }
+
+  .salary-grid,
+  .legal-grid,
+  .living-costs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dos-donts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-title {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header-flag {
+    font-size: 2.5rem;
+  }
+
+  .header-title h1 {
+    font-size: 1.75rem;
+  }
+
+  .content-section {
+    padding: 1.5rem 0;
+  }
+
+  .content-section h2 {
+    font-size: 1.4rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .back-button,
+  .section-nav {
+    display: none;
+  }
+
+  .content-section {
+    break-inside: avoid;
+  }
+
+  .header-content {
+    background: #f7fafc;
+    color: #1a202c;
+    border: 1px solid #000;
+  }
+
+  .emergency-card,
+  .legal-card,
+  .salary-card {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}

@@ -1,0 +1,233 @@
+/* ===================================
+   Recommendations Panel Styles
+   =================================== */
+
+.recommendations-panel {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.section-subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Recommendation Section */
+.recommendation-section {
+  margin-bottom: 1.5rem;
+}
+
+.recommendation-section:last-child {
+  margin-bottom: 0;
+}
+
+.rec-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.rec-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Countries Grid */
+.countries-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.country-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.country-card:hover {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  transform: translateX(4px);
+}
+
+.country-flag {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.country-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.country-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.25rem 0;
+}
+
+.demand-badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.demand-high {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.demand-medium {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.demand-low {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.country-salary {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.card-arrow {
+  color: #94a3b8;
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.country-card:hover .card-arrow,
+.agency-card-sm:hover .card-arrow {
+  transform: translateX(4px);
+  color: #16a34a;
+}
+
+/* Agencies Grid */
+.agencies-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.agency-card-sm {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.agency-card-sm:hover {
+  background: #f1f5f9;
+}
+
+.agency-info {
+  flex: 1;
+}
+
+.agency-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.25rem 0;
+}
+
+.agency-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.agency-rating {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+/* No Recommendations */
+.no-recommendations {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.no-rec-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.no-recommendations p {
+  color: #64748b;
+  margin: 0 0 1rem 0;
+}
+
+.complete-profile-btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.complete-profile-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+/* Recommendations Grid for skeleton */
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+/* ===================================
+   Responsive Styles
+   =================================== */
+
+@media (max-width: 768px) {
+  .countries-grid,
+  .recommendations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .country-card {
+    padding: 0.75rem;
+  }
+
+  .country-flag {
+    font-size: 1.5rem;
+  }
+
+  .country-name {
+    font-size: 0.875rem;
+  }
+}

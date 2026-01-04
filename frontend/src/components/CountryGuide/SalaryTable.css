@@ -1,0 +1,205 @@
+/* SalaryTable Component Styles */
+
+.salary-table-container {
+  width: 100%;
+}
+
+.salary-table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.salary-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.salary-table th {
+  background-color: #f7fafc;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.salary-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  color: #2d3748;
+  font-size: 0.95rem;
+}
+
+.salary-table tbody tr:hover {
+  background-color: #f7fafc;
+}
+
+.salary-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Job Type Cell */
+.job-type-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sector-indicator {
+  width: 4px;
+  height: 24px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.job-title {
+  font-weight: 500;
+}
+
+/* Salary Cell */
+.salary-cell {
+  white-space: nowrap;
+}
+
+.salary-amount {
+  font-weight: 600;
+  color: #3182ce;
+}
+
+/* Period Cell */
+.period-cell {
+  text-transform: capitalize;
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+/* Notes Cell */
+.notes-cell {
+  color: #718096;
+  font-size: 0.9rem;
+  max-width: 200px;
+}
+
+/* Mobile Cards - Hidden by default */
+.salary-cards-mobile {
+  display: none;
+}
+
+/* Empty State */
+.salary-table-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #718096;
+  background-color: #f7fafc;
+  border-radius: 8px;
+}
+
+/* Legend */
+.salary-legend {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f7fafc;
+  border-radius: 8px;
+}
+
+.legend-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-right: 1rem;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legend-label {
+  font-size: 0.8rem;
+  color: #718096;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .salary-table-wrapper {
+    display: none;
+  }
+
+  .salary-cards-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .salary-card-mobile {
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .salary-card-header {
+    padding: 1rem;
+    background-color: #f7fafc;
+    border-left: 4px solid #3182ce;
+  }
+
+  .salary-card-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: #2d3748;
+  }
+
+  .salary-card-body {
+    padding: 1rem;
+  }
+
+  .salary-range {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .range-label {
+    font-size: 0.8rem;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .range-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #3182ce;
+  }
+
+  .salary-note {
+    margin: 0.75rem 0 0;
+    font-size: 0.9rem;
+    color: #718096;
+    font-style: italic;
+  }
+
+  .salary-legend {
+    display: none;
+  }
+}

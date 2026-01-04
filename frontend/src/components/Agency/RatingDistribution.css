@@ -1,0 +1,89 @@
+/* Rating Distribution Styles */
+
+.rating-distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rating-distribution.empty {
+  padding: 2rem;
+  text-align: center;
+  color: #718096;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+.distribution-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Star Label */
+.star-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: 35px;
+  flex-shrink: 0;
+}
+
+.star-count {
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 0.9rem;
+}
+
+.star-icon {
+  color: #f6ad55;
+  font-size: 0.9rem;
+}
+
+/* Bar Container */
+.bar-container {
+  flex: 1;
+  height: 12px;
+  background: #edf2f7;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f6ad55 0%, #ed8936 100%);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+  min-width: 4px;
+}
+
+/* Count Label */
+.count-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 100px;
+  font-size: 0.8rem;
+  color: #718096;
+}
+
+.count-label .count {
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.count-label .percentage {
+  color: #a0aec0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .count-label {
+    min-width: 80px;
+    font-size: 0.75rem;
+  }
+
+  .count-label .text {
+    display: none;
+  }
+}

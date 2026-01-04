@@ -1,0 +1,169 @@
+/* StepList Component Styles */
+
+.step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.step-list-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #718096;
+  background-color: #f7fafc;
+  border-radius: 8px;
+}
+
+.step-item {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Step Indicator */
+.step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.step-item--completed .step-number {
+  background-color: #38a169;
+  color: white;
+}
+
+.step-item--current .step-number {
+  background-color: #3182ce;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(49, 130, 206, 0.2);
+}
+
+.step-connector {
+  width: 2px;
+  flex: 1;
+  min-height: 40px;
+  background-color: #e2e8f0;
+  margin-top: 0.5rem;
+}
+
+.step-item--completed .step-connector {
+  background-color: #38a169;
+}
+
+/* Step Content */
+.step-content {
+  flex: 1;
+  padding-bottom: 2rem;
+}
+
+.step-item:last-child .step-content {
+  padding-bottom: 0;
+}
+
+.step-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.step-item--completed .step-title {
+  color: #38a169;
+}
+
+.step-item--current .step-title {
+  color: #3182ce;
+}
+
+.step-description {
+  font-size: 0.95rem;
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0 0 0.75rem 0;
+}
+
+.step-duration {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: #f7fafc;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #718096;
+  margin-bottom: 0.75rem;
+}
+
+.step-tips {
+  background-color: #fffff0;
+  border: 1px solid #ecc94b;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.tips-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #744210;
+}
+
+.step-tips p {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: #744210;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .step-item {
+    gap: 0.75rem;
+  }
+
+  .step-number {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  .step-title {
+    font-size: 1rem;
+  }
+
+  .step-description {
+    font-size: 0.9rem;
+  }
+
+  .step-content {
+    padding-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .step-number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .step-connector {
+    min-height: 30px;
+  }
+
+  .step-title {
+    font-size: 0.95rem;
+  }
+}

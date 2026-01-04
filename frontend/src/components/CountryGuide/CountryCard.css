@@ -1,0 +1,196 @@
+/* CountryCard Component Styles */
+
+.country-card {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.country-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  border-color: #3182ce;
+}
+
+.country-card:focus {
+  outline: 2px solid #3182ce;
+  outline-offset: 2px;
+}
+
+/* Header */
+.country-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.country-flag {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.country-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.country-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 0.25rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.country-region {
+  font-size: 0.875rem;
+  color: #718096;
+  margin: 0;
+}
+
+/* Demand Badge */
+.demand-badge {
+  flex-shrink: 0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.demand-green {
+  background-color: #c6f6d5;
+  color: #22543d;
+}
+
+.demand-yellow {
+  background-color: #fefcbf;
+  color: #744210;
+}
+
+.demand-gray {
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+/* Content */
+.country-card-content {
+  padding: 1.25rem;
+  flex: 1;
+}
+
+.country-overview {
+  color: #4a5568;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+}
+
+.job-types-preview {
+  background-color: #f7fafc;
+  padding: 0.75rem;
+  border-radius: 8px;
+}
+
+.job-count {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.job-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.job-tag {
+  background-color: white;
+  color: #4a5568;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  border: 1px solid #e2e8f0;
+}
+
+.job-tag.more {
+  background-color: #3182ce;
+  color: white;
+  border-color: #3182ce;
+}
+
+/* Footer */
+.country-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background-color: #f7fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.view-count {
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.view-link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #3182ce;
+  transition: color 0.2s;
+}
+
+.country-card:hover .view-link {
+  color: #2c5aa0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .country-card-header {
+    flex-wrap: wrap;
+  }
+
+  .demand-badge {
+    order: -1;
+    margin-left: auto;
+  }
+
+  .country-flag {
+    font-size: 2rem;
+  }
+
+  .country-name {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .country-card-header {
+    padding: 1rem;
+  }
+
+  .country-card-content {
+    padding: 1rem;
+  }
+
+  .country-card-footer {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

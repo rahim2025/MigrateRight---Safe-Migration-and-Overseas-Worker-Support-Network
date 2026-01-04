@@ -1,6 +1,7 @@
 /**
  * Agency Routes
  * API endpoints for agency-related operations
+ * Demonstrates JWT authentication and role-based access control
  */
 
 const express = require('express');
@@ -13,6 +14,7 @@ const {
   getAgencyStats,
   getNearbyAgencies,
 } = require('../controllers/agency.controller');
+const { authenticate, authorize, requireVerifiedEmail } = require('../middleware/auth.middleware');
 
 // ==================== PUBLIC ROUTES ====================
 
@@ -72,5 +74,50 @@ router.get('/city/:city', getAgenciesByCity);
  * @param   id - Agency ID (MongoDB ObjectId)
  */
 router.get('/:id', getAgencyById);
+
+// ==================== PROTECTED ROUTES ====================
+// All routes below require authentication
+
+/**
+ * @route   POST /api/agencies
+ * @desc    Create a new recruitment agency (Admin only)
+ * @access  Private - platform_admin only
+ */
+// Example: router.post('/', authenticate, authorize('platform_admin'), createAgency);
+
+/**
+ * @route   PUT /api/agencies/:id
+ * @desc    Update agency details (Agency admin or platform admin)
+ * @access  Private - recruitment_admin, platform_admin
+ */
+// Example: router.put('/:id', authenticate, authorize('recruitment_admin', 'platform_admin'), updateAgency);
+
+/**
+ * @route   DELETE /api/agencies/:id
+ * @desc    Delete/deactivate agency (Platform admin only)
+ * @access  Private - platform_admin only
+ */
+// Example: router.delete('/:id', authenticate, authorize('platform_admin'), deleteAgency);
+
+/**
+ * @route   POST /api/agencies/:id/reviews
+ * @desc    Add review to agency (Authenticated users, verified email required)
+ * @access  Private - All authenticated users with verified email
+ */
+// Example: router.post('/:id/reviews', authenticate, requireVerifiedEmail, addAgencyReview);
+
+/**
+ * @route   POST /api/agencies/:id/favorite
+ * @desc    Add agency to favorites (Authenticated users)
+ * @access  Private - All authenticated users
+ */
+// Example: router.post('/:id/favorite', authenticate, addToFavorites);
+
+/**
+ * @route   GET /api/agencies/my/managed
+ * @desc    Get agencies managed by current user
+ * @access  Private - recruitment_admin
+ */
+// Example: router.get('/my/managed', authenticate, authorize('recruitment_admin'), getManagedAgencies);
 
 module.exports = router;

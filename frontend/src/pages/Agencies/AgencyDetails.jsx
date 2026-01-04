@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@context/LanguageContext';
+import { useAuth } from '@context/AuthContext';
 import agencyService from '@services/agencyService';
+import { 
+  StarRating, 
+  ReviewCard, 
+  RatingDistribution, 
+  ReviewSubmissionForm 
+} from '@components/Agency';
 import './AgencyDetails.css';
 
 /**
@@ -11,16 +18,35 @@ import './AgencyDetails.css';
 const AgencyDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { user, isAuthenticated } = useAuth();
 
   const [agency, setAgency] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // Reviews state
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewsError, setReviewsError] = useState('');
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSubmitError, setReviewSubmitError] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+  const [reviewPage, setReviewPage] = useState(1);
+  const [totalReviewPages, setTotalReviewPages] = useState(1);
 
   useEffect(() => {
     fetchAgencyDetails();
   }, [id]);
+
+  // Fetch reviews when tab changes to reviews or sort/page changes
+  useEffect(() => {
+    if (activeTab === 'reviews' && agency) {
+      fetchReviews();
+    }
+  }, [activeTab, sortBy, reviewPage]);
 
   const fetchAgencyDetails = async () => {
     setLoading(true);
@@ -34,6 +60,75 @@ const AgencyDetails = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchReviews = async () => {
+    setReviewsLoading(true);
+    setReviewsError('');
+
+    try {
+      const response = await agencyService.getAgencyReviews(id, {
+        page: reviewPage,
+        limit: 10,
+        sort: sortBy === 'newest' ? '-createdAt' : sortBy === 'oldest' ? 'createdAt' : '-helpful'
+      });
+      setReviews(response.data?.reviews || response.reviews || []);
+      setTotalReviewPages(response.data?.totalPages || response.totalPages || 1);
+    } catch (err) {
+      setReviewsError(err.message || 'Failed to load reviews');
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  const handleSubmitReview = async (reviewData) => {
+    setSubmittingReview(true);
+    setReviewSubmitError('');
+
+    try {
+      await agencyService.submitReview(id, reviewData);
+      setShowReviewForm(false);
+      // Refresh reviews and agency to update rating
+      fetchReviews();
+      fetchAgencyDetails();
+    } catch (err) {
+      setReviewSubmitError(err.message || 'Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const handleMarkHelpful = async (reviewId) => {
+    try {
+      await agencyService.markReviewHelpful(id, reviewId);
+      fetchReviews();
+    } catch (err) {
+      console.error('Failed to mark review as helpful:', err);
+    }
+  };
+
+  const handleReportReview = async (reviewId, reason, description) => {
+    try {
+      await agencyService.reportReview(id, reviewId, { reason, description });
+      // Could show a toast notification here
+    } catch (err) {
+      console.error('Failed to report review:', err);
+    }
+  };
+
+  // Calculate rating distribution from reviews or agency data
+  const getRatingDistribution = () => {
+    if (agency?.ratings?.distribution) {
+      return agency.ratings.distribution;
+    }
+    // Fallback: calculate from reviews
+    const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    reviews.forEach(r => {
+      if (r.rating >= 1 && r.rating <= 5) {
+        dist[r.rating]++;
+      }
+    });
+    return dist;
   };
 
   if (loading) {
@@ -219,20 +314,156 @@ const AgencyDetails = () => {
 
           {activeTab === 'reviews' && (
             <div className="reviews-tab">
-              <h2>User Reviews</h2>
+              {/* Reviews Header */}
+              <div className="reviews-header">
+                <h2>{language === 'bn' ? 'ব্যবহারকারীর রিভিউ' : 'User Reviews'}</h2>
+                {isAuthenticated ? (
+                  <button 
+                    className="btn btn-primary write-review-btn"
+                    onClick={() => setShowReviewForm(true)}
+                  >
+                    {language === 'bn' ? '✍️ রিভিউ লিখুন' : '✍️ Write a Review'}
+                  </button>
+                ) : (
+                  <button 
+                    className="btn btn-secondary login-to-review-btn"
+                    onClick={() => navigate('/login', { state: { from: `/agencies/${id}` } })}
+                  >
+                    {language === 'bn' ? '🔒 রিভিউ লিখতে লগইন করুন' : '🔒 Login to Write Review'}
+                  </button>
+                )}
+              </div>
+
+              {/* Reviews Summary with Distribution */}
               <div className="reviews-summary">
-                <div className="rating-breakdown">
-                  <div className="avg-rating">
+                <div className="rating-overview">
+                  <div className="avg-rating-large">
                     <span className="rating-number">
-                      {agency.ratings.averageRating.toFixed(1)}
+                      {agency.ratings?.averageRating?.toFixed(1) || '0.0'}
                     </span>
-                    <span className="rating-stars">⭐⭐⭐⭐⭐</span>
-                    <span className="rating-count">{agency.ratings.totalReviews} reviews</span>
+                    <StarRating 
+                      value={agency.ratings?.averageRating || 0} 
+                      size="large" 
+                      language={language}
+                    />
+                    <span className="rating-count">
+                      {language === 'bn' 
+                        ? `${agency.ratings?.totalReviews || 0} টি রিভিউ` 
+                        : `${agency.ratings?.totalReviews || 0} reviews`
+                      }
+                    </span>
                   </div>
+                </div>
+                <div className="rating-distribution-wrapper">
+                  <RatingDistribution 
+                    distribution={getRatingDistribution()} 
+                    totalReviews={agency.ratings?.totalReviews || 0}
+                    language={language}
+                  />
                 </div>
               </div>
 
-              <p className="coming-soon">Detailed reviews coming soon...</p>
+              {/* Sort Controls */}
+              <div className="reviews-controls">
+                <label htmlFor="review-sort">
+                  {language === 'bn' ? 'সাজান:' : 'Sort by:'}
+                </label>
+                <select 
+                  id="review-sort"
+                  value={sortBy}
+                  onChange={(e) => {
+                    setSortBy(e.target.value);
+                    setReviewPage(1);
+                  }}
+                >
+                  <option value="newest">{language === 'bn' ? 'নতুন প্রথমে' : 'Newest First'}</option>
+                  <option value="oldest">{language === 'bn' ? 'পুরাতন প্রথমে' : 'Oldest First'}</option>
+                  <option value="helpful">{language === 'bn' ? 'সবচেয়ে সহায়ক' : 'Most Helpful'}</option>
+                </select>
+              </div>
+
+              {/* Reviews List */}
+              <div className="reviews-list">
+                {reviewsLoading ? (
+                  <div className="reviews-loading">
+                    <div className="spinner"></div>
+                    <p>{language === 'bn' ? 'রিভিউ লোড হচ্ছে...' : 'Loading reviews...'}</p>
+                  </div>
+                ) : reviewsError ? (
+                  <div className="reviews-error">
+                    <p>{reviewsError}</p>
+                    <button onClick={fetchReviews} className="btn btn-secondary">
+                      {language === 'bn' ? 'আবার চেষ্টা করুন' : 'Try Again'}
+                    </button>
+                  </div>
+                ) : reviews.length === 0 ? (
+                  <div className="no-reviews">
+                    <span className="no-reviews-icon">📝</span>
+                    <h3>{language === 'bn' ? 'এখনো কোনো রিভিউ নেই' : 'No Reviews Yet'}</h3>
+                    <p>
+                      {language === 'bn' 
+                        ? 'এই এজেন্সির প্রথম রিভিউ লিখুন!'
+                        : 'Be the first to review this agency!'
+                      }
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {reviews.map((review) => (
+                      <ReviewCard
+                        key={review._id || review.id}
+                        review={review}
+                        onHelpful={() => handleMarkHelpful(review._id || review.id)}
+                        onReport={(reason, desc) => handleReportReview(review._id || review.id, reason, desc)}
+                        isAuthenticated={isAuthenticated}
+                        language={language}
+                      />
+                    ))}
+
+                    {/* Pagination */}
+                    {totalReviewPages > 1 && (
+                      <div className="reviews-pagination">
+                        <button
+                          className="btn btn-secondary"
+                          disabled={reviewPage <= 1}
+                          onClick={() => setReviewPage(p => p - 1)}
+                        >
+                          {language === 'bn' ? '← পূর্ববর্তী' : '← Previous'}
+                        </button>
+                        <span className="page-info">
+                          {language === 'bn' 
+                            ? `পৃষ্ঠা ${reviewPage} / ${totalReviewPages}`
+                            : `Page ${reviewPage} of ${totalReviewPages}`
+                          }
+                        </span>
+                        <button
+                          className="btn btn-secondary"
+                          disabled={reviewPage >= totalReviewPages}
+                          onClick={() => setReviewPage(p => p + 1)}
+                        >
+                          {language === 'bn' ? 'পরবর্তী →' : 'Next →'}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Review Submission Form Modal */}
+              {showReviewForm && (
+                <ReviewSubmissionForm
+                  agencyId={id}
+                  agencyName={agency.agencyName}
+                  onSubmit={handleSubmitReview}
+                  onClose={() => {
+                    setShowReviewForm(false);
+                    setReviewSubmitError('');
+                  }}
+                  isSubmitting={submittingReview}
+                  error={reviewSubmitError}
+                  language={language}
+                />
+              )}
             </div>
           )}
 

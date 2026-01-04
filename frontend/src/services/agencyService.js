@@ -78,6 +78,62 @@ const agencyService = {
       throw error;
     }
   },
+
+  /**
+   * Submit a review for an agency (requires authentication)
+   * @param {string} agencyId - Agency ID
+   * @param {object} reviewData - Review data { rating, comment, isAnonymous }
+   */
+  submitReview: async (agencyId, reviewData) => {
+    try {
+      const response = await api.post(`/agencies/${agencyId}/reviews`, reviewData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Mark a review as helpful
+   * @param {string} agencyId - Agency ID
+   * @param {string} reviewId - Review ID
+   */
+  markReviewHelpful: async (agencyId, reviewId) => {
+    try {
+      const response = await api.post(`/agencies/${agencyId}/reviews/${reviewId}/helpful`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Report a review
+   * @param {string} agencyId - Agency ID
+   * @param {string} reviewId - Review ID
+   * @param {object} reportData - Report data { reason, description }
+   */
+  reportReview: async (agencyId, reviewId, reportData) => {
+    try {
+      const response = await api.post(`/agencies/${agencyId}/reviews/${reviewId}/report`, reportData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Get review statistics for an agency
+   * @param {string} agencyId - Agency ID
+   */
+  getReviewStats: async (agencyId) => {
+    try {
+      const response = await api.get(`/agencies/${agencyId}/reviews/stats`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default agencyService;

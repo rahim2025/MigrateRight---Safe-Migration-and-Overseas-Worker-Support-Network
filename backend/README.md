@@ -11,6 +11,7 @@ Backend API server for **MigrateRight** - A Safe Migration and Overseas Worker S
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [API Endpoints](#api-endpoints)
+- [JWT Authentication](#jwt-authentication)
 - [Environment Variables](#environment-variables)
 - [Scripts](#scripts)
 - [Error Handling](#error-handling)
@@ -22,12 +23,14 @@ Backend API server for **MigrateRight** - A Safe Migration and Overseas Worker S
 
 ✅ **Express.js** server with clean architecture  
 ✅ **MongoDB** database integration with Mongoose  
+✅ **JWT Authentication** with access/refresh tokens  
+✅ **Role-Based Access Control (RBAC)**  
 ✅ **Environment variables** configuration with dotenv  
-✅ **Security** middleware (Helmet, CORS)  
+✅ **Security** middleware (Helmet, CORS, Rate Limiting)  
 ✅ **Error handling** middleware  
 ✅ **Health check** endpoints  
-✅ **Request logging** with Morgan  
-✅ **JSON parsing** middleware  
+✅ **Request logging** with comprehensive logger  
+✅ **Production-ready** security features  
 ✅ **Beginner-friendly** code structure  
 
 ---
@@ -40,10 +43,12 @@ Backend API server for **MigrateRight** - A Safe Migration and Overseas Worker S
 | **Express.js** | Web framework |
 | **MongoDB** | NoSQL database |
 | **Mongoose** | MongoDB ODM |
+| **JWT** | Authentication tokens |
+| **Bcrypt** | Password hashing |
 | **dotenv** | Environment variables |
 | **Helmet** | Security headers |
 | **CORS** | Cross-origin requests |
-| **Morgan** | HTTP logger |
+| **Express Rate Limit** | API rate limiting |
 | **Nodemon** | Auto-restart server (dev) |
 
 ---
@@ -182,6 +187,64 @@ http://localhost:5000
   }
 }
 ```
+
+---
+
+## 🔐 JWT Authentication
+
+This backend implements **production-ready JWT authentication** with comprehensive security features.
+
+### Quick Start
+
+```bash
+# Generate secure JWT secrets
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+# Add to .env
+JWT_SECRET=<generated_secret>
+JWT_REFRESH_SECRET=<different_secret>
+```
+
+### Authentication Endpoints
+
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| `POST` | `/api/auth/register` | Public | Register new user |
+| `POST` | `/api/auth/login` | Public | Login user |
+| `POST` | `/api/auth/logout` | Private | Logout (blacklist token) |
+| `GET` | `/api/auth/me` | Private | Get current user |
+| `POST` | `/api/auth/refresh-token` | Public | Refresh access token |
+
+### Protect Routes
+
+```javascript
+const { authenticate, authorize } = require('./middleware/auth.middleware');
+
+// Protected route
+router.get('/profile', authenticate, getProfile);
+
+// Role-based route
+router.delete('/admin', authenticate, authorize('platform_admin'), deleteResource);
+```
+
+### Comprehensive Documentation
+
+- **📚 Complete Guide:** [docs/JWT_AUTHENTICATION_GUIDE.md](./docs/JWT_AUTHENTICATION_GUIDE.md)
+- **⚡ Quick Reference:** [docs/JWT_QUICK_REFERENCE.md](./docs/JWT_QUICK_REFERENCE.md)
+- **📝 Implementation Summary:** [docs/JWT_IMPLEMENTATION_SUMMARY.md](./docs/JWT_IMPLEMENTATION_SUMMARY.md)
+
+### Security Features
+
+✅ JWT with HS256 algorithm  
+✅ Access + Refresh token pattern  
+✅ Token blacklisting for logout  
+✅ Role-based access control (RBAC)  
+✅ Account status verification  
+✅ Email verification requirements  
+✅ Password change detection  
+✅ Login attempt limiting  
+✅ Account locking  
+✅ Security logging  
 
 ---
 

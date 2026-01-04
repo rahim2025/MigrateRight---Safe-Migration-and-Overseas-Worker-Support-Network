@@ -11,6 +11,16 @@ import AgencyDetails from '@pages/Agencies/AgencyDetails';
 import UserProfile from '@pages/Profile/UserProfile';
 import NotFound from '@pages/NotFound/NotFound';
 
+// Country Guide pages
+import CountryGuideList from '@pages/CountryGuides/CountryGuideList';
+import CountryGuideDetail from '@pages/CountryGuides/CountryGuideDetail';
+
+// Cost Calculator page
+import CostCalculator from '@pages/CostCalculator';
+
+// Worker Dashboard page
+import WorkerDashboard from '@pages/WorkerDashboard';
+
 // Placeholder pages for future features
 import SavedAgencies from '@pages/Placeholder/SavedAgencies';
 import Documents from '@pages/Placeholder/Documents';
@@ -35,7 +45,25 @@ const AppRoutes = () => {
         <Route path="agencies" element={<SearchAgencies />} />
         <Route path="agencies/:id" element={<AgencyDetails />} />
 
+        {/* Country Guide Routes */}
+        <Route path="countries" element={<CountryGuideList />} />
+        <Route path="countries/:countryCode" element={<CountryGuideDetail />} />
+        <Route path="country-guides" element={<CountryGuideList />} />
+        <Route path="country-guides/:country" element={<CountryGuideDetail />} />
+
+        {/* Cost Calculator Routes */}
+        <Route path="calculator" element={<CostCalculator />} />
+        <Route path="cost-calculator" element={<CostCalculator />} />
+
         {/* Protected Routes */}
+        <Route
+          path="dashboard"
+          element={
+            <ProtectedRoute>
+              <WorkerDashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="profile"
           element={

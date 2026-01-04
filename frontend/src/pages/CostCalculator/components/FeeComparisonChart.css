@@ -1,0 +1,111 @@
+/* Fee Comparison Chart Styles */
+
+.fee-comparison-chart {
+  padding: 1rem 0;
+}
+
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  background: #f7fafc;
+  border-radius: 8px;
+  color: #718096;
+}
+
+/* Custom Tooltip */
+.chart-tooltip {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+}
+
+.tooltip-title {
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 0.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.tooltip-label {
+  color: #718096;
+}
+
+.tooltip-value {
+  font-weight: 500;
+}
+
+.tooltip-row.legal .tooltip-value {
+  color: #3182ce;
+}
+
+.tooltip-row.actual .tooltip-value {
+  color: #805ad5;
+}
+
+.tooltip-diff {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+  color: #e53e3e;
+  font-weight: 500;
+}
+
+/* Chart Legend */
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.legend-color.legal {
+  background-color: #3182ce;
+}
+
+.legend-color.actual {
+  background-color: #805ad5;
+}
+
+.legend-text {
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .chart-legend {
+    gap: 1rem;
+  }
+
+  .legend-text {
+    font-size: 0.8rem;
+  }
+}

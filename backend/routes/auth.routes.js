@@ -7,6 +7,8 @@ const router = express.Router();
 const {
   register,
   login,
+  logout,
+  getCurrentUser,
   forgotPassword,
   resetPassword,
   verifyEmail,
@@ -18,6 +20,7 @@ const {
   validateForgotPassword,
   validateResetPassword,
 } = require('../middleware/validation.middleware');
+const { authenticate } = require('../middleware/auth.middleware');
 const { authLimiter, passwordResetLimiter } = require('../middleware/rateLimiter.middleware');
 
 // Handle OPTIONS requests for CORS preflight (must be before other routes)
@@ -34,6 +37,12 @@ router.post('/register', authLimiter, validateRegister, register);
 
 // POST /api/auth/login
 router.post('/login', authLimiter, validateLogin, login);
+
+// POST /api/auth/logout (Protected)
+router.post('/logout', authenticate, logout);
+
+// GET /api/auth/me (Protected)
+router.get('/me', authenticate, getCurrentUser);
 
 // POST /api/auth/forgot-password
 router.post('/forgot-password', passwordResetLimiter, validateForgotPassword, forgotPassword);

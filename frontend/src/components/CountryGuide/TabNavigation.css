@@ -1,0 +1,115 @@
+/* TabNavigation Component Styles */
+
+.tab-navigation {
+  background-color: #f7fafc;
+  padding: 0.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.tab-navigation--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  padding: 0.5rem 1rem;
+  margin: 0 -1rem 2rem;
+}
+
+.tab-list {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.tab-list::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tab-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tab-list::-webkit-scrollbar-thumb {
+  background-color: #cbd5e0;
+  border-radius: 2px;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  color: #4a5568;
+  scroll-snap-align: start;
+}
+
+.tab-button:hover {
+  background-color: #e2e8f0;
+}
+
+.tab-button:focus {
+  outline: 2px solid #3182ce;
+  outline-offset: 2px;
+}
+
+.tab-button--active {
+  background-color: #3182ce;
+  color: white;
+}
+
+.tab-button--active:hover {
+  background-color: #2c5aa0;
+}
+
+.tab-icon {
+  font-size: 1.1rem;
+}
+
+.tab-label {
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tab-navigation {
+    margin: 0 -1rem 1.5rem;
+    border-radius: 0;
+    padding: 0.5rem;
+  }
+
+  .tab-navigation--sticky {
+    top: 56px; /* Account for mobile header */
+  }
+
+  .tab-button {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .tab-icon {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .tab-icon {
+    display: none;
+  }
+}
