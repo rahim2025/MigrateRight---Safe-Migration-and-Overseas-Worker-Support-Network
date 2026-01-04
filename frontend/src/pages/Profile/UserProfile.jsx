@@ -28,9 +28,9 @@ const UserProfile = () => {
     setError('');
 
     try {
-      const response = await userService.getProfile();
-      setProfile(response.data);
-      setFormData(response.data);
+      const profileData = await userService.getProfile();
+      setProfile(profileData);
+      setFormData(profileData);
     } catch (err) {
       setError(err.message || 'Failed to load profile');
     } finally {
@@ -67,8 +67,8 @@ const UserProfile = () => {
     setSuccess('');
 
     try {
-      const response = await userService.updateProfile(formData);
-      setProfile(response.data);
+      const updatedProfile = await userService.updateProfile(formData);
+      setProfile(updatedProfile);
       setEditing(false);
       setSuccess('Profile updated successfully!');
     } catch (err) {
