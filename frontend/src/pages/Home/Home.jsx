@@ -15,14 +15,14 @@ const Home = () => {
       {/* Hero Section */}
       <section className="hero">
         <div className="container">
-          <h1 className="hero-title">{t('welcome')}</h1>
-          <p className="hero-subtitle">{t('tagline')}</p>
+          <h1 className="hero-title">{t('home.welcome')}</h1>
+          <p className="hero-subtitle">{t('common.tagline')}</p>
           <div className="hero-actions">
             <Link to="/agencies" className="btn btn-primary btn-lg">
-              {t('searchAgencies')}
+              {t('navigation.searchAgencies')}
             </Link>
             <Link to="/register" className="btn btn-secondary btn-lg">
-              {t('register')}
+              {t('auth.register')}
             </Link>
           </div>
         </div>

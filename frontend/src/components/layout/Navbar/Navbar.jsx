@@ -35,28 +35,34 @@ const Navbar = () => {
         {/* Desktop Menu */}
         <div className="navbar-menu">
           <Link to="/" className="nav-link">
-            {t('home')}
+            {t('navigation.home')}
           </Link>
           <Link to="/agencies" className="nav-link">
-            {t('agencies')}
+            {t('navigation.agencies')}
+          </Link>
+          <Link to="/countries" className="nav-link">
+            {t('navigation.countryGuides')}
+          </Link>
+          <Link to="/calculator" className="nav-link">
+            {t('navigation.calculator')}
           </Link>
 
           {isAuthenticated ? (
             <>
               <Link to="/profile" className="nav-link">
-                {t('profile')}
+                {t('navigation.profile')}
               </Link>
               <button onClick={handleLogout} className="nav-link btn-link">
-                {t('logout')}
+                {t('auth.logout')}
               </button>
             </>
           ) : (
             <>
               <Link to="/login" className="nav-link">
-                {t('login')}
+                {t('auth.login')}
               </Link>
               <Link to="/register" className="nav-link btn-primary">
-                {t('register')}
+                {t('auth.register')}
               </Link>
             </>
           )}
@@ -74,16 +80,22 @@ const Navbar = () => {
       {mobileMenuOpen && (
         <div className="mobile-menu">
           <Link to="/" className="mobile-nav-link" onClick={toggleMobileMenu}>
-            {t('home')}
+            {t('navigation.home')}
           </Link>
           <Link to="/agencies" className="mobile-nav-link" onClick={toggleMobileMenu}>
-            {t('agencies')}
+            {t('navigation.agencies')}
+          </Link>
+          <Link to="/countries" className="mobile-nav-link" onClick={toggleMobileMenu}>
+            {t('navigation.countryGuides')}
+          </Link>
+          <Link to="/calculator" className="mobile-nav-link" onClick={toggleMobileMenu}>
+            {t('navigation.calculator')}
           </Link>
 
           {isAuthenticated ? (
             <>
               <Link to="/profile" className="mobile-nav-link" onClick={toggleMobileMenu}>
-                {t('profile')}
+                {t('navigation.profile')}
               </Link>
               <button
                 onClick={() => {
@@ -92,16 +104,16 @@ const Navbar = () => {
                 }}
                 className="mobile-nav-link btn-link"
               >
-                {t('logout')}
+                {t('auth.logout')}
               </button>
             </>
           ) : (
             <>
               <Link to="/login" className="mobile-nav-link" onClick={toggleMobileMenu}>
-                {t('login')}
+                {t('auth.login')}
               </Link>
               <Link to="/register" className="mobile-nav-link" onClick={toggleMobileMenu}>
-                {t('register')}
+                {t('auth.register')}
               </Link>
             </>
           )}
