@@ -1,0 +1,199 @@
+/* ===================================
+   Dashboard Header Styles
+   =================================== */
+
+.dashboard-header {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white;
+  padding: 1.5rem 0;
+}
+
+.header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Left Section */
+.header-left {
+  flex: 1;
+  min-width: 280px;
+}
+
+.welcome-message {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+.user-name {
+  color: #bbf7d0;
+}
+
+.last-login {
+  margin: 0;
+  font-size: 0.875rem;
+  opacity: 0.85;
+}
+
+/* Right Section */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Profile Completeness */
+.profile-completeness {
+  background: rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  min-width: 180px;
+}
+
+.completeness-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.completeness-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+}
+
+.completeness-value {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #bbf7d0 0%, #86efac 100%);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.complete-profile-link {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #bbf7d0;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.complete-profile-link:hover {
+  color: #fff;
+}
+
+/* Notification Bell */
+.notification-bell {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.notification-bell:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.bell-icon {
+  font-size: 1.5rem;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 20px;
+  height: 20px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #16a34a;
+}
+
+/* Skeleton Loading */
+.dashboard-header .skeleton {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ===================================
+   Responsive Styles
+   =================================== */
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 1.25rem 0;
+  }
+
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 1rem;
+  }
+
+  .welcome-message {
+    font-size: 1.375rem;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .profile-completeness {
+    flex: 1;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-message {
+    font-size: 1.25rem;
+  }
+
+  .notification-bell {
+    width: 44px;
+    height: 44px;
+  }
+
+  .bell-icon {
+    font-size: 1.25rem;
+  }
+}

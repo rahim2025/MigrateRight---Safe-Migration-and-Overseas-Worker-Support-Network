@@ -1,0 +1,629 @@
+{
+  "info": {
+    "name": "MigrateRight API",
+    "description": "Complete API test collection for MigrateRight - Safe Migration and Overseas Worker Support Network",
+    "version": "1.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Get Health Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            }
+          }
+        },
+        {
+          "name": "Get Detailed Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health/detailed",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health", "detailed"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var data = pm.response.json();",
+                  "  pm.environment.set('token', data.token);",
+                  "  pm.environment.set('userId', data.user._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test{{$timestamp}}@migrateright.com\",\n  \"password\": \"TestPassword123!\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"userType\": \"worker\",\n  \"phone\": \"+8801234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var data = pm.response.json();",
+                  "  pm.environment.set('token', data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Request Password Reset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "forgot-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Country Guides",
+      "item": [
+        {
+          "name": "Get All Countries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries"]
+            }
+          }
+        },
+        {
+          "name": "Get Country by Code (SA)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/SA",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "SA"]
+            }
+          }
+        },
+        {
+          "name": "Get Country by Code (AE)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/AE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "AE"]
+            }
+          }
+        },
+        {
+          "name": "Get Country by Code (QA)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/QA",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "QA"]
+            }
+          }
+        },
+        {
+          "name": "Get Regions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/meta/regions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "meta", "regions"]
+            }
+          }
+        },
+        {
+          "name": "Get Job Types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/meta/job-types",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "meta", "job-types"]
+            }
+          }
+        },
+        {
+          "name": "Search by Job Type",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/search/job/construction",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "search", "job", "construction"]
+            }
+          }
+        },
+        {
+          "name": "Get Countries by Region",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries/region/Middle East",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries", "region", "Middle East"]
+            }
+          }
+        },
+        {
+          "name": "Get Countries with Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/countries?region=Middle East&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "countries"],
+              "query": [
+                {
+                  "key": "region",
+                  "value": "Middle East"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Calculator",
+      "item": [
+        {
+          "name": "Get Available Countries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/calculator/countries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calculator", "countries"]
+            }
+          }
+        },
+        {
+          "name": "Get Job Types by Country",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/calculator/countries/SA/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calculator", "countries", "SA", "jobs"]
+            }
+          }
+        },
+        {
+          "name": "Get Fee Rules",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/calculator/fee-rules?country=SA&jobType=domestic_work",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calculator", "fee-rules"],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "SA"
+                },
+                {
+                  "key": "jobType",
+                  "value": "domestic_work"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Calculate Migration Cost",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destinationCountry\": \"SA\",\n  \"jobType\": \"domestic_work\",\n  \"agencyFee\": 2500,\n  \"additionalCosts\": {\n    \"airfare\": 600,\n    \"documentation\": 200,\n    \"insurance\": 150\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/calculator/calculate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calculator", "calculate"]
+            }
+          }
+        },
+        {
+          "name": "Calculate Cost - High Fee (Warning Test)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destinationCountry\": \"SA\",\n  \"jobType\": \"domestic_work\",\n  \"agencyFee\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/calculator/calculate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calculator", "calculate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Agencies",
+      "item": [
+        {
+          "name": "Get All Agencies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agencies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "agencies"]
+            }
+          }
+        },
+        {
+          "name": "Get Agency Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agencies/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "agencies", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Top Rated Agencies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agencies/top-rated",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "agencies", "top-rated"]
+            }
+          }
+        },
+        {
+          "name": "Get Agencies by City",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agencies/city/Dhaka",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "agencies", "city", "Dhaka"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Emergency",
+      "item": [
+        {
+          "name": "Get Emergency Contacts by Country (SA)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/emergency/contacts/country/SA",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "emergency", "contacts", "country", "SA"]
+            }
+          }
+        },
+        {
+          "name": "Get Emergency Contacts by Country (AE)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/emergency/contacts/country/AE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "emergency", "contacts", "country", "AE"]
+            }
+          }
+        },
+        {
+          "name": "Trigger SOS (Auth Required)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"country\": \"SA\",\n  \"description\": \"Need urgent help\",\n  \"severity\": \"high\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/emergency/sos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "emergency", "sos"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Salary Tracking",
+      "item": [
+        {
+          "name": "Create Salary Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"month\": \"January\",\n  \"year\": 2026,\n  \"expectedAmount\": 5000,\n  \"receivedAmount\": 4500,\n  \"currency\": \"SAR\",\n  \"jobType\": \"domestic_work\",\n  \"country\": \"SA\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/salary",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "salary"]
+            }
+          }
+        },
+        {
+          "name": "Get Salary Records",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/salary",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "salary"]
+            }
+          }
+        },
+        {
+          "name": "Get Salary Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/salary/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "salary", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Discrepancies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/salary/discrepancies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "salary", "discrepancies"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Current User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"UpdatedName\",\n  \"lastName\": \"UpdatedLastName\",\n  \"phone\": \"+8801987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userEmail",
+      "value": "test@example.com",
+      "type": "string"
+    },
+    {
+      "key": "userPassword",
+      "value": "TestPass123!",
+      "type": "string"
+    }
+  ]
+}

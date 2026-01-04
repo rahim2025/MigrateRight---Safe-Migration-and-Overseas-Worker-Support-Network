@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../../context/LanguageContext';
-import * as countryGuideService from '../../../services/countryGuideService';
+import { useLanguage } from '../../context/LanguageContext';
+import * as countryGuideService from '../../services/countryGuideService';
+import { SearchBar } from '../../components/CountryGuide';
 import './CountryGuideList.css';
 
 const CountryGuideList = () => {
@@ -19,6 +20,7 @@ const CountryGuideList = () => {
   const [selectedRegion, setSelectedRegion] = useState('');
   const [selectedJobType, setSelectedJobType] = useState('');
   const [sortBy, setSortBy] = useState('popularityRank');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadInitialData();
@@ -26,7 +28,7 @@ const CountryGuideList = () => {
 
   useEffect(() => {
     loadGuides();
-  }, [selectedRegion, selectedJobType, sortBy]);
+  }, [selectedRegion, selectedJobType, sortBy, searchQuery]);
 
   const loadInitialData = async () => {
     try {
@@ -62,6 +64,7 @@ const CountryGuideList = () => {
 
       if (selectedRegion) params.region = selectedRegion;
       if (selectedJobType) params.jobType = selectedJobType;
+      if (searchQuery) params.search = searchQuery;
 
       const response = await countryGuideService.getAllGuides(params);
       setGuides(response.data || []);
@@ -80,6 +83,11 @@ const CountryGuideList = () => {
     setSelectedRegion('');
     setSelectedJobType('');
     setSortBy('popularityRank');
+    setSearchQuery('');
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
   };
 
   const formatJobType = (jobType) => {
@@ -113,6 +121,15 @@ const CountryGuideList = () => {
           {t?.destinationGuidesSubtitle ||
             'Comprehensive information about popular migration destinations'}
         </p>
+      </div>
+
+      {/* Search Bar */}
+      <div className="search-section">
+        <SearchBar
+          onSearch={handleSearch}
+          placeholder={t?.searchCountries || 'Search countries by name, region, or job type...'}
+          language={language}
+        />
       </div>
 
       {/* Popular Destinations Section */}
@@ -189,7 +206,7 @@ const CountryGuideList = () => {
             </select>
           </div>
 
-          {(selectedRegion || selectedJobType) && (
+          {(selectedRegion || selectedJobType || searchQuery) && (
             <button className="clear-filters-btn" onClick={handleClearFilters}>
               {t?.clearFilters || 'Clear Filters'}
             </button>

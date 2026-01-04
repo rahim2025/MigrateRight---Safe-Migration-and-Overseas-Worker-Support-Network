@@ -92,6 +92,34 @@ export const deleteFeeRule = async (id) => {
   return response.data;
 };
 
+/**
+ * Get legal fees for a specific destination, service type, and worker category
+ * @param {Object} params - Fee parameters
+ * @param {string} params.destinationCountry - Destination country code
+ * @param {string} params.serviceType - Service type (visa, work_permit, full_package)
+ * @param {string} params.workerCategory - Worker category
+ * @returns {Promise} - Legal fee details
+ */
+export const getLegalFees = async (params) => {
+  const response = await api.post('/calculator/fees', params);
+  return response.data;
+};
+
+/**
+ * Compare actual fees with legal fees
+ * @param {Object} params - Comparison parameters
+ * @param {string} params.destinationCountry - Destination country code
+ * @param {string} params.serviceType - Service type
+ * @param {string} params.workerCategory - Worker category
+ * @param {Object} params.actualFees - Actual fees object
+ * @param {Object} params.paymentTerms - Payment terms object
+ * @returns {Promise} - Comparison results with warnings
+ */
+export const compareFees = async (params) => {
+  const response = await api.post('/calculator/fees/compare', params);
+  return response.data;
+};
+
 export default {
   getAvailableCountries,
   getJobTypesByCountry,
@@ -100,5 +128,7 @@ export default {
   getAllFeeRules,
   createFeeRule,
   updateFeeRule,
-  deleteFeeRule
+  deleteFeeRule,
+  getLegalFees,
+  compareFees
 };

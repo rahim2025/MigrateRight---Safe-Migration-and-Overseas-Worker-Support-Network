@@ -131,7 +131,7 @@
   background-color: #f7fafc;
   padding: 0.5rem;
   border-radius: 8px;
-  scrollbar-width: thin;
+  /* scrollbar styling handled via ::-webkit-scrollbar */
 }
 
 .section-nav button {

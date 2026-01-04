@@ -1,0 +1,228 @@
+/* Agency Card Styles */
+
+.agency-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.agency-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  border-color: #3182ce;
+}
+
+/* Header */
+.agency-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.agency-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.agency-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.badges-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.badge-verified {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.badge-licensed {
+  background: #bee3f8;
+  color: #2b6cb0;
+}
+
+.agency-location {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #718096;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.location-icon {
+  font-size: 1rem;
+}
+
+/* Rating Section */
+.agency-rating-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.rating-number {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.review-count {
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+/* Compliance Status */
+.compliance-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.compliance-status.status-good,
+.compliance-status.status-Good {
+  background: #f0fff4;
+  color: #22543d;
+}
+
+.compliance-status.status-warning,
+.compliance-status.status-Warnings {
+  background: #fff5f5;
+  color: #742a2a;
+}
+
+.status-icon {
+  font-size: 0.9rem;
+}
+
+/* Description */
+.agency-description {
+  font-size: 0.9rem;
+  color: #4a5568;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* License */
+.agency-license {
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.agency-license .label {
+  font-weight: 500;
+}
+
+.agency-license .value {
+  font-family: monospace;
+  background: #f7fafc;
+  padding: 0.1rem 0.25rem;
+  border-radius: 3px;
+}
+
+/* Specializations */
+.agency-specializations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.spec-tag {
+  background: #edf2f7;
+  color: #4a5568;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.spec-more {
+  background: #e2e8f0;
+  color: #718096;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+/* Actions */
+.agency-card-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.agency-card-actions .btn {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-align: center;
+}
+
+.agency-card-actions .btn-primary {
+  background: #3182ce;
+  color: white;
+}
+
+.agency-card-actions .btn-primary:hover {
+  background: #2c5282;
+}
+
+.agency-card-actions .btn-secondary {
+  background: #edf2f7;
+  color: #4a5568;
+}
+
+.agency-card-actions .btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .agency-card {
+    padding: 1rem;
+  }
+
+  .agency-name {
+    font-size: 1.1rem;
+  }
+
+  .agency-card-actions {
+    flex-direction: column;
+  }
+}

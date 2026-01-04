@@ -1,0 +1,437 @@
+/* Comparison Results Styles */
+
+.comparison-results {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Sections */
+.comparison-results section {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.comparison-results section:last-child {
+  border-bottom: none;
+}
+
+.comparison-results h2 {
+  font-size: 1.25rem;
+  color: #1a202c;
+  margin: 0 0 1.5rem 0;
+}
+
+.comparison-results h3 {
+  font-size: 1.1rem;
+  color: #2d3748;
+  margin: 0 0 1rem 0;
+}
+
+/* Summary Section */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.summary-card {
+  padding: 1.25rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.summary-card.legal {
+  background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+  border: 1px solid #90cdf4;
+}
+
+.summary-card.actual {
+  background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%);
+  border: 1px solid #d6bcfa;
+}
+
+.summary-card.difference {
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.summary-card.difference.negative {
+  background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+  border: 1px solid #fc8181;
+}
+
+.summary-card.difference.positive {
+  background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+  border: 1px solid #68d391;
+}
+
+.card-label {
+  display: block;
+  font-size: 0.85rem;
+  color: #718096;
+  margin-bottom: 0.5rem;
+}
+
+.card-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.card-value .percent {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-left: 0.5rem;
+  color: #718096;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.status-badge.status-fair-pricing {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.status-badge.status-moderate-overcharge {
+  background: #fefcbf;
+  color: #744210;
+}
+
+.status-badge.status-overcharged {
+  background: #fed7d7;
+  color: #742a2a;
+}
+
+/* Comparison Table */
+.comparison-table-wrapper {
+  overflow-x: auto;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.comparison-table th {
+  background: #f7fafc;
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.comparison-table .fee-type {
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.comparison-table .amount {
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+}
+
+.comparison-table .amount.legal {
+  color: #3182ce;
+}
+
+.comparison-table .amount.actual {
+  color: #805ad5;
+}
+
+.comparison-table .amount.diff.negative {
+  color: #e53e3e;
+}
+
+.comparison-table .amount.diff.positive {
+  color: #38a169;
+}
+
+.comparison-table .percent {
+  font-size: 0.8rem;
+  color: #718096;
+  display: block;
+}
+
+.status-cell {
+  text-align: center;
+}
+
+.status-icon {
+  font-size: 1.25rem;
+}
+
+.status-cell.status-fair .status-icon {
+  color: #38a169;
+}
+
+.status-cell.status-moderate .status-icon {
+  color: #d69e2e;
+}
+
+.status-cell.status-high .status-icon {
+  color: #e53e3e;
+}
+
+/* Mobile Cards */
+.comparison-cards-mobile {
+  display: none;
+}
+
+/* Chart Section */
+.chart-section {
+  background: #f7fafc;
+}
+
+/* Warnings Section */
+.warnings-section {
+  background: #fffaf0;
+}
+
+.warnings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Recommendations Section */
+.recommendations-section {
+  border-left: 4px solid #e2e8f0;
+}
+
+.recommendations-section.status-fair-pricing {
+  border-left-color: #38a169;
+  background: #f0fff4;
+}
+
+.recommendations-section.status-moderate-overcharge {
+  border-left-color: #d69e2e;
+  background: #fffaf0;
+}
+
+.recommendations-section.status-overcharged {
+  border-left-color: #e53e3e;
+  background: #fff5f5;
+}
+
+.recommendation-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.rec-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.rec-text {
+  flex: 1;
+}
+
+.rec-main {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.rec-sub {
+  font-size: 0.95rem;
+  margin: 0;
+  color: #4a5568;
+}
+
+.recommendation-content.fair .rec-main {
+  color: #22543d;
+}
+
+.recommendation-content.moderate .rec-main {
+  color: #744210;
+}
+
+.recommendation-content.high .rec-main {
+  color: #742a2a;
+}
+
+/* Action Buttons */
+.actions-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: #f7fafc;
+  justify-content: center;
+}
+
+.actions-section .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border: none;
+}
+
+.actions-section .btn-primary {
+  background: #3182ce;
+  color: white;
+}
+
+.actions-section .btn-primary:hover {
+  background: #2c5282;
+}
+
+.actions-section .btn-secondary {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.actions-section .btn-secondary:hover {
+  background: #cbd5e0;
+}
+
+.actions-section .btn-outline {
+  background: white;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+}
+
+.actions-section .btn-outline:hover {
+  background: #f7fafc;
+}
+
+.actions-section .btn-danger {
+  background: #e53e3e;
+  color: white;
+}
+
+.actions-section .btn-danger:hover {
+  background: #c53030;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .comparison-results section {
+    padding: 1rem;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .card-value {
+    font-size: 1.25rem;
+  }
+
+  .comparison-table-wrapper {
+    display: none;
+  }
+
+  .comparison-cards-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .comparison-card-mobile {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+  }
+
+  .comparison-card-mobile .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #f7fafc;
+    font-weight: 600;
+  }
+
+  .comparison-card-mobile .card-body {
+    padding: 0.75rem 1rem;
+  }
+
+  .comparison-card-mobile .amount-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+    font-size: 0.9rem;
+  }
+
+  .comparison-card-mobile .amount-row .label {
+    color: #718096;
+  }
+
+  .comparison-card-mobile .amount-row .value {
+    font-weight: 500;
+  }
+
+  .comparison-card-mobile .amount-row.diff.negative .value {
+    color: #e53e3e;
+  }
+
+  .comparison-card-mobile .amount-row.diff.positive .value {
+    color: #38a169;
+  }
+
+  .comparison-card-mobile.status-fair {
+    border-color: #68d391;
+  }
+
+  .comparison-card-mobile.status-moderate {
+    border-color: #ecc94b;
+  }
+
+  .comparison-card-mobile.status-high {
+    border-color: #fc8181;
+  }
+
+  .actions-section {
+    flex-direction: column;
+  }
+
+  .actions-section .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .status-badge {
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .rec-icon {
+    font-size: 1.5rem;
+  }
+
+  .rec-main {
+    font-size: 1rem;
+  }
+}

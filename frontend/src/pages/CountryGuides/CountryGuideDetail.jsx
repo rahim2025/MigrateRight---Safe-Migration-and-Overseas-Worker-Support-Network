@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../../context/LanguageContext';
-import * as countryGuideService from '../../../services/countryGuideService';
+import { useLanguage } from '../../context/LanguageContext';
+import * as countryGuideService from '../../services/countryGuideService';
 import './CountryGuideDetail.css';
 
 const CountryGuideDetail = () => {

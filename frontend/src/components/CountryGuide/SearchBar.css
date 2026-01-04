@@ -1,0 +1,88 @@
+/* SearchBar Component Styles */
+
+.search-bar-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 1.5rem;
+}
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.25rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-bar:hover {
+  border-color: #cbd5e0;
+}
+
+.search-bar:focus-within {
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 1.1rem;
+  color: #718096;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  padding: 0.75rem 0.5rem;
+  background: transparent;
+  color: #2d3748;
+}
+
+.search-input::placeholder {
+  color: #a0aec0;
+}
+
+.clear-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background-color: #edf2f7;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #718096;
+  transition: all 0.2s;
+  margin-right: 0.25rem;
+}
+
+.clear-button:hover {
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+.clear-button:focus {
+  outline: 2px solid #3182ce;
+  outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-bar-container {
+    max-width: 100%;
+  }
+
+  .search-input {
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+}

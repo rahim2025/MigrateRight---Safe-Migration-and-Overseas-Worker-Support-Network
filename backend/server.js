@@ -4,6 +4,7 @@
  */
 
 const express = require('express');
+const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -17,6 +18,9 @@ const calculatorRoutes = require('./routes/calculator.routes');
 const countryGuideRoutes = require('./routes/countryGuide.routes');
 const emergencyRoutes = require('./routes/emergency.routes');
 const salaryRoutes = require('./routes/salary.routes');
+const workerRoutes = require('./src/routes/workerProfile.routes');
+const agencyReviewRoutes = require('./src/routes/agencyReview.routes');
+const agencyComplaintRoutes = require('./src/routes/agencyComplaint.routes');
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 const {
   requestLogger,
@@ -125,11 +129,20 @@ app.use('/api/users', userRoutes);
 // Agency Routes
 app.use('/api/agencies', agencyRoutes);
 
+// Agency Review Routes (extends /api/agencies/:id/reviews)
+app.use('/api/agencies', agencyReviewRoutes);
+
+// Agency Complaint Routes (extends /api/agencies/:id/complaints)
+app.use('/api/agencies', agencyComplaintRoutes);
+
 // Calculator Routes
 app.use('/api/calculator', calculatorRoutes);
 
 // Country Guide Routes
-app.use('/api/country-guides', countryGuideRoutes);
+app.use('/api/countries', countryGuideRoutes);
+
+// Worker Routes
+app.use('/api/workers', workerRoutes);
 
 // Emergency SOS Routes
 app.use('/api/emergency', emergencyRoutes);
@@ -150,7 +163,8 @@ app.get('/', (req, res) => {
       users: '/api/users',
       agencies: '/api/agencies',
       calculator: '/api/calculator',
-      countryGuides: '/api/country-guides',
+      countries: '/api/countries',
+      workers: '/api/workers',
       emergency: '/api/emergency',
       salary: '/api/salary',
     },
@@ -209,3 +223,5 @@ process.on('uncaughtException', (err) => {
   // Exit process
   process.exit(1);
 });
+
+module.exports = app;

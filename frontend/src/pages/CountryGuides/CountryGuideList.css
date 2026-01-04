@@ -23,6 +23,12 @@
   color: #718096;
 }
 
+/* Search Section */
+.search-section {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
 /* Loading Spinner */
 .loading-spinner {
   display: flex;

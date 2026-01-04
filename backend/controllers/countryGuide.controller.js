@@ -70,7 +70,7 @@ const getAllGuides = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Get country guide by country name
+ * @desc    Get country guide by country name or country code
  * @route   GET /api/country-guides/:country
  * @access  Public
  */
@@ -78,9 +78,12 @@ const getGuideByCountry = asyncHandler(async (req, res) => {
   const { country } = req.params;
   const { language = 'en' } = req.query;
 
-  // Find guide (case-insensitive search)
+  // Find guide by either country name or country code (case-insensitive search)
   const guide = await CountryGuide.findOne({
-    country: { $regex: new RegExp(`^${country}$`, 'i') },
+    $or: [
+      { country: { $regex: new RegExp(`^${country}$`, 'i') } },
+      { countryCode: { $regex: new RegExp(`^${country}$`, 'i') } }
+    ],
     isActive: true,
   }).select('-__v');
 

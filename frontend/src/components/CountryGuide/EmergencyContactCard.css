@@ -1,0 +1,211 @@
+/* EmergencyContactCard Component Styles */
+
+.emergency-contact-card {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.emergency-contact-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.emergency-contact-card--highlight {
+  border-color: #3182ce;
+  border-width: 2px;
+  background: linear-gradient(135deg, #ebf8ff 0%, #ffffff 100%);
+}
+
+/* Header */
+.emergency-contact-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background-color: #f7fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.emergency-contact-card--highlight .card-header {
+  background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%);
+  color: white;
+}
+
+.card-icon {
+  font-size: 1.5rem;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0;
+}
+
+.emergency-contact-card--highlight .card-title {
+  color: white;
+}
+
+/* Body */
+.card-body {
+  padding: 1rem 1.25rem;
+}
+
+.contact-row {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.contact-row:last-child {
+  border-bottom: none;
+}
+
+.contact-row--emergency {
+  background-color: #fff5f5;
+  margin: 0 -1.25rem;
+  padding: 0.75rem 1.25rem;
+  border-color: #feb2b2;
+}
+
+.contact-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.contact-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.contact-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.contact-value {
+  font-size: 0.95rem;
+  color: #2d3748;
+  word-break: break-word;
+}
+
+/* Phone Links */
+.phone-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.phone-link {
+  color: #3182ce;
+  text-decoration: none;
+  padding: 0.25rem 0.75rem;
+  background-color: #ebf8ff;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.phone-link:hover {
+  background-color: #3182ce;
+  color: white;
+}
+
+.emergency-number {
+  color: #c53030;
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+
+.emergency-number:hover {
+  text-decoration: underline;
+}
+
+/* Email */
+.email-link {
+  color: #3182ce;
+  text-decoration: none;
+}
+
+.email-link:hover {
+  text-decoration: underline;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.25rem;
+  margin-left: 0.5rem;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.copy-button:hover {
+  opacity: 1;
+}
+
+/* Address */
+.address {
+  line-height: 1.5;
+}
+
+/* Website */
+.website-link {
+  color: #3182ce;
+  text-decoration: none;
+}
+
+.website-link:hover {
+  text-decoration: underline;
+}
+
+/* Notes */
+.contact-notes {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background-color: #f7fafc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #4a5568;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .emergency-contact-card .card-header {
+    padding: 0.875rem 1rem;
+  }
+
+  .card-body {
+    padding: 0.75rem 1rem;
+  }
+
+  .contact-row--emergency {
+    margin: 0 -1rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .phone-list {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .phone-link {
+    display: inline-block;
+    width: fit-content;
+  }
+}

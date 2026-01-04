@@ -1,0 +1,137 @@
+/* Warning Card Styles */
+
+.warning-card {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+.warning-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Severity Variants */
+.warning-card.severity-low {
+  border-left: 4px solid #3182ce;
+  background: #ebf8ff;
+}
+
+.warning-card.severity-medium {
+  border-left: 4px solid #ecc94b;
+  background: #fffff0;
+}
+
+.warning-card.severity-high {
+  border-left: 4px solid #ed8936;
+  background: #fffaf0;
+}
+
+.warning-card.severity-critical {
+  border-left: 4px solid #e53e3e;
+  background: #fff5f5;
+}
+
+/* Header */
+.warning-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.warning-icon {
+  font-size: 1.25rem;
+}
+
+.severity-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.severity-badge.severity-low {
+  background: #bee3f8;
+  color: #2b6cb0;
+}
+
+.severity-badge.severity-medium {
+  background: #faf089;
+  color: #744210;
+}
+
+.severity-badge.severity-high {
+  background: #fbd38d;
+  color: #7b341e;
+}
+
+.severity-badge.severity-critical {
+  background: #feb2b2;
+  color: #742a2a;
+}
+
+/* Content */
+.warning-content {
+  padding: 1rem;
+}
+
+.warning-message {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #2d3748;
+}
+
+.affected-fee {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.affected-fee .label {
+  color: #718096;
+}
+
+.affected-fee .value {
+  font-weight: 500;
+  color: #4a5568;
+}
+
+/* Recommendation */
+.warning-recommendation {
+  padding-top: 0.75rem;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.rec-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.rec-text {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: #4a5568;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .warning-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .warning-content {
+    padding: 0.75rem;
+  }
+
+  .warning-message {
+    font-size: 0.9rem;
+  }
+}

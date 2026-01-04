@@ -1,0 +1,221 @@
+/* ===================================
+   Profile Completion Banner Styles
+   =================================== */
+
+.profile-completion-banner {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-bottom: 1px solid #fcd34d;
+}
+
+.banner-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Dismiss Button */
+.banner-dismiss {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  font-size: 1.25rem;
+  color: #92400e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.banner-dismiss:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Banner Content */
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 280px;
+}
+
+.banner-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.banner-text {
+  flex: 1;
+}
+
+.banner-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #92400e;
+  margin: 0 0 0.25rem 0;
+}
+
+.banner-subtitle {
+  font-size: 0.875rem;
+  color: #a16207;
+  margin: 0;
+}
+
+/* Progress Circle */
+.banner-progress {
+  flex-shrink: 0;
+}
+
+.progress-circle {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+.circular-progress {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 3;
+}
+
+.circle-fill {
+  fill: none;
+  stroke: #16a34a;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #92400e;
+}
+
+/* Sections List */
+.banner-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  border-left: 2px solid rgba(146, 64, 14, 0.2);
+}
+
+.section-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  font-size: 0.8125rem;
+}
+
+.section-item.complete {
+  color: #16a34a;
+}
+
+.section-item.incomplete {
+  color: #dc2626;
+}
+
+.section-icon {
+  font-weight: 700;
+}
+
+.section-name {
+  font-weight: 500;
+}
+
+/* Action Button */
+.banner-action {
+  flex-shrink: 0;
+}
+
+.banner-action .complete-profile-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.banner-action .complete-profile-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
+}
+
+/* ===================================
+   Responsive Styles
+   =================================== */
+
+@media (max-width: 900px) {
+  .banner-sections {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .banner-container {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    padding-right: 2.5rem;
+  }
+
+  .banner-content {
+    flex-wrap: wrap;
+  }
+
+  .banner-progress {
+    order: -1;
+  }
+
+  .progress-circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .progress-text {
+    font-size: 0.75rem;
+  }
+
+  .banner-title {
+    font-size: 1rem;
+  }
+
+  .banner-action {
+    width: 100%;
+  }
+
+  .banner-action .complete-profile-btn {
+    display: block;
+    text-align: center;
+  }
+}
