@@ -9,17 +9,73 @@ const MigrationFeeRule = require('../models/MigrationFeeRule');
 const logger = require('../utils/logger');
 
 /**
+ * Country information mapping
+ * Maps country codes to full country objects with name, flag, and currency
+ */
+const COUNTRY_INFO = {
+  'SA': { name: 'Saudi Arabia', flag: '🇸🇦', currency: 'SAR' },
+  'AE': { name: 'United Arab Emirates', flag: '🇦🇪', currency: 'AED' },
+  'QA': { name: 'Qatar', flag: '🇶🇦', currency: 'QAR' },
+  'KW': { name: 'Kuwait', flag: '🇰🇼', currency: 'KWD' },
+  'OM': { name: 'Oman', flag: '🇴🇲', currency: 'OMR' },
+  'BH': { name: 'Bahrain', flag: '🇧🇭', currency: 'BHD' },
+  'MY': { name: 'Malaysia', flag: '🇲🇾', currency: 'MYR' },
+  'SG': { name: 'Singapore', flag: '🇸🇬', currency: 'SGD' },
+  'BN': { name: 'Brunei', flag: '🇧🇳', currency: 'BND' },
+  'KR': { name: 'South Korea', flag: '🇰🇷', currency: 'KRW' },
+  'JP': { name: 'Japan', flag: '🇯🇵', currency: 'JPY' },
+  'GB': { name: 'United Kingdom', flag: '🇬🇧', currency: 'GBP' },
+  'US': { name: 'United States', flag: '🇺🇸', currency: 'USD' },
+  'CA': { name: 'Canada', flag: '🇨🇦', currency: 'CAD' },
+  'AU': { name: 'Australia', flag: '🇦🇺', currency: 'AUD' },
+  'NZ': { name: 'New Zealand', flag: '🇳🇿', currency: 'NZD' },
+  'IT': { name: 'Italy', flag: '🇮🇹', currency: 'EUR' },
+  'GR': { name: 'Greece', flag: '🇬🇷', currency: 'EUR' },
+  'IE': { name: 'Ireland', flag: '🇮🇪', currency: 'EUR' },
+  'BD': { name: 'Bangladesh', flag: '🇧🇩', currency: 'BDT' }
+};
+
+/**
+ * Format country codes into full country objects
+ * @param {Array<string>} countryCodes - Array of country codes
+ * @returns {Array<Object>} Array of country objects
+ */
+const formatCountries = (countryCodes) => {
+  return countryCodes
+    .map(code => {
+      const info = COUNTRY_INFO[code];
+      if (info) {
+        return {
+          code,
+          name: info.name,
+          flag: info.flag,
+          currency: info.currency
+        };
+      }
+      // Fallback for unknown countries
+      return {
+        code,
+        name: code,
+        flag: '🌍',
+        currency: 'USD'
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+};
+
+/**
  * @desc    Get all available destination countries
  * @route   GET /api/calculator/countries
  * @access  Public
  */
 const getAvailableCountries = asyncHandler(async (req, res) => {
-  const countries = await MigrationFeeRule.distinct('destinationCountry', { isActive: true });
+  const countryCodes = await MigrationFeeRule.distinct('destinationCountry', { isActive: true });
+  const countries = formatCountries(countryCodes);
   
   res.status(200).json({
     success: true,
     data: {
-      countries: countries.sort(),
+      countries,
       count: countries.length
     }
   });
@@ -351,6 +407,225 @@ function generateAdvice(comparison, feeRule) {
   return advice;
 }
 
+/**
+ * @desc    Get legal fees for a specific destination, service type, and worker category
+ * @route   POST /api/calculator/fees
+ * @access  Public
+ */
+const getLegalFees = asyncHandler(async (req, res) => {
+  const { destinationCountry, serviceType, workerCategory } = req.body;
+
+  // Validation
+  if (!destinationCountry) {
+    throw new BadRequestError('Destination country is required');
+  }
+
+  // Find fee rule - try to match with available data
+  // Since we're using serviceType and workerCategory, we need to map them
+  const jobTypeMap = {
+    'domestic': 'domestic_work',
+    'construction': 'construction',
+    'healthcare': 'healthcare',
+    'hospitality': 'hospitality',
+    'other': 'general_labor'
+  };
+
+  const jobType = jobTypeMap[workerCategory] || 'general_labor';
+
+  const feeRule = await MigrationFeeRule.findOne({
+    destinationCountry: destinationCountry.toUpperCase(),
+    jobType,
+    isActive: true
+  });
+
+  if (!feeRule) {
+    // Return default/estimated fees if no rule found
+    const defaultFees = {
+      visaApplicationFee: 15000,
+      medicalTestsFee: 8000,
+      documentProcessingFee: 10000,
+      trainingFee: 12000,
+      totalLegalFee: 45000
+    };
+
+    logger.warn('Fee rule not found, returning default fees', {
+      destinationCountry,
+      serviceType,
+      workerCategory
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        destinationCountry,
+        serviceType,
+        workerCategory,
+        legalFees: defaultFees,
+        currency: 'BDT',
+        note: 'Estimated fees - no specific rule found for this combination'
+      }
+    });
+  }
+
+  // Extract legal fees from fee rule
+  const legalFees = {
+    visaApplicationFee: feeRule.fees?.estimatedCosts?.visa?.amount || 15000,
+    medicalTestsFee: feeRule.fees?.estimatedCosts?.medical?.amount || 8000,
+    documentProcessingFee: feeRule.fees?.estimatedCosts?.documentation?.amount || 10000,
+    trainingFee: feeRule.fees?.estimatedCosts?.training?.amount || 12000,
+    totalLegalFee: feeRule.fees?.recruitmentFee?.max || 45000
+  };
+
+  res.status(200).json({
+    success: true,
+    data: {
+      destinationCountry,
+      serviceType,
+      workerCategory,
+      legalFees,
+      currency: feeRule.fees?.recruitmentFee?.currency || 'BDT',
+      legalReference: feeRule.legalReference
+    }
+  });
+});
+
+/**
+ * @desc    Compare actual fees with legal fees
+ * @route   POST /api/calculator/fees/compare
+ * @access  Public
+ */
+const compareFees = asyncHandler(async (req, res) => {
+  const {
+    destinationCountry,
+    serviceType,
+    workerCategory,
+    actualFees = {},
+    paymentTerms = {}
+  } = req.body;
+
+  // Validation
+  if (!destinationCountry) {
+    throw new BadRequestError('Destination country is required');
+  }
+
+  // Get legal fees first
+  const jobTypeMap = {
+    'domestic': 'domestic_work',
+    'construction': 'construction',
+    'healthcare': 'healthcare',
+    'hospitality': 'hospitality',
+    'other': 'general_labor'
+  };
+
+  const jobType = jobTypeMap[workerCategory] || 'general_labor';
+
+  const feeRule = await MigrationFeeRule.findOne({
+    destinationCountry: destinationCountry.toUpperCase(),
+    jobType,
+    isActive: true
+  });
+
+  // Default legal fees if rule not found
+  const defaultLegalFees = {
+    visaApplicationFee: 15000,
+    medicalTestsFee: 8000,
+    documentProcessingFee: 10000,
+    trainingFee: 12000
+  };
+
+  const legalFees = feeRule ? {
+    visaApplicationFee: feeRule.fees?.estimatedCosts?.visa?.amount || defaultLegalFees.visaApplicationFee,
+    medicalTestsFee: feeRule.fees?.estimatedCosts?.medical?.amount || defaultLegalFees.medicalTestsFee,
+    documentProcessingFee: feeRule.fees?.estimatedCosts?.documentation?.amount || defaultLegalFees.documentProcessingFee,
+    trainingFee: feeRule.fees?.estimatedCosts?.training?.amount || defaultLegalFees.trainingFee
+  } : defaultLegalFees;
+
+  // Calculate totals
+  const totalLegalFee = Object.values(legalFees).reduce((sum, fee) => sum + fee, 0);
+  const totalActualFee = Object.values(actualFees).reduce((sum, fee) => sum + (parseFloat(fee) || 0), 0);
+
+  // Compare fees
+  const feeDifferences = Object.keys(legalFees).map(feeType => {
+    const legal = legalFees[feeType] || 0;
+    const actual = parseFloat(actualFees[feeType]) || 0;
+    const difference = actual - legal;
+    const differencePercent = legal > 0 ? ((difference / legal) * 100) : 0;
+
+    return {
+      feeType,
+      legalFee: legal,
+      actualFee: actual,
+      difference,
+      differencePercent: Math.round(differencePercent * 100) / 100,
+      status: differencePercent > 15 ? 'overcharged' : differencePercent > 5 ? 'moderate' : 'fair'
+    };
+  });
+
+  // Determine overall status
+  const hasOvercharge = feeDifferences.some(f => f.status === 'overcharged');
+  const hasModerate = feeDifferences.some(f => f.status === 'moderate');
+  const overallStatus = hasOvercharge ? 'overcharged' : hasModerate ? 'moderate' : 'fair';
+
+  // Generate warnings
+  const warnings = [];
+  feeDifferences.forEach(fee => {
+    if (fee.differencePercent > 20) {
+      warnings.push({
+        type: 'high_overcharge',
+        severity: 'high',
+        message: `${fee.feeType} exceeds legal limit by ${fee.differencePercent.toFixed(1)}%`,
+        recommendation: 'Report to BMET immediately'
+      });
+    } else if (fee.differencePercent > 15) {
+      warnings.push({
+        type: 'moderate_overcharge',
+        severity: 'medium',
+        message: `${fee.feeType} exceeds legal limit by ${fee.differencePercent.toFixed(1)}%`,
+        recommendation: 'Request detailed breakdown from agency'
+      });
+    }
+  });
+
+  if (actualFees.hiddenCharges && parseFloat(actualFees.hiddenCharges) > 0) {
+    warnings.push({
+      type: 'hidden_charges',
+      severity: 'high',
+      message: 'Hidden charges detected',
+      recommendation: 'Demand itemized invoice'
+    });
+  }
+
+  if (paymentTerms.requiresDebtBondage) {
+    warnings.push({
+      type: 'debt_bondage',
+      severity: 'critical',
+      message: 'Debt bondage terms detected',
+      recommendation: 'Do not sign and report immediately'
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      destinationCountry,
+      serviceType,
+      workerCategory,
+      totalLegalFee,
+      totalActualFee,
+      totalDifference: totalActualFee - totalLegalFee,
+      status: overallStatus,
+      feeBreakdown: feeDifferences,
+      warnings,
+      recommendations: {
+        verifyAgency: true,
+        getWrittenAgreement: true,
+        checkBMETLicense: true,
+        reportSuspiciousFees: hasOvercharge
+      }
+    }
+  });
+});
+
 module.exports = {
   getAvailableCountries,
   getJobTypesByCountry,
@@ -359,5 +634,7 @@ module.exports = {
   getAllFeeRules,
   createFeeRule,
   updateFeeRule,
-  deleteFeeRule
+  deleteFeeRule,
+  getLegalFees,
+  compareFees
 };

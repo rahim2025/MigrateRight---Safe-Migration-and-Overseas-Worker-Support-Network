@@ -50,21 +50,44 @@ const CostCalculator = () => {
   }, []);
 
   const loadCountries = async () => {
+    // Fallback countries - always available
+    const fallbackCountries = [
+      { code: 'SA', name: 'Saudi Arabia', flag: '🇸🇦', currency: 'SAR' },
+      { code: 'AE', name: 'United Arab Emirates', flag: '🇦🇪', currency: 'AED' },
+      { code: 'QA', name: 'Qatar', flag: '🇶🇦', currency: 'QAR' },
+      { code: 'KW', name: 'Kuwait', flag: '🇰🇼', currency: 'KWD' },
+      { code: 'MY', name: 'Malaysia', flag: '🇲🇾', currency: 'MYR' },
+      { code: 'SG', name: 'Singapore', flag: '🇸🇬', currency: 'SGD' },
+      { code: 'OM', name: 'Oman', flag: '🇴🇲', currency: 'OMR' },
+      { code: 'BH', name: 'Bahrain', flag: '🇧🇭', currency: 'BHD' }
+    ];
+
     try {
       setCountriesLoading(true);
       const response = await calculatorService.getAvailableCountries();
-      setCountries(response?.countries || response?.data?.countries || []);
+      
+      // Debug logging
+      console.log('API Response:', response);
+      
+      // API interceptor returns response.data, so response is already the data object
+      // Backend returns: { success: true, data: { countries: [...], count: ... } }
+      const countries = response?.data?.countries || response?.countries || [];
+      
+      console.log('Extracted countries:', countries);
+      console.log('Countries count:', countries.length);
+      
+      // If API returns empty array or invalid data, use fallback
+      if (Array.isArray(countries) && countries.length > 0) {
+        setCountries(countries);
+      } else {
+        console.warn('API returned empty countries array, using fallback');
+        setCountries(fallbackCountries);
+      }
     } catch (err) {
       console.error('Error loading countries:', err);
-      // Fallback countries for demo
-      setCountries([
-        { code: 'SA', name: 'Saudi Arabia', flag: '🇸🇦', currency: 'SAR' },
-        { code: 'AE', name: 'United Arab Emirates', flag: '🇦🇪', currency: 'AED' },
-        { code: 'QA', name: 'Qatar', flag: '🇶🇦', currency: 'QAR' },
-        { code: 'KW', name: 'Kuwait', flag: '🇰🇼', currency: 'KWD' },
-        { code: 'MY', name: 'Malaysia', flag: '🇲🇾', currency: 'MYR' },
-        { code: 'SG', name: 'Singapore', flag: '🇸🇬', currency: 'SGD' }
-      ]);
+      console.warn('Using fallback countries due to API error');
+      // Always use fallback on error
+      setCountries(fallbackCountries);
     } finally {
       setCountriesLoading(false);
     }
@@ -128,6 +151,10 @@ const CostCalculator = () => {
         workerCategory: formData.workerCategory
       });
 
+      // Extract legal fees from response
+      const legalFeesData = legalFeesResponse?.data || legalFeesResponse;
+      const legalFees = legalFeesData?.legalFees || {};
+
       // Then compare with actual fees
       const comparisonResponse = await calculatorService.compareFees({
         destinationCountry: formData.destinationCountry,
@@ -140,7 +167,40 @@ const CostCalculator = () => {
         }
       });
 
-      const resultsData = comparisonResponse?.data || comparisonResponse;
+      // Extract comparison data
+      const comparisonData = comparisonResponse?.data || comparisonResponse;
+      
+      // Extract fee breakdown from comparison response
+      const feeBreakdown = comparisonData?.feeBreakdown || [];
+      
+      // Build legal fees object from breakdown or use from legalFees response
+      const legalFeesBreakdown = {
+        visaApplicationFee: legalFees.visaApplicationFee || feeBreakdown[0]?.legalFee || 0,
+        medicalTestsFee: legalFees.medicalTestsFee || feeBreakdown[1]?.legalFee || 0,
+        documentProcessingFee: legalFees.documentProcessingFee || feeBreakdown[2]?.legalFee || 0,
+        trainingFee: legalFees.trainingFee || feeBreakdown[3]?.legalFee || 0,
+        hiddenCharges: 0
+      };
+      
+      // Calculate total actual fee
+      const calculatedTotalActualFee = Object.values(actualFees).reduce((sum, fee) => sum + (parseFloat(fee) || 0), 0);
+      
+      // Build results object with proper structure
+      const resultsData = {
+        ...comparisonData,
+        legalFees: legalFeesBreakdown,
+        actualFees: {
+          visaApplicationFee: actualFees.visaApplicationFee || 0,
+          medicalTestsFee: actualFees.medicalTestsFee || 0,
+          documentProcessingFee: actualFees.documentProcessingFee || 0,
+          trainingFee: actualFees.trainingFee || 0,
+          hiddenCharges: actualFees.hiddenCharges || 0
+        },
+        totalLegalFee: legalFees.totalLegalFee || comparisonData?.totalLegalFee || Object.values(legalFeesBreakdown).reduce((sum, fee) => sum + fee, 0),
+        totalActualFee: comparisonData?.totalActualFee || calculatedTotalActualFee,
+        status: comparisonData?.status || 'fair'
+      };
+
       setResults(resultsData);
       saveToHistory(formData, resultsData);
       setCurrentStep(2);
@@ -275,6 +335,7 @@ const CostCalculator = () => {
               <button onClick={() => setError(null)} className="btn-close">×</button>
             </div>
           )}
+
 
           {/* Step 1: Calculator Form */}
           {currentStep === 1 && (

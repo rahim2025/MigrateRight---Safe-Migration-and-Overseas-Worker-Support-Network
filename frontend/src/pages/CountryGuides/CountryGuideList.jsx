@@ -41,9 +41,10 @@ const CountryGuideList = () => {
         countryGuideService.getJobTypes(),
       ]);
 
-      setPopularGuides(popularRes.data || []);
-      setRegions(regionsRes.data?.regions || []);
-      setJobTypes(jobTypesRes.data?.jobTypes || []);
+      // Response structure: { success: true, data: [...], count: ... }
+      setPopularGuides(popularRes?.data || popularRes || []);
+      setRegions(regionsRes?.data?.regions || regionsRes?.regions || []);
+      setJobTypes(jobTypesRes?.data?.jobTypes || jobTypesRes?.jobTypes || []);
 
       // Load all guides
       await loadGuides();
@@ -67,7 +68,8 @@ const CountryGuideList = () => {
       if (searchQuery) params.search = searchQuery;
 
       const response = await countryGuideService.getAllGuides(params);
-      setGuides(response.data || []);
+      // Response structure: { success: true, data: [...], count: ... }
+      setGuides(response?.data || response || []);
       setError(null);
     } catch (err) {
       console.error('Error loading guides:', err);

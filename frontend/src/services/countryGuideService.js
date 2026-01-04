@@ -18,10 +18,12 @@ import api from './api';
  */
 export const getAllGuides = async (params = {}) => {
   try {
+    // API interceptor already returns response.data, so response is the data object
     const response = await api.get('/country-guides', { params });
-    return response.data;
+    return response;
   } catch (error) {
-    throw error.response?.data || error;
+    console.error('Error fetching guides:', error);
+    throw error;
   }
 };
 
@@ -48,10 +50,12 @@ export const getGuideByCountry = async (country, language = 'en') => {
  */
 export const getRegions = async () => {
   try {
+    // API interceptor already returns response.data, so response is the data object
     const response = await api.get('/country-guides/meta/regions');
-    return response.data;
+    return response;
   } catch (error) {
-    throw error.response?.data || error;
+    console.error('Error fetching regions:', error);
+    throw error;
   }
 };
 
@@ -61,10 +65,12 @@ export const getRegions = async () => {
  */
 export const getJobTypes = async () => {
   try {
+    // API interceptor already returns response.data, so response is the data object
     const response = await api.get('/country-guides/meta/job-types');
-    return response.data;
+    return response;
   } catch (error) {
-    throw error.response?.data || error;
+    console.error('Error fetching job types:', error);
+    throw error;
   }
 };
 
@@ -122,12 +128,14 @@ export const compareSalaries = async (jobType, countries = []) => {
  */
 export const getPopularDestinations = async (limit = 5) => {
   try {
+    // API interceptor already returns response.data, so response is the data object
     const response = await api.get('/country-guides', {
       params: { popular: true, limit },
     });
-    return response.data;
+    return response;
   } catch (error) {
-    throw error.response?.data || error;
+    console.error('Error fetching popular destinations:', error);
+    throw error;
   }
 };
 

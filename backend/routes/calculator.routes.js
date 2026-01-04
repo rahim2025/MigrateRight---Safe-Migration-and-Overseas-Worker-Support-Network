@@ -13,7 +13,9 @@ const {
   getAllFeeRules,
   createFeeRule,
   updateFeeRule,
-  deleteFeeRule
+  deleteFeeRule,
+  getLegalFees,
+  compareFees
 } = require('../controllers/calculator.controller');
 const { authenticate, authorize } = require('../middleware/auth.middleware');
 
@@ -60,6 +62,41 @@ router.get('/fee-rules', getFeeRule);
  *          }
  */
 router.post('/calculate', calculateMigrationCost);
+
+/**
+ * @route   POST /api/calculator/fees
+ * @desc    Get legal fees for destination, service type, and worker category
+ * @access  Public
+ * @body    {
+ *            destinationCountry: String,
+ *            serviceType: String (visa, work_permit, full_package),
+ *            workerCategory: String (domestic, construction, healthcare, etc.)
+ *          }
+ */
+router.post('/fees', getLegalFees);
+
+/**
+ * @route   POST /api/calculator/fees/compare
+ * @desc    Compare actual fees with legal fees
+ * @access  Public
+ * @body    {
+ *            destinationCountry: String,
+ *            serviceType: String,
+ *            workerCategory: String,
+ *            actualFees: {
+ *              visaApplicationFee: Number,
+ *              medicalTestsFee: Number,
+ *              documentProcessingFee: Number,
+ *              trainingFee: Number,
+ *              hiddenCharges: Number (optional)
+ *            },
+ *            paymentTerms: {
+ *              upfrontPercentage: Number (optional),
+ *              requiresDebtBondage: Boolean (optional)
+ *            }
+ *          }
+ */
+router.post('/fees/compare', compareFees);
 
 // ==================== ADMIN ROUTES ====================
 // All routes below require authentication and platform_admin role

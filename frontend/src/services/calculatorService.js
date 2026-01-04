@@ -10,8 +10,9 @@ import api from './api';
  * @returns {Promise} - List of countries
  */
 export const getAvailableCountries = async () => {
+  // API interceptor already returns response.data, so response is the data object
   const response = await api.get('/calculator/countries');
-  return response.data;
+  return response;
 };
 
 /**

@@ -139,7 +139,7 @@ app.use('/api/agencies', agencyComplaintRoutes);
 app.use('/api/calculator', calculatorRoutes);
 
 // Country Guide Routes
-app.use('/api/countries', countryGuideRoutes);
+app.use('/api/country-guides', countryGuideRoutes);
 
 // Worker Routes
 app.use('/api/workers', workerRoutes);
@@ -163,6 +163,7 @@ app.get('/', (req, res) => {
       users: '/api/users',
       agencies: '/api/agencies',
       calculator: '/api/calculator',
+      countryGuides: '/api/country-guides',
       countries: '/api/countries',
       workers: '/api/workers',
       emergency: '/api/emergency',

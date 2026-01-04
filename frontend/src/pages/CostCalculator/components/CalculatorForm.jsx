@@ -235,11 +235,23 @@ const CalculatorForm = ({
               className={validationErrors.destinationCountry ? 'error' : ''}
             >
               <option value="">{txt.selectCountry}</option>
-              {countries.map((country) => (
-                <option key={country.code} value={country.code}>
-                  {country.flag} {country.name}
-                </option>
-              ))}
+              {countries && countries.length > 0 ? (
+                countries.map((country) => (
+                  <option key={country.code || country} value={country.code || country}>
+                    {country.flag || ''} {country.name || country}
+                  </option>
+                ))
+              ) : (
+                // Fallback if countries array is empty
+                <>
+                  <option value="SA">🇸🇦 Saudi Arabia</option>
+                  <option value="AE">🇦🇪 United Arab Emirates</option>
+                  <option value="QA">🇶🇦 Qatar</option>
+                  <option value="KW">🇰🇼 Kuwait</option>
+                  <option value="MY">🇲🇾 Malaysia</option>
+                  <option value="SG">🇸🇬 Singapore</option>
+                </>
+              )}
             </select>
             {validationErrors.destinationCountry && (
               <span className="error-text">{validationErrors.destinationCountry}</span>
