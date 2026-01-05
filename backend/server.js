@@ -18,6 +18,7 @@ const calculatorRoutes = require('./routes/calculator.routes');
 const countryGuideRoutes = require('./routes/countryGuide.routes');
 const emergencyRoutes = require('./routes/emergency.routes');
 const salaryRoutes = require('./routes/salary.routes');
+const salaryTrackerRoutes = require('./routes/salaryTracker.routes');
 const workerRoutes = require('./src/routes/workerProfile.routes');
 const agencyReviewRoutes = require('./src/routes/agencyReview.routes');
 const agencyComplaintRoutes = require('./src/routes/agencyComplaint.routes');
@@ -147,7 +148,10 @@ app.use('/api/workers', workerRoutes);
 // Emergency SOS Routes
 app.use('/api/emergency', emergencyRoutes);
 
-// Salary Tracker Routes
+// Salary Tracker Routes (Wage Mismatch Detection)
+app.use('/api/salary-tracker', salaryTrackerRoutes);
+
+// Legacy Salary Routes
 app.use('/api/salary', salaryRoutes);
 
 // Welcome Route
@@ -167,6 +171,7 @@ app.get('/', (req, res) => {
       countries: '/api/countries',
       workers: '/api/workers',
       emergency: '/api/emergency',
+      salaryTracker: '/api/salary-tracker',
       salary: '/api/salary',
     },
   });
