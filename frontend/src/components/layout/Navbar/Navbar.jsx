@@ -50,22 +50,18 @@ const Navbar = () => {
 
           {isAuthenticated && (
             <>
-              {/* Agency Dashboard - only for agency users */}
-              {user?.role === 'agency' && (
-                <Link to="/agency-dashboard" className="nav-link">
-                  🏢 My Agency Dashboard
-                </Link>
-              )}
-              
               <Link to="/records" className="nav-link">
                 📁 My Records
               </Link>
               <Link to="/salary-tracker" className="nav-link">
                 💰 Salary Tracker
               </Link>
-              <Link to="/admin/dashboard" className="nav-link">
-                Admin Panel
-              </Link>
+              {/* Admin Panel - only for platform admins */}
+              {user?.role === 'platform_admin' && (
+                <Link to="/admin/dashboard" className="nav-link">
+                  ⚙️ Admin Panel
+                </Link>
+              )}
             </>
           )}
 
@@ -117,22 +113,18 @@ const Navbar = () => {
 
           {isAuthenticated && (
             <>
-              {/* Agency Dashboard - only for agency users */}
-              {user?.role === 'agency' && (
-                <Link to="/agency-dashboard" className="mobile-nav-link" onClick={toggleMobileMenu}>
-                  🏢 My Agency Dashboard
-                </Link>
-              )}
-              
               <Link to="/records" className="mobile-nav-link" onClick={toggleMobileMenu}>
                 📁 My Records
               </Link>
               <Link to="/salary-tracker" className="mobile-nav-link" onClick={toggleMobileMenu}>
                 💰 Salary Tracker
               </Link>
-              <Link to="/admin/dashboard" className="mobile-nav-link" onClick={toggleMobileMenu}>
-                Admin Panel
-              </Link>
+              {/* Admin Panel - only for platform admins */}
+              {user?.role === 'platform_admin' && (
+                <Link to="/admin/dashboard" className="mobile-nav-link" onClick={toggleMobileMenu}>
+                  ⚙️ Admin Panel
+                </Link>
+              )}
             </>
           )}
 

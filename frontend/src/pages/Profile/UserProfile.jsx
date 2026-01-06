@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext';
 import { useLanguage } from '@context/LanguageContext';
 import userService from '@services/userService';
@@ -11,6 +12,7 @@ import './UserProfile.css';
 const UserProfile = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -149,6 +151,70 @@ const UserProfile = () => {
 
           {/* Profile Form */}
           <div className="profile-main">
+            {/* Agency Management Section - Only for agency users */}
+            {user?.role === 'agency' && (
+              <section className="agency-management-section">
+                <div className="agency-banner">
+                  <div className="agency-banner-content">
+                    <div className="agency-icon">🏢</div>
+                    <div className="agency-text">
+                      <h2>Agency Account</h2>
+                      <p>Manage your recruitment agency profile, services, and track your performance</p>
+                    </div>
+                  </div>
+                  <button 
+                    className="btn-agency-dashboard-large"
+                    onClick={() => navigate('/agency-dashboard')}
+                  >
+                    <span className="btn-icon">⚙️</span>
+                    <span className="btn-text">
+                      <strong>Manage Agency Dashboard</strong>
+                      <small>Company Info • Services • Workers • Analytics</small>
+                    </span>
+                    <span className="btn-arrow">→</span>
+                  </button>
+                </div>
+                
+                <div className="agency-quick-links">
+                  <h3>Quick Actions</h3>
+                  <div className="quick-links-grid">
+                    <button 
+                      className="quick-link-card"
+                      onClick={() => navigate('/agency-dashboard')}
+                    >
+                      <span className="card-icon">📋</span>
+                      <span className="card-title">Company Info</span>
+                      <span className="card-desc">Update business details</span>
+                    </button>
+                    <button 
+                      className="quick-link-card"
+                      onClick={() => navigate('/agency-dashboard')}
+                    >
+                      <span className="card-icon">⭐</span>
+                      <span className="card-title">Success Stories</span>
+                      <span className="card-desc">Share your achievements</span>
+                    </button>
+                    <button 
+                      className="quick-link-card"
+                      onClick={() => navigate('/agency-dashboard')}
+                    >
+                      <span className="card-icon">💰</span>
+                      <span className="card-title">Fee Structure</span>
+                      <span className="card-desc">Manage pricing</span>
+                    </button>
+                    <button 
+                      className="quick-link-card"
+                      onClick={() => navigate('/agency-dashboard')}
+                    >
+                      <span className="card-icon">👥</span>
+                      <span className="card-title">Workers</span>
+                      <span className="card-desc">View interested candidates</span>
+                    </button>
+                  </div>
+                </div>
+              </section>
+            )}
+
             <form onSubmit={handleSubmit}>
               {/* Personal Information */}
               <section className="form-section">

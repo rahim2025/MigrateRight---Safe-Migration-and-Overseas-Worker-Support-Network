@@ -520,6 +520,13 @@
   gap: 20px;
 }
 
+.section-description {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
 .service-item {
   display: flex;
   align-items: center;
@@ -535,6 +542,14 @@
   background: #f3f4f6;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.destination-item .service-icon {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.specialization-item .service-icon {
+  background: linear-gradient(135deg, #10b981, #059669);
 }
 
 .service-icon {
@@ -553,6 +568,71 @@
 .service-name {
   font-weight: 500;
   color: #1f2937;
+}
+
+/* Placement Stats */
+.placement-stats {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+.placement-number {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.placement-label {
+  font-size: 1.125rem;
+  opacity: 0.95;
+}
+
+/* Experience Info */
+.experience-info {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.experience-year,
+.experience-duration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+}
+
+.year-label,
+.duration-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.year-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.duration-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #10b981;
 }
 
 /* Reviews Section */
@@ -784,6 +864,15 @@
   .services-grid {
     grid-template-columns: 1fr;
   }
+
+  .experience-info {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .placement-number {
+    font-size: 2.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -801,5 +890,14 @@
   
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .placement-number {
+    font-size: 2rem;
+  }
+
+  .year-value,
+  .duration-value {
+    font-size: 1.5rem;
   }
 }

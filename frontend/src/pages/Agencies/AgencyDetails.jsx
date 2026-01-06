@@ -361,12 +361,32 @@ const AgencyDetails = () => {
           {/* Services Tab */}
           {activeTab === 'services' && (
             <div className="tab-content">
+              {/* Destination Countries */}
               <div className="info-card">
-                <h2>Specializations</h2>
+                <h2>Destination Countries</h2>
+                <p className="section-description">Countries where this agency provides recruitment services</p>
+                {agency.destinationCountries && agency.destinationCountries.length > 0 ? (
+                  <div className="services-grid">
+                    {agency.destinationCountries.map((country, index) => (
+                      <div key={index} className="service-item destination-item">
+                        <div className="service-icon">🌍</div>
+                        <div className="service-name">{country}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="no-data">No destination countries specified.</p>
+                )}
+              </div>
+
+              {/* Specializations */}
+              <div className="info-card">
+                <h2>Industry Specializations</h2>
+                <p className="section-description">Job sectors and industries this agency specializes in</p>
                 {agency.specialization && agency.specialization.length > 0 ? (
                   <div className="services-grid">
                     {agency.specialization.map((specialization, index) => (
-                      <div key={index} className="service-item">
+                      <div key={index} className="service-item specialization-item">
                         <div className="service-icon">🔧</div>
                         <div className="service-name">{specialization}</div>
                       </div>
@@ -376,6 +396,36 @@ const AgencyDetails = () => {
                   <p className="no-data">No specialization information available.</p>
                 )}
               </div>
+
+              {/* Total Placements if available */}
+              {agency.totalPlacements !== undefined && agency.totalPlacements > 0 && (
+                <div className="info-card">
+                  <h2>Track Record</h2>
+                  <div className="placement-stats">
+                    <div className="placement-number">{agency.totalPlacements.toLocaleString()}</div>
+                    <div className="placement-label">Total Workers Placed</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Established Year if available */}
+              {agency.establishedYear && (
+                <div className="info-card">
+                  <h2>Experience</h2>
+                  <div className="experience-info">
+                    <div className="experience-year">
+                      <span className="year-label">Established in</span>
+                      <span className="year-value">{agency.establishedYear}</span>
+                    </div>
+                    <div className="experience-duration">
+                      <span className="duration-value">
+                        {new Date().getFullYear() - agency.establishedYear}
+                      </span>
+                      <span className="duration-label">years in business</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
