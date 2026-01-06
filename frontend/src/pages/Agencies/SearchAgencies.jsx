@@ -128,6 +128,20 @@ const SearchAgencies = () => {
           <p className="header-subtitle">
             Discover verified agencies with transparent fees, excellent track records, and trusted credentials
           </p>
+          
+          {/* Agency Dashboard Button - Only visible to agency users */}
+          {isAuthenticated && user?.role === 'agency' && (
+            <div className="agency-dashboard-prompt">
+              <button 
+                onClick={() => navigate('/agency-dashboard')}
+                className="btn-agency-dashboard"
+              >
+                🏢 Manage My Agency Profile
+              </button>
+              <p className="prompt-text">Update your company information, manage services, and track performance</p>
+            </div>
+          )}
+          
           <div className="header-stats">
             <div className="stat-item">
               <div className="stat-number">{agencies.length}</div>

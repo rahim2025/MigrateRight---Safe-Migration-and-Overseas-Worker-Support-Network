@@ -11,10 +11,54 @@ import './AgencyDashboard.css';
 const AgencyDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('stories');
+  const [activeTab, setActiveTab] = useState('company');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  
+  // Company-specific loading and success states
+  const [companyLoading, setCompanyLoading] = useState(false);
+  const [companySuccess, setCompanySuccess] = useState('');
+  const [companyError, setCompanyError] = useState('');
+  
+  // Section-specific states for modular updates
+  const [expandedSections, setExpandedSections] = useState({
+    basic: true,
+    license: true,
+    contact: true,
+    location: true,
+    business: true
+  });
+  const [sectionLoading, setSectionLoading] = useState({});
+  const [sectionSuccess, setSectionSuccess] = useState({});
+  const [sectionError, setSectionError] = useState({});
+
+  // Company Info State
+  const [companyInfo, setCompanyInfo] = useState({
+    name: '',
+    description: '',
+    license: {
+      number: '',
+      issueDate: '',
+      expiryDate: '',
+      isValid: true
+    },
+    location: {
+      address: '',
+      city: '',
+      district: '',
+      country: 'Bangladesh'
+    },
+    contact: {
+      phone: '',
+      email: '',
+      website: ''
+    },
+    destinationCountries: [],
+    specialization: [],
+    establishedYear: '',
+    totalPlacements: 0
+  });
 
   // Success Stories State
   const [successStories, setSuccessStories] = useState([]);
@@ -58,14 +102,49 @@ const AgencyDashboard = () => {
       navigate('/');
       return;
     }
-    loadData();
+    fetchData();
   }, [user, navigate, activeTab]);
 
-  const loadData = async () => {
+  const fetchData = async () => {
     setLoading(true);
     setError('');
     try {
-      if (activeTab === 'stories') {
+      if (activeTab === 'company') {
+        console.log('Fetching agency details...');
+        const response = await agencyManagementService.getAgencyDetails();
+        console.log('Agency details response:', response);
+        
+        if (response.data) {
+          console.log('Setting company info with data:', response.data);
+          setCompanyInfo({
+            name: response.data.name || '',
+            description: response.data.description || '',
+            license: {
+              number: response.data.license?.number || '',
+              issueDate: response.data.license?.issueDate ? response.data.license.issueDate.split('T')[0] : '',
+              expiryDate: response.data.license?.expiryDate ? response.data.license.expiryDate.split('T')[0] : '',
+              isValid: response.data.license?.isValid !== false
+            },
+            location: {
+              address: response.data.location?.address || '',
+              city: response.data.location?.city || '',
+              district: response.data.location?.district || '',
+              country: response.data.location?.country || 'Bangladesh'
+            },
+            contact: {
+              phone: response.data.contact?.phone || '',
+              email: response.data.contact?.email || '',
+              website: response.data.contact?.website || ''
+            },
+            destinationCountries: response.data.destinationCountries || [],
+            specialization: response.data.specialization || [],
+            establishedYear: response.data.establishedYear || '',
+            totalPlacements: response.data.totalPlacements || 0
+          });
+        } else {
+          console.warn('No data in response');
+        }
+      } else if (activeTab === 'stories') {
         const response = await agencyManagementService.getSuccessStories();
         setSuccessStories(response.data || []);
       } else if (activeTab === 'fees') {
@@ -79,9 +158,138 @@ const AgencyDashboard = () => {
         setInterestedWorkers(response.data || []);
       }
     } catch (err) {
-      setError(err.message || 'Failed to load data');
+      console.error('Error loading data:', err);
+      // If agency details don't exist (404), it's not necessarily an error - they just need to create them
+      if (err.response?.status === 404 && activeTab === 'company') {
+        console.log('No agency details found - user needs to create them');
+        setError('No agency details found. Please fill in your company information below.');
+      } else {
+        setError(err.message || 'Failed to load data');
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Company Info Handlers
+  const handleCompanyInfoSubmit = async (e) => {
+    e.preventDefault();
+    setCompanyLoading(true);
+    setCompanyError('');
+    setCompanySuccess('');
+    
+    try {
+      // Clear any general messages
+      setError('');
+      setSuccess('');
+      
+      let response;
+      
+      // Try to update first
+      try {
+        response = await agencyManagementService.updateAgencyDetails(companyInfo);
+      } catch (updateError) {
+        // If update fails with 404, try to create
+        if (updateError.response?.status === 404) {
+          console.log('Agency details not found, creating new...');
+          response = await agencyManagementService.createAgencyDetails(companyInfo);
+        } else {
+          throw updateError;
+        }
+      }
+      
+      setCompanySuccess('Company information updated successfully!');
+      
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => {
+        setCompanySuccess('');
+      }, 5000);
+      
+      // Refresh data
+      await fetchData();
+      
+    } catch (err) {
+      console.error('Error updating company info:', err);
+      setCompanyError(err.message || 'Failed to update company information');
+    } finally {
+      setCompanyLoading(false);
+    }
+  };
+
+  const handleCompanyInfoChange = (field, value) => {
+    if (field.includes('.')) {
+      const [parent, child] = field.split('.');
+      setCompanyInfo(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }));
+    } else {
+      setCompanyInfo(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
+    
+    // Clear messages on input change
+    if (companyError) setCompanyError('');
+    if (companySuccess) setCompanySuccess('');
+  };
+
+  // Toggle section expansion
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  // Update individual section
+  const handleSectionUpdate = async (section, data) => {
+    setSectionLoading(prev => ({ ...prev, [section]: true }));
+    setSectionError(prev => ({ ...prev, [section]: '' }));
+    setSectionSuccess(prev => ({ ...prev, [section]: '' }));
+    
+    try {
+      let response;
+      
+      // Try to update first
+      try {
+        response = await agencyManagementService.updateAgencyDetails(data);
+        console.log('Section update response:', response);
+      } catch (updateError) {
+        // If update fails with 404, try to create
+        if (updateError.response?.status === 404) {
+          console.log('Agency details not found, creating new...');
+          response = await agencyManagementService.createAgencyDetails(data);
+          console.log('Section create response:', response);
+        } else {
+          throw updateError;
+        }
+      }
+      
+      setSectionSuccess(prev => ({ 
+        ...prev, 
+        [section]: 'Section updated successfully!' 
+      }));
+      
+      // Auto-hide success message after 3 seconds
+      setTimeout(() => {
+        setSectionSuccess(prev => ({ ...prev, [section]: '' }));
+      }, 3000);
+      
+      // Refresh data to get latest from server
+      await fetchData();
+      
+    } catch (err) {
+      setSectionError(prev => ({ 
+        ...prev, 
+        [section]: err.message || 'Failed to update section' 
+      }));
+    } finally {
+      setSectionLoading(prev => ({ ...prev, [section]: false }));
     }
   };
 
@@ -236,6 +444,12 @@ const AgencyDashboard = () => {
 
       <nav className="dashboard-tabs">
         <button
+          className={activeTab === 'company' ? 'tab active' : 'tab'}
+          onClick={() => setActiveTab('company')}
+        >
+          Company Info
+        </button>
+        <button
           className={activeTab === 'stories' ? 'tab active' : 'tab'}
           onClick={() => setActiveTab('stories')}
         >
@@ -262,6 +476,418 @@ const AgencyDashboard = () => {
       </nav>
 
       <div className="dashboard-content">
+        {/* Company Info Tab */}
+        {activeTab === 'company' && (
+          <div className="section">
+            <h2>Company Information Management</h2>
+            <p className="section-description">Update your agency details section by section. Each section can be updated independently.</p>
+            
+            {/* Loading State */}
+            {loading && (
+              <div className="loading-state">
+                <div className="loading-spinner"></div>
+                <p>Loading your company information...</p>
+              </div>
+            )}
+            
+            {/* Global messages */}
+            {companyError && <div className="alert alert-error">{companyError}</div>}
+            {companySuccess && <div className="form-success">{companySuccess}</div>}
+            
+            {!loading && (
+            <div className="company-sections">
+              {/* Basic Information Section */}
+              <div className={`info-section ${expandedSections.basic ? 'expanded' : 'collapsed'}`}>
+                <div className="section-header" onClick={() => toggleSection('basic')}>
+                  <div className="section-title-group">
+                    <span className="section-icon">📋</span>
+                    <h3>Basic Information</h3>
+                  </div>
+                  <div className="section-controls">
+                    {sectionSuccess.basic && <span className="success-badge">✓ Saved</span>}
+                    <button type="button" className="toggle-btn">
+                      {expandedSections.basic ? '▼' : '▶'}
+                    </button>
+                  </div>
+                </div>
+                
+                {expandedSections.basic && (
+                  <div className="section-content">
+                    {sectionError.basic && <div className="alert alert-error">{sectionError.basic}</div>}
+                    {sectionSuccess.basic && <div className="form-success">{sectionSuccess.basic}</div>}
+                    
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>Company Name *</label>
+                        <input
+                          type="text"
+                          value={companyInfo.name}
+                          onChange={(e) => handleCompanyInfoChange('name', e.target.value)}
+                          placeholder="Enter company name"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Established Year</label>
+                        <input
+                          type="number"
+                          value={companyInfo.establishedYear}
+                          onChange={(e) => handleCompanyInfoChange('establishedYear', parseInt(e.target.value) || '')}
+                          placeholder="e.g., 2010"
+                          min="1900"
+                          max={new Date().getFullYear()}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Description</label>
+                      <textarea
+                        value={companyInfo.description}
+                        onChange={(e) => handleCompanyInfoChange('description', e.target.value)}
+                        placeholder="Describe your agency and services"
+                        rows="4"
+                        maxLength="1000"
+                      />
+                      <small className="multi-select-info">
+                        {companyInfo.description.length}/1000 characters
+                      </small>
+                    </div>
+
+                    <div className="section-actions">
+                      <button 
+                        type="button"
+                        className="btn btn-primary"
+                        disabled={sectionLoading.basic}
+                        onClick={() => handleSectionUpdate('basic', {
+                          name: companyInfo.name,
+                          description: companyInfo.description,
+                          establishedYear: companyInfo.establishedYear
+                        })}
+                      >
+                        {sectionLoading.basic ? 'Saving...' : 'Save Basic Info'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* License Information Section */}
+              <div className={`info-section ${expandedSections.license ? 'expanded' : 'collapsed'}`}>
+                <div className="section-header" onClick={() => toggleSection('license')}>
+                  <div className="section-title-group">
+                    <span className="section-icon">📜</span>
+                    <h3>License Information</h3>
+                  </div>
+                  <div className="section-controls">
+                    {sectionSuccess.license && <span className="success-badge">✓ Saved</span>}
+                    <button type="button" className="toggle-btn">
+                      {expandedSections.license ? '▼' : '▶'}
+                    </button>
+                  </div>
+                </div>
+                
+                {expandedSections.license && (
+                  <div className="section-content">
+                    {sectionError.license && <div className="alert alert-error">{sectionError.license}</div>}
+                    {sectionSuccess.license && <div className="form-success">{sectionSuccess.license}</div>}
+                    
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>License Number *</label>
+                        <input
+                          type="text"
+                          value={companyInfo.license.number}
+                          onChange={(e) => handleCompanyInfoChange('license.number', e.target.value)}
+                          placeholder="Enter license number"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Issue Date</label>
+                        <input
+                          type="date"
+                          value={companyInfo.license.issueDate}
+                          onChange={(e) => handleCompanyInfoChange('license.issueDate', e.target.value)}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Expiry Date</label>
+                        <input
+                          type="date"
+                          value={companyInfo.license.expiryDate}
+                          onChange={(e) => handleCompanyInfoChange('license.expiryDate', e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="section-actions">
+                      <button 
+                        type="button"
+                        className="btn btn-primary"
+                        disabled={sectionLoading.license}
+                        onClick={() => handleSectionUpdate('license', {
+                          license: companyInfo.license
+                        })}
+                      >
+                        {sectionLoading.license ? 'Saving...' : 'Save License Info'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Contact Information Section */}
+              <div className={`info-section ${expandedSections.contact ? 'expanded' : 'collapsed'}`}>
+                <div className="section-header" onClick={() => toggleSection('contact')}>
+                  <div className="section-title-group">
+                    <span className="section-icon">📞</span>
+                    <h3>Contact Information</h3>
+                  </div>
+                  <div className="section-controls">
+                    {sectionSuccess.contact && <span className="success-badge">✓ Saved</span>}
+                    <button type="button" className="toggle-btn">
+                      {expandedSections.contact ? '▼' : '▶'}
+                    </button>
+                  </div>
+                </div>
+                
+                {expandedSections.contact && (
+                  <div className="section-content">
+                    {sectionError.contact && <div className="alert alert-error">{sectionError.contact}</div>}
+                    {sectionSuccess.contact && <div className="form-success">{sectionSuccess.contact}</div>}
+                    
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>Email</label>
+                        <input
+                          type="email"
+                          value={companyInfo.contact.email}
+                          onChange={(e) => handleCompanyInfoChange('contact.email', e.target.value)}
+                          placeholder="contact@agency.com"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Phone</label>
+                        <input
+                          type="tel"
+                          value={companyInfo.contact.phone}
+                          onChange={(e) => handleCompanyInfoChange('contact.phone', e.target.value)}
+                          placeholder="+880 1XXX XXXXXX"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Website</label>
+                        <input
+                          type="url"
+                          value={companyInfo.contact.website}
+                          onChange={(e) => handleCompanyInfoChange('contact.website', e.target.value)}
+                          placeholder="https://www.agency.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="section-actions">
+                      <button 
+                        type="button"
+                        className="btn btn-primary"
+                        disabled={sectionLoading.contact}
+                        onClick={() => handleSectionUpdate('contact', {
+                          contact: companyInfo.contact
+                        })}
+                      >
+                        {sectionLoading.contact ? 'Saving...' : 'Save Contact Info'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Location Section */}
+              <div className={`info-section ${expandedSections.location ? 'expanded' : 'collapsed'}`}>
+                <div className="section-header" onClick={() => toggleSection('location')}>
+                  <div className="section-title-group">
+                    <span className="section-icon">📍</span>
+                    <h3>Location</h3>
+                  </div>
+                  <div className="section-controls">
+                    {sectionSuccess.location && <span className="success-badge">✓ Saved</span>}
+                    <button type="button" className="toggle-btn">
+                      {expandedSections.location ? '▼' : '▶'}
+                    </button>
+                  </div>
+                </div>
+                
+                {expandedSections.location && (
+                  <div className="section-content">
+                    {sectionError.location && <div className="alert alert-error">{sectionError.location}</div>}
+                    {sectionSuccess.location && <div className="form-success">{sectionSuccess.location}</div>}
+                    
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>Address</label>
+                        <input
+                          type="text"
+                          value={companyInfo.location.address}
+                          onChange={(e) => handleCompanyInfoChange('location.address', e.target.value)}
+                          placeholder="Street address"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>City *</label>
+                        <input
+                          type="text"
+                          value={companyInfo.location.city}
+                          onChange={(e) => handleCompanyInfoChange('location.city', e.target.value)}
+                          placeholder="City name"
+                        />
+                      </div>
+                    </div>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>District</label>
+                        <input
+                          type="text"
+                          value={companyInfo.location.district}
+                          onChange={(e) => handleCompanyInfoChange('location.district', e.target.value)}
+                          placeholder="District name"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Country</label>
+                        <input
+                          type="text"
+                          value={companyInfo.location.country}
+                          onChange={(e) => handleCompanyInfoChange('location.country', e.target.value)}
+                          placeholder="Country"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="section-actions">
+                      <button 
+                        type="button"
+                        className="btn btn-primary"
+                        disabled={sectionLoading.location}
+                        onClick={() => handleSectionUpdate('location', {
+                          location: companyInfo.location
+                        })}
+                      >
+                        {sectionLoading.location ? 'Saving...' : 'Save Location'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Business Details Section */}
+              <div className={`info-section ${expandedSections.business ? 'expanded' : 'collapsed'}`}>
+                <div className="section-header" onClick={() => toggleSection('business')}>
+                  <div className="section-title-group">
+                    <span className="section-icon">💼</span>
+                    <h3>Business Details</h3>
+                  </div>
+                  <div className="section-controls">
+                    {sectionSuccess.business && <span className="success-badge">✓ Saved</span>}
+                    <button type="button" className="toggle-btn">
+                      {expandedSections.business ? '▼' : '▶'}
+                    </button>
+                  </div>
+                </div>
+                
+                {expandedSections.business && (
+                  <div className="section-content">
+                    {sectionError.business && <div className="alert alert-error">{sectionError.business}</div>}
+                    {sectionSuccess.business && <div className="form-success">{sectionSuccess.business}</div>}
+                    
+                    <div className="form-group">
+                      <label>Destination Countries</label>
+                      <input
+                        type="text"
+                        value={companyInfo.destinationCountries.join(', ')}
+                        onChange={(e) => handleCompanyInfoChange('destinationCountries', e.target.value.split(',').map(c => c.trim()).filter(c => c))}
+                        placeholder="Saudi Arabia, UAE, Qatar, Kuwait"
+                      />
+                      <small className="multi-select-info">
+                        Separate countries with commas
+                      </small>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Specializations</label>
+                      <select 
+                        multiple
+                        value={companyInfo.specialization}
+                        onChange={(e) => {
+                          const values = Array.from(e.target.selectedOptions, option => option.value);
+                          handleCompanyInfoChange('specialization', values);
+                        }}
+                        className="multi-select"
+                      >
+                        <option value="Construction">Construction</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Hospitality">Hospitality</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Domestic Work">Domestic Work</option>
+                        <option value="IT & Technology">IT & Technology</option>
+                        <option value="Agriculture">Agriculture</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <small className="multi-select-info">
+                        Hold Ctrl/Cmd to select multiple options
+                      </small>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Total Placements</label>
+                      <input
+                        type="number"
+                        value={companyInfo.totalPlacements}
+                        onChange={(e) => handleCompanyInfoChange('totalPlacements', parseInt(e.target.value) || 0)}
+                        placeholder="Number of workers placed"
+                        min="0"
+                      />
+                    </div>
+
+                    <div className="section-actions">
+                      <button 
+                        type="button"
+                        className="btn btn-primary"
+                        disabled={sectionLoading.business}
+                        onClick={() => handleSectionUpdate('business', {
+                          destinationCountries: companyInfo.destinationCountries,
+                          specialization: companyInfo.specialization,
+                          totalPlacements: companyInfo.totalPlacements
+                        })}
+                      >
+                        {sectionLoading.business ? 'Saving...' : 'Save Business Details'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Save All Button */}
+              <div className="save-all-section">
+                <button 
+                  type="button"
+                  className="btn btn-primary btn-lg"
+                  disabled={companyLoading}
+                  onClick={() => handleCompanyInfoSubmit({ preventDefault: () => {} })}
+                >
+                  {companyLoading ? 'Saving All...' : '💾 Save All Sections'}
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-secondary btn-lg" 
+                  onClick={() => fetchData()}
+                >
+                  🔄 Reset All Changes
+                </button>
+              </div>
+            </div>
+            )}
+          </div>
+        )}
+
         {/* Success Stories Tab */}
         {activeTab === 'stories' && (
           <div className="section">

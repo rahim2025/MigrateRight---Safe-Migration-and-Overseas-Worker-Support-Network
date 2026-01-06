@@ -112,12 +112,16 @@ const AgencyDetails = () => {
     return location || 'Location not specified';
   };
 
-  const formatAddress = (address) => {
-    if (typeof address === 'object') {
-      return `${address.address || ''}, ${address.city || ''}, ${address.district || ''}, ${address.country || ''}`
-        .replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '') || 'Not provided';
+  const formatAddress = (location) => {
+    if (typeof location === 'object' && location) {
+      const parts = [];
+      if (location.address) parts.push(location.address);
+      if (location.city) parts.push(location.city);
+      if (location.district) parts.push(location.district);
+      if (location.country) parts.push(location.country);
+      return parts.join(', ') || 'Not provided';
     }
-    return address || 'Not provided';
+    return location || 'Not provided';
   };
 
   return (
@@ -151,11 +155,11 @@ const AgencyDetails = () => {
                   <span className="icon">📍</span>
                   {formatLocation(agency.location)}
                 </span>
-                <span className={`verification-badge ${agency.verificationStatus?.toLowerCase() || 'unverified'}`}>
+                <span className={`verification-badge ${agency.isVerified ? 'verified' : 'unverified'}`}>
                   <span className="badge-icon">
-                    {agency.verificationStatus === 'verified' ? '✓' : '⚠'}
+                    {agency.isVerified ? '✓' : '⚠'}
                   </span>
-                  {agency.verificationStatus === 'verified' ? 'Verified Agency' : 'Unverified'}
+                  {agency.isVerified ? 'Verified Agency' : 'Unverified'}
                 </span>
               </div>
               
@@ -235,13 +239,35 @@ const AgencyDetails = () => {
                     <p className="description">
                       {agency.description || 'No description provided for this agency.'}
                     </p>
+                    {agency.establishedYear && (
+                      <p><strong>Established:</strong> {agency.establishedYear}</p>
+                    )}
+                    {agency.totalPlacements > 0 && (
+                      <p><strong>Total Placements:</strong> {agency.totalPlacements}</p>
+                    )}
+                  </div>
+                  
+                  <div className="info-card">
+                    <h2>License Information</h2>
+                    <p><strong>License Number:</strong> {agency.license?.number || 'Not available'}</p>
+                    {agency.license?.issueDate && (
+                      <p><strong>Issue Date:</strong> {new Date(agency.license.issueDate).toLocaleDateString()}</p>
+                    )}
+                    {agency.license?.expiryDate && (
+                      <p><strong>Expiry Date:</strong> {new Date(agency.license.expiryDate).toLocaleDateString()}</p>
+                    )}
+                    <p><strong>Status:</strong> 
+                      <span className={`status-badge ${agency.license?.isValid ? 'valid' : 'invalid'}`}>
+                        {agency.license?.isValid ? 'Valid' : 'Invalid'}
+                      </span>
+                    </p>
                   </div>
                   
                   <div className="info-card">
                     <h2>Destination Countries</h2>
-                    {agency.countries && agency.countries.length > 0 ? (
+                    {agency.destinationCountries && agency.destinationCountries.length > 0 ? (
                       <div className="tags-container">
-                        {agency.countries.map((country, index) => (
+                        {agency.destinationCountries.map((country, index) => (
                           <span key={index} className="tag country-tag">
                             🌍 {country}
                           </span>
@@ -266,12 +292,12 @@ const AgencyDetails = () => {
                         <div className="stat-label">Average Rating</div>
                       </div>
                       <div className="stat-item">
-                        <div className="stat-value">{agency.countries?.length || 0}</div>
+                        <div className="stat-value">{agency.destinationCountries?.length || 0}</div>
                         <div className="stat-label">Countries</div>
                       </div>
                       <div className="stat-item">
-                        <div className="stat-value">{agency.services?.length || 0}</div>
-                        <div className="stat-label">Services</div>
+                        <div className="stat-value">{agency.specialization?.length || 0}</div>
+                        <div className="stat-label">Specializations</div>
                       </div>
                     </div>
                   </div>
@@ -291,7 +317,7 @@ const AgencyDetails = () => {
                     <div className="contact-info">
                       <div className="contact-label">Email</div>
                       <div className="contact-value">
-                        <a href={`mailto:${agency.email}`}>{agency.email || 'Not provided'}</a>
+                        <a href={`mailto:${agency.contact?.email}`}>{agency.contact?.email || 'Not provided'}</a>
                       </div>
                     </div>
                   </div>
@@ -301,7 +327,7 @@ const AgencyDetails = () => {
                     <div className="contact-info">
                       <div className="contact-label">Phone</div>
                       <div className="contact-value">
-                        <a href={`tel:${agency.phone}`}>{agency.phone || 'Not provided'}</a>
+                        <a href={`tel:${agency.contact?.phone}`}>{agency.contact?.phone || 'Not provided'}</a>
                       </div>
                     </div>
                   </div>
@@ -310,17 +336,17 @@ const AgencyDetails = () => {
                     <div className="contact-icon">📍</div>
                     <div className="contact-info">
                       <div className="contact-label">Address</div>
-                      <div className="contact-value">{formatAddress(agency.address)}</div>
+                      <div className="contact-value">{formatAddress(agency.location)}</div>
                     </div>
                   </div>
                   
-                  {agency.website && (
+                  {agency.contact?.website && (
                     <div className="contact-item">
                       <div className="contact-icon">🌐</div>
                       <div className="contact-info">
                         <div className="contact-label">Website</div>
                         <div className="contact-value">
-                          <a href={agency.website} target="_blank" rel="noopener noreferrer">
+                          <a href={agency.contact.website} target="_blank" rel="noopener noreferrer">
                             Visit Website
                           </a>
                         </div>
@@ -336,18 +362,18 @@ const AgencyDetails = () => {
           {activeTab === 'services' && (
             <div className="tab-content">
               <div className="info-card">
-                <h2>Services Offered</h2>
-                {agency.services && agency.services.length > 0 ? (
+                <h2>Specializations</h2>
+                {agency.specialization && agency.specialization.length > 0 ? (
                   <div className="services-grid">
-                    {agency.services.map((service, index) => (
+                    {agency.specialization.map((specialization, index) => (
                       <div key={index} className="service-item">
                         <div className="service-icon">🔧</div>
-                        <div className="service-name">{service}</div>
+                        <div className="service-name">{specialization}</div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="no-data">No services information available.</p>
+                  <p className="no-data">No specialization information available.</p>
                 )}
               </div>
             </div>

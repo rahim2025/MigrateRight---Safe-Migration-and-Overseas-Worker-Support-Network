@@ -50,6 +50,13 @@ const Navbar = () => {
 
           {isAuthenticated && (
             <>
+              {/* Agency Dashboard - only for agency users */}
+              {user?.role === 'agency' && (
+                <Link to="/agency-dashboard" className="nav-link">
+                  🏢 My Agency Dashboard
+                </Link>
+              )}
+              
               <Link to="/records" className="nav-link">
                 📁 My Records
               </Link>
@@ -110,6 +117,13 @@ const Navbar = () => {
 
           {isAuthenticated && (
             <>
+              {/* Agency Dashboard - only for agency users */}
+              {user?.role === 'agency' && (
+                <Link to="/agency-dashboard" className="mobile-nav-link" onClick={toggleMobileMenu}>
+                  🏢 My Agency Dashboard
+                </Link>
+              )}
+              
               <Link to="/records" className="mobile-nav-link" onClick={toggleMobileMenu}>
                 📁 My Records
               </Link>
