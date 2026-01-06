@@ -30,7 +30,7 @@ const countryGuideSchema = new mongoose.Schema(
       enum: ['Middle East', 'Southeast Asia', 'East Asia', 'Europe', 'North America', 'Other'],
       required: true,
     },
-    
+
     // Multi-language Overview
     overview: {
       en: {
@@ -404,6 +404,133 @@ const countryGuideSchema = new mongoose.Schema(
       ],
     },
 
+    // Civilian Rules and Laws
+    civilianRules: {
+      prohibitedItems: [
+        {
+          item: {
+            en: String,
+            bn: String,
+          },
+          penalty: {
+            en: String,
+            bn: String,
+          },
+          severity: {
+            type: String,
+            enum: ['low', 'medium', 'high', 'critical'],
+            default: 'medium',
+          },
+        },
+      ],
+      photographyRestrictions: {
+        en: String,
+        bn: String,
+      },
+      internetLaws: {
+        en: String,
+        bn: String,
+      },
+      relationshipLaws: {
+        en: String,
+        bn: String,
+      },
+      publicGatheringRules: {
+        en: String,
+        bn: String,
+      },
+      religiousSensitivityLaws: {
+        en: String,
+        bn: String,
+      },
+      womenSpecificLaws: {
+        en: String,
+        bn: String,
+      },
+    },
+
+    // Driving Guidelines
+    drivingGuidelines: {
+      licenseRequired: {
+        type: Boolean,
+        default: true,
+      },
+      internationalLicenseAccepted: {
+        type: Boolean,
+        default: false,
+      },
+      drivingSide: {
+        type: String,
+        enum: ['left', 'right'],
+      },
+      speedLimits: {
+        urban: Number,
+        highway: Number,
+        residential: Number,
+        unit: {
+          type: String,
+          default: 'km/h',
+        },
+        notes: {
+          en: String,
+          bn: String,
+        },
+      },
+      bloodAlcoholLimit: {
+        limit: Number,
+        notes: {
+          en: String,
+          bn: String,
+        },
+      },
+      seatBeltMandatory: {
+        type: Boolean,
+        default: true,
+      },
+      childSafetyRequired: {
+        type: Boolean,
+        default: false,
+      },
+      parkingRules: {
+        en: String,
+        bn: String,
+      },
+      accidentProcedure: {
+        en: String,
+        bn: String,
+      },
+      penalties: [
+        {
+          violation: {
+            en: String,
+            bn: String,
+          },
+          penalty: {
+            en: String,
+            bn: String,
+          },
+          severity: {
+            type: String,
+            enum: ['low', 'medium', 'high', 'critical'],
+          },
+        },
+      ],
+    },
+
+    // Media and Downloads
+    audioGuideUrl: {
+      type: String,
+    },
+    pdfGuideUrl: {
+      type: String,
+    },
+    lastAudioUpdate: {
+      type: Date,
+    },
+    lastPdfUpdate: {
+      type: Date,
+    },
+
     // Meta Information
     popularityRank: {
       type: Number,
@@ -447,11 +574,11 @@ countryGuideSchema.index({ 'salaryRanges.jobType': 1 });
 // Virtual: Average salary across all job types
 countryGuideSchema.virtual('averageSalary').get(function () {
   if (!this.salaryRanges || this.salaryRanges.length === 0) return null;
-  
+
   const total = this.salaryRanges.reduce((sum, range) => {
     return sum + (range.minSalary + range.maxSalary) / 2;
   }, 0);
-  
+
   return {
     average: Math.round(total / this.salaryRanges.length),
     currency: this.salaryRanges[0]?.currency || 'USD',
@@ -477,7 +604,7 @@ countryGuideSchema.methods.getSalaryForJob = function (jobType) {
  */
 countryGuideSchema.methods.getLocalizedContent = function (language = 'en') {
   const lang = ['en', 'bn'].includes(language) ? language : 'en';
-  
+
   return {
     overview: this.overview[lang],
     // Add more localized fields as needed

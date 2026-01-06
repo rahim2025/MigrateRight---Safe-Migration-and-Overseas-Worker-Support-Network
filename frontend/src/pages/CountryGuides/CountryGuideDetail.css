@@ -533,6 +533,175 @@
   font-size: 0.95rem;
 }
 
+/* Civilian Rules Section */
+.civilian-subsection {
+  margin-bottom: 2rem;
+}
+
+.prohibited-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.prohibited-item {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: white;
+  border-left: 4px solid;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.prohibited-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.prohibited-item.severity-critical {
+  border-left-color: #c53030;
+  background-color: #fff5f5;
+}
+
+.prohibited-item.severity-high {
+  border-left-color: #dd6b20;
+  background-color: #fffaf0;
+}
+
+.prohibited-item.severity-medium {
+  border-left-color: #d69e2e;
+  background-color: #fffff0;
+}
+
+.prohibited-item.severity-low {
+  border-left-color: #38a169;
+  background-color: #f0fff4;
+}
+
+.prohibited-item h4 {
+  margin: 0 0 0.75rem 0;
+  color: #1a202c;
+}
+
+.prohibited-item .penalty {
+  color: #4a5568;
+  margin: 0.5rem 0;
+}
+
+.severity-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.severity-badge.critical {
+  background-color: #c53030;
+  color: white;
+}
+
+.severity-badge.high {
+  background-color: #dd6b20;
+  color: white;
+}
+
+.severity-badge.medium {
+  background-color: #d69e2e;
+  color: white;
+}
+
+.severity-badge.low {
+  background-color: #38a169;
+  color: white;
+}
+
+/* Driving Guidelines Section */
+.driving-basics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.driving-card {
+  background-color: #ebf8ff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #3182ce;
+}
+
+.driving-card.warning {
+  background-color: #fffaf0;
+  border-left-color: #dd6b20;
+}
+
+.driving-card h3 {
+  margin: 0 0 1rem 0;
+  color: #2c5aa0;
+}
+
+.driving-card p {
+  margin: 0.5rem 0;
+  color: #2d3748;
+}
+
+.driving-card .note {
+  font-size: 0.9rem;
+  color: #718096;
+  font-style: italic;
+  margin-top: 0.75rem;
+}
+
+.driving-penalties {
+  margin-top: 2rem;
+}
+
+.penalties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.penalty-item {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: white;
+  border-left: 4px solid;
+}
+
+.penalty-item.severity-critical {
+  border-left-color: #c53030;
+  background-color: #fff5f5;
+}
+
+.penalty-item.severity-high {
+  border-left-color: #dd6b20;
+  background-color: #fffaf0;
+}
+
+.penalty-item.severity-medium {
+  border-left-color: #d69e2e;
+  background-color: #fffff0;
+}
+
+.penalty-item.severity-low {
+  border-left-color: #38a169;
+  background-color: #f0fff4;
+}
+
+.penalty-item h4 {
+  margin: 0 0 0.5rem 0;
+  color: #1a202c;
+}
+
+.penalty-item p {
+  margin: 0;
+  color: #4a5568;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .country-detail-container {

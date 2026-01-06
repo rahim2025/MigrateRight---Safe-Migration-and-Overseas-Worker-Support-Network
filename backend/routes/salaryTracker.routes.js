@@ -8,7 +8,7 @@ const router = express.Router();
 const multer = require('multer');
 const salaryTrackerController = require('../controllers/salaryTracker.controller');
 const { authenticate } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+// const { validateRequest } = require('../middleware/validation.middleware'); // Removed: undefined
 
 // ==================== Multer Configuration ====================
 // Use memory storage for multer - files will be processed directly
@@ -58,7 +58,7 @@ router.use(authenticate);
  *   notes: string (optional)
  * }
  */
-router.post('/', validateRequest, salaryTrackerController.createSalaryRecord);
+router.post('/', salaryTrackerController.createSalaryRecord);
 
 // ==================== READ OPERATIONS ====================
 
@@ -101,7 +101,7 @@ router.get('/:id', salaryTrackerController.getSalaryRecordById);
  *   notes: string
  * }
  */
-router.patch('/:id', validateRequest, salaryTrackerController.updateSalaryRecord);
+router.patch('/:id', salaryTrackerController.updateSalaryRecord);
 
 // ==================== PROOF DOCUMENT OPERATIONS ====================
 
@@ -136,7 +136,7 @@ router.delete('/:id/proof/:docId', salaryTrackerController.deleteProofDocument);
  *   reason: string (required)
  * }
  */
-router.patch('/:id/dispute', validateRequest, salaryTrackerController.markAsDisputed);
+router.patch('/:id/dispute', salaryTrackerController.markAsDisputed);
 
 /**
  * PATCH /api/salary-tracker/:id/archive

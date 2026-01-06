@@ -28,10 +28,11 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: {
-      values: ['aspiring_migrant', 'worker_abroad', 'family_member', 'recruitment_admin', 'platform_admin'],
+      values: ['aspiring_migrant', 'worker_abroad', 'family_member', 'recruitment_admin', 'platform_admin', 'user', 'agency'],
       message: '{VALUE} is not a valid role'
     },
-    required: [true, 'User role is required']
+    required: [true, 'User role is required'],
+    default: 'user'
   },
   accountStatus: {
     type: String,

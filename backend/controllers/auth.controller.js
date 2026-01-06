@@ -8,6 +8,7 @@ const { asyncHandler } = require('../middleware/error.middleware');
 const { BadRequestError, UnauthorizedError } = require('../utils/errors');
 const { generateTokenPair, verifyRefreshToken, generateAccessToken, blacklistToken } = require('../utils/jwt.utils');
 const User = require('../models/User');
+const AgencyDetails = require('../models/AgencyDetails.model');
 const emailService = require('../services/email.service');
 const config = require('../config/env');
 const logger = require('../utils/logger');
@@ -18,7 +19,7 @@ const logger = require('../utils/logger');
  * @access  Public
  */
 const register = asyncHandler(async (req, res) => {
-  const { email, password, phoneNumber, role, fullName, dateOfBirth, gender, location } = req.body;
+  const { email, password, phoneNumber, role, fullName, dateOfBirth, gender, location, migrationStatus } = req.body;
 
   // Check existing user
   const existingUser = await User.findOne({ $or: [{ email }, { phoneNumber }] });
@@ -28,7 +29,7 @@ const register = asyncHandler(async (req, res) => {
 
   // Create user
   const user = await User.create({
-    email, password, phoneNumber, role, fullName, dateOfBirth, gender, location,
+    email, password, phoneNumber, role, fullName, dateOfBirth, gender, location, migrationStatus,
     accountStatus: 'pending',
   });
 
@@ -84,12 +85,100 @@ const login = asyncHandler(async (req, res) => {
   const tokens = generateTokenPair(user);
   user.password = undefined;
 
-  logger.info('User logged in', { userId: user._id, email: user.email });
+  logger.info('User logged in', { userId: user._id, email: user.email, role: user.role });
 
   res.status(200).json({
     success: true,
     message: 'Login successful',
-    data: { user, token: tokens.accessToken, refreshToken: tokens.refreshToken },
+    data: { user, token: tokens.accessToken, refreshToken: tokens.refreshToken, role: user.role },
+  });
+});
+
+/**
+ * @desc    Register new agency
+ * @route   POST /api/auth/register-agency
+ * @access  Public
+ */
+const registerAgency = asyncHandler(async (req, res) => {
+  const { 
+    email, 
+    password, 
+    companyName, 
+    tradeLicenseNumber, 
+    tinNumber, 
+    incomeLevel, 
+    businessAddress, 
+    contactPersonName, 
+    phoneNumber 
+  } = req.body;
+
+  // Check existing user
+  const existingUser = await User.findOne({ $or: [{ email }, { phoneNumber }] });
+  if (existingUser) {
+    throw new BadRequestError(existingUser.email === email ? 'Email already registered' : 'Phone number already registered');
+  }
+
+  // Check existing agency with same license or TIN
+  const existingAgency = await AgencyDetails.findOne({ 
+    $or: [{ tradeLicenseNumber }, { tinNumber }] 
+  });
+  if (existingAgency) {
+    throw new BadRequestError('Trade license or TIN number already registered');
+  }
+
+  // Create user account with agency role
+  const user = await User.create({
+    email,
+    password,
+    phoneNumber,
+    role: 'agency',
+    fullName: {
+      firstName: contactPersonName.split(' ')[0] || contactPersonName,
+      lastName: contactPersonName.split(' ').slice(1).join(' ') || contactPersonName
+    },
+    dateOfBirth: new Date('2000-01-01'), // Placeholder for agency
+    gender: 'other',
+    accountStatus: 'pending',
+  });
+
+  // Create agency details
+  const agencyDetails = await AgencyDetails.create({
+    userId: user._id,
+    companyName,
+    tradeLicenseNumber,
+    tinNumber,
+    incomeLevel,
+    businessAddress,
+    contactPersonName,
+    phoneNumber
+  });
+
+  // Generate verification token
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  user.emailVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+  user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  await user.save({ validateBeforeSave: false });
+
+  // Send verification email
+  const verificationUrl = `${config.frontendUrl}/verify-email/${verificationToken}`;
+  await emailService.sendEmailVerificationEmail(user.email, verificationToken, verificationUrl);
+
+  // Generate tokens
+  const tokens = generateTokenPair(user);
+
+  user.password = undefined;
+
+  logger.info('Agency registered', { userId: user._id, email: user.email, companyName });
+
+  res.status(201).json({
+    success: true,
+    message: 'Agency registration successful. Please verify your email.',
+    data: { 
+      user, 
+      agencyDetails,
+      token: tokens.accessToken, 
+      refreshToken: tokens.refreshToken 
+    },
   });
 });
 
@@ -256,6 +345,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 module.exports = {
   register,
+  registerAgency,
   login,
   logout,
   getCurrentUser,

@@ -6,6 +6,7 @@ const express = require('express');
 const router = express.Router();
 const {
   register,
+  registerAgency,
   login,
   logout,
   getCurrentUser,
@@ -34,6 +35,9 @@ router.options('*', (req, res) => {
 
 // POST /api/auth/register
 router.post('/register', authLimiter, validateRegister, register);
+
+// POST /api/auth/register-agency
+router.post('/register-agency', authLimiter, registerAgency);
 
 // POST /api/auth/login
 router.post('/login', authLimiter, validateLogin, login);

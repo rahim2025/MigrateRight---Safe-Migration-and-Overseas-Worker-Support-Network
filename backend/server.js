@@ -12,6 +12,7 @@ const { connectDB } = require('./config/database');
 const logger = require('./utils/logger');
 const healthRoutes = require('./routes/health.routes');
 const agencyRoutes = require('./routes/agency.routes');
+const agencyManagementRoutes = require('./routes/agencyManagement.routes');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const calculatorRoutes = require('./routes/calculator.routes');
@@ -22,6 +23,7 @@ const salaryTrackerRoutes = require('./routes/salaryTracker.routes');
 const workerRoutes = require('./src/routes/workerProfile.routes');
 const agencyReviewRoutes = require('./src/routes/agencyReview.routes');
 const agencyComplaintRoutes = require('./src/routes/agencyComplaint.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 const {
   requestLogger,
@@ -130,6 +132,9 @@ app.use('/api/users', userRoutes);
 // Agency Routes
 app.use('/api/agencies', agencyRoutes);
 
+// Agency Management Routes (New - for agency dashboard)
+app.use('/api/agency-management', agencyManagementRoutes);
+
 // Agency Review Routes (extends /api/agencies/:id/reviews)
 app.use('/api/agencies', agencyReviewRoutes);
 
@@ -153,6 +158,15 @@ app.use('/api/salary-tracker', salaryTrackerRoutes);
 
 // Legacy Salary Routes
 app.use('/api/salary', salaryRoutes);
+
+// NEW: Work Records Routes
+app.use('/api/work-records', require('./routes/workRecord.routes'));
+
+// NEW: Salary Records Routes (User Manual Entry)
+app.use('/api/salary-records', require('./routes/salaryRecord.routes'));
+
+// Dashboard Routes (New)
+app.use('/api/dashboard', dashboardRoutes);
 
 // Welcome Route
 app.get('/', (req, res) => {
@@ -195,7 +209,7 @@ const server = app.listen(PORT, () => {
   logger.info(`Port: ${PORT}`);
   logger.info(`URL: http://localhost:${PORT}`);
   logger.info(`Health Check: http://localhost:${PORT}/api/health`);
-  
+
   console.log(`
 ╔═══════════════════════════════════════════════════════╗
 ║                                                       ║

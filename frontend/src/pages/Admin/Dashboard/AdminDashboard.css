@@ -1,0 +1,410 @@
+/* Admin Dashboard Styles - Vibrant Theme */
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #f6f8fb 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.dashboard-header {
+    margin-bottom: 2.5rem;
+    background: linear-gradient(to right, #2d3748, #4a5568);
+    -webkit-background-clip: text;
+    color: transparent;
+    padding-bottom: 0.5rem;
+}
+
+.dashboard-header h1 {
+    font-size: 2.2rem;
+    color: #1a202c;
+    /* Fallback */
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(90deg, #3182ce 0%, #2b6cb0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dashboard-header p {
+    color: #718096;
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+}
+
+/* Grid Layouts */
+.dashboard-row {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+
+    .grid-4,
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Card Base Styles - Glassmorphism & Shadow */
+.dashboard-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    position: relative;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Metric Cards - Vibrant Gradients */
+/* Card 1: Users (Blue/Teal Gradient) */
+.dashboard-card:nth-child(1) .metric-icon {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    color: #1e88e5;
+}
+
+/* Card 2: Agencies (Purple/Pink Gradient) */
+.dashboard-card:nth-child(2) .metric-icon {
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    color: #8e24aa;
+}
+
+/* Card 3: Complaints (Orange/Red Gradient) */
+.dashboard-card:nth-child(3) .metric-icon {
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    color: #e53935;
+}
+
+/* Card 4: Activity (Green/Teal Gradient) */
+.dashboard-card:nth-child(4) .metric-icon {
+    background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+    color: #00897b;
+}
+
+.metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.metric-title {
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.metric-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.03em;
+}
+
+.metric-trend {
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+}
+
+.trend-up {
+    color: #10b981;
+    background-color: rgba(16, 185, 129, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.trend-down {
+    color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    padding: 0.35rem 0;
+    color: #475569;
+    border-bottom: 1px dashed #f1f5f9;
+}
+
+.breakdown-item strong {
+    color: #1e293b;
+}
+
+.badge-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+.bg-green {
+    background-color: #10b981;
+}
+
+.bg-yellow {
+    background-color: #f59e0b;
+}
+
+.bg-red {
+    background-color: #ef4444;
+}
+
+.bg-orange {
+    background-color: #f97316;
+}
+
+.card-action {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+    transition: color 0.2s;
+}
+
+.btn-link:hover {
+    color: #2563eb;
+}
+
+.btn-link::after {
+    content: '→';
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: all 0.2s;
+}
+
+.btn-link:hover::after {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
+/* Management Cards - Special Styling */
+.management-card {
+    border-left-width: 0 !important;
+    /* Override inline styles */
+    position: relative;
+    overflow: hidden;
+}
+
+.management-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+}
+
+/* Country Guides Card */
+.management-card:first-child::before {
+    background: linear-gradient(to bottom, #3b82f6, #60a5fa);
+}
+
+.management-card:first-child .metric-icon {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+/* General News Card */
+.management-card:last-child::before {
+    background: linear-gradient(to bottom, #94a3b8, #cbd5e1);
+}
+
+
+/* Section Header */
+.section-header {
+    font-size: 1.25rem;
+    color: #334155;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-header::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 24px;
+    background: #3b82f6;
+    border-radius: 4px;
+}
+
+/* Action Cards */
+.action-card {
+    padding: 1.25rem;
+    background: #ffffff;
+}
+
+.action-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    font-size: 1.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.icon-orange {
+    background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+    color: #ea580c;
+}
+
+.icon-red {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #dc2626;
+}
+
+.icon-purple {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    color: #9333ea;
+}
+
+.action-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.2rem;
+}
+
+.action-meta {
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.btn-action {
+    width: 100%;
+    padding: 0.6rem;
+    margin-top: 0.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    transition: transform 0.1s;
+}
+
+.btn-action:active {
+    transform: scale(0.98);
+}
+
+.btn-urgent {
+    background: linear-gradient(to right, #ea580c, #f97316);
+    color: white;
+    box-shadow: 0 2px 4px rgba(234, 88, 12, 0.3);
+}
+
+.btn-neutral {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.btn-neutral:hover {
+    background: #e2e8f0;
+}
+
+
+/* Charts */
+.chart-title {
+    font-size: 1.1rem;
+    color: #334155;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.chart-container {
+    background: #fff;
+    /* Ensure white bg for svg contrast */
+}
+
+/* Activity Feed */
+.feed-item {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.feed-icon {
+    font-size: 1.4rem;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+}
+
+.feed-message {
+    font-size: 1rem;
+    color: #334155;
+}
+
+.feed-message strong {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.feed-time {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}

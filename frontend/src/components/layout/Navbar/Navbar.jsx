@@ -47,6 +47,21 @@ const Navbar = () => {
             {t('navigation.calculator')}
           </Link>
 
+
+          {isAuthenticated && (
+            <>
+              <Link to="/records" className="nav-link">
+                📁 My Records
+              </Link>
+              <Link to="/salary-tracker" className="nav-link">
+                💰 Salary Tracker
+              </Link>
+              <Link to="/admin/dashboard" className="nav-link">
+                Admin Panel
+              </Link>
+            </>
+          )}
+
           {isAuthenticated ? (
             <>
               <Link to="/profile" className="nav-link">
@@ -91,6 +106,21 @@ const Navbar = () => {
           <Link to="/calculator" className="mobile-nav-link" onClick={toggleMobileMenu}>
             {t('navigation.calculator')}
           </Link>
+
+
+          {isAuthenticated && (
+            <>
+              <Link to="/records" className="mobile-nav-link" onClick={toggleMobileMenu}>
+                📁 My Records
+              </Link>
+              <Link to="/salary-tracker" className="mobile-nav-link" onClick={toggleMobileMenu}>
+                💰 Salary Tracker
+              </Link>
+              <Link to="/admin/dashboard" className="mobile-nav-link" onClick={toggleMobileMenu}>
+                Admin Panel
+              </Link>
+            </>
+          )}
 
           {isAuthenticated ? (
             <>

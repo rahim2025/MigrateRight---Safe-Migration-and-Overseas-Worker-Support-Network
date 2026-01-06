@@ -39,6 +39,15 @@ const QuickAccessGrid = ({ language = 'en' }) => {
           color: 'blue'
         },
         {
+          id: 'browse-agencies',
+          icon: '🏢',
+          title: 'Browse Agencies',
+          description: 'View verified recruitment agencies',
+          button: 'Browse Now',
+          link: '/browse-agencies',
+          color: 'teal'
+        },
+        {
           id: 'calculator',
           icon: '🧮',
           title: 'Fee Calculator',
@@ -96,6 +105,15 @@ const QuickAccessGrid = ({ language = 'en' }) => {
           button: 'এখনই খুঁজুন',
           link: '/agencies',
           color: 'blue'
+        },
+        {
+          id: 'browse-agencies',
+          icon: '🏢',
+          title: 'এজেন্সি ব্রাউজ করুন',
+          description: 'যাচাইকৃত নিয়োগ এজেন্সি দেখুন',
+          button: 'ব্রাউজ করুন',
+          link: '/browse-agencies',
+          color: 'teal'
         },
         {
           id: 'calculator',

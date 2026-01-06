@@ -15,7 +15,7 @@ const logger = require('../utils/logger');
  */
 const getCurrentUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.userId);
-  
+
   if (!user) {
     throw new NotFoundError('User', 'User not found');
   }
@@ -41,6 +41,7 @@ const updateCurrentUser = asyncHandler(async (req, res) => {
     'profilePicture',
     'language',
     'notifications',
+    'migrationStatus',
   ];
 
   const updates = Object.keys(req.body);

@@ -26,6 +26,24 @@ const authService = {
   },
 
   /**
+   * Register a new agency
+   */
+  registerAgency: async (agencyData) => {
+    try {
+      const response = await api.post('/auth/register-agency', agencyData);
+      if (response?.data?.token) {
+        localStorage.setItem('authToken', response.data.token);
+        if (response.data.refreshToken) {
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+        }
+      }
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
    * Login user
    */
   login: async (credentials) => {

@@ -8,6 +8,8 @@ import ForgotPassword from '@pages/Auth/ForgotPassword';
 import ResetPassword from '@pages/Auth/ResetPassword';
 import SearchAgencies from '@pages/Agencies/SearchAgencies';
 import AgencyDetails from '@pages/Agencies/AgencyDetails';
+import AgenciesList from '@pages/Agencies/AgenciesList';
+import AgencyProfile from '@pages/Agencies/AgencyProfile';
 import UserProfile from '@pages/Profile/UserProfile';
 import NotFound from '@pages/NotFound/NotFound';
 
@@ -21,10 +23,24 @@ import CostCalculator from '@pages/CostCalculator';
 // Worker Dashboard page
 import WorkerDashboard from '@pages/WorkerDashboard';
 
+// Agency Dashboard page
+import AgencyDashboard from '@pages/AgencyDashboard/AgencyDashboard';
+
+// New Features: Records & Salary
+import MyRecords from '@pages/Records/MyRecords';
+import SalaryTracker from '@pages/Records/SalaryTracker';
+
 // Placeholder pages for future features
 import SavedAgencies from '@pages/Placeholder/SavedAgencies';
-import Documents from '@pages/Placeholder/Documents';
 import Help from '@pages/Placeholder/Help';
+
+// Admin Pages
+import AdminDashboard from '@pages/Admin/Dashboard/AdminDashboard';
+import AdminCountryGuideList from '@pages/Admin/CountryGuides/CountryGuideList';
+import CountryGuideForm from '@pages/Admin/CountryGuides/CountryGuideForm';
+import AdminUserList from '@pages/Admin/Users/AdminUserList';
+import AdminAgencyList from '@pages/Admin/Agencies/AdminAgencyList';
+import AdminComplaintList from '@pages/Admin/Complaints/AdminComplaintList';
 
 import ProtectedRoute from './ProtectedRoute';
 
@@ -55,12 +71,85 @@ const AppRoutes = () => {
         <Route path="calculator" element={<CostCalculator />} />
         <Route path="cost-calculator" element={<CostCalculator />} />
 
+        {/* Agencies Browse Routes (Public) */}
+        <Route path="browse-agencies" element={<AgenciesList />} />
+        <Route path="agency-profile/:id" element={<AgencyProfile />} />
+
         {/* Protected Routes */}
         <Route
           path="dashboard"
           element={
             <ProtectedRoute>
               <WorkerDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Agency Dashboard Route (Protected - Agency Only) */}
+        <Route
+          path="agency-dashboard"
+          element={
+            <ProtectedRoute>
+              <AgencyDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Country Guide Routes */}
+        <Route
+          path="admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/country-guides"
+          element={
+            <ProtectedRoute>
+              <AdminCountryGuideList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/country-guides/new"
+          element={
+            <ProtectedRoute>
+              <CountryGuideForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/country-guides/edit/:id"
+          element={
+            <ProtectedRoute>
+              <CountryGuideForm />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="admin/users"
+          element={
+            <ProtectedRoute>
+              <AdminUserList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/agencies"
+          element={
+            <ProtectedRoute>
+              <AdminAgencyList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/complaints"
+          element={
+            <ProtectedRoute>
+              <AdminComplaintList />
             </ProtectedRoute>
           }
         />
@@ -83,10 +172,18 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="documents"
+          path="records"
           element={
             <ProtectedRoute>
-              <Documents />
+              <MyRecords />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="salary-tracker"
+          element={
+            <ProtectedRoute>
+              <SalaryTracker />
             </ProtectedRoute>
           }
         />

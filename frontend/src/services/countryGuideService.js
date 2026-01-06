@@ -35,10 +35,11 @@ export const getAllGuides = async (params = {}) => {
  */
 export const getGuideByCountry = async (country, language = 'en') => {
   try {
+    // API interceptor already returns response.data, so response is the data object
     const response = await api.get(`/country-guides/${encodeURIComponent(country)}`, {
       params: { language },
     });
-    return response.data;
+    return response;
   } catch (error) {
     throw error.response?.data || error;
   }

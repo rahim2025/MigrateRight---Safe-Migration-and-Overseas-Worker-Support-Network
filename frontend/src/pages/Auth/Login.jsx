@@ -34,8 +34,16 @@ const Login = () => {
     setError('');
 
     try {
-      await login(formData);
-      navigate('/');
+      const response = await login(formData);
+      
+      // Check user role and redirect accordingly
+      const userRole = response?.data?.user?.role || response?.data?.role;
+      
+      if (userRole === 'agency') {
+        navigate('/agency-dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally {

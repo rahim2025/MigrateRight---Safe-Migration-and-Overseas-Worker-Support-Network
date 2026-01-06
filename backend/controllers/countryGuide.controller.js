@@ -78,17 +78,23 @@ const getGuideByCountry = asyncHandler(async (req, res) => {
   const { country } = req.params;
   const { language = 'en' } = req.query;
 
+  // Decode URL-encoded country name and handle various formats
+  const decodedCountry = decodeURIComponent(country).trim();
+
+  // Create flexible regex pattern for matching
+  const escapedCountry = decodedCountry.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
   // Find guide by either country name or country code (case-insensitive search)
   const guide = await CountryGuide.findOne({
     $or: [
-      { country: { $regex: new RegExp(`^${country}$`, 'i') } },
-      { countryCode: { $regex: new RegExp(`^${country}$`, 'i') } }
+      { country: { $regex: new RegExp(`^${escapedCountry}$`, 'i') } },
+      { countryCode: { $regex: new RegExp(`^${escapedCountry}$`, 'i') } }
     ],
     isActive: true,
   }).select('-__v');
 
   if (!guide) {
-    throw new NotFoundError(`Country guide not found for: ${country}`);
+    throw new NotFoundError(`Country guide not found for: ${decodedCountry}`);
   }
 
   // Increment view count

@@ -112,8 +112,18 @@ const UserProfile = () => {
           <div className="profile-sidebar">
             <div className="profile-avatar">
               <div className="avatar-circle">
-                {profile.fullName.firstName[0]}
-                {profile.fullName.lastName[0]}
+                {profile.profilePicture ? (
+                  <img src={profile.profilePicture} alt="Profile" className="avatar-img" />
+                ) : (
+                  <>
+                    {profile.fullName.firstName[0]}
+                    {profile.fullName.lastName[0]}
+                  </>
+                )}
+                {/* Overlay for "Add Option" */}
+                <div className="avatar-overlay" onClick={() => alert('Profile picture upload coming soon!')}>
+                  <span>📷</span>
+                </div>
               </div>
               <h2>
                 {profile.fullName.firstName} {profile.fullName.lastName}
@@ -127,9 +137,10 @@ const UserProfile = () => {
                   </span>
                 </div>
                 <div className="stat">
-                  <span className="stat-label">Verification</span>
-                  <span className={`stat-value ${profile.isVerified ? 'verified' : 'unverified'}`}>
-                    {profile.isVerified ? '✓ Verified' : 'Not Verified'}
+                  <span className="stat-label">Status</span>
+                  <span className={`stat-value ${profile.role === 'worker_abroad' ? 'verified' : 'pending-status'}`}
+                    style={{ color: profile.role === 'worker_abroad' ? '#38a169' : '#dd6b20' }}>
+                    {profile.role === 'worker_abroad' ? 'Migrated' : 'Going to migrate'}
                   </span>
                 </div>
               </div>
@@ -242,6 +253,42 @@ const UserProfile = () => {
               {/* Location */}
               <section className="form-section">
                 <h3>Location</h3>
+
+                <div className="form-group">
+                  <label>Home Address (Bangladesh)</label>
+                  {editing ? (
+                    <input
+                      type="text"
+                      name="location.bangladeshAddress.detailedAddress"
+                      value={formData.location?.bangladeshAddress?.detailedAddress || ''}
+                      onChange={handleChange}
+                      className="form-input"
+                      placeholder="Village, House No, etc."
+                    />
+                  ) : (
+                    <p className="form-value">
+                      {profile.location?.bangladeshAddress?.detailedAddress || 'Not specified'}
+                    </p>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label>Current Address (Abroad/Local)</label>
+                  {editing ? (
+                    <input
+                      type="text"
+                      name="location.currentLocation.address"
+                      value={formData.location?.currentLocation?.address || ''}
+                      onChange={handleChange}
+                      className="form-input"
+                      placeholder="Current residence address"
+                    />
+                  ) : (
+                    <p className="form-value">
+                      {profile.location?.currentLocation?.address || 'Not specified'}
+                    </p>
+                  )}
+                </div>
 
                 <div className="form-group">
                   <label>District</label>

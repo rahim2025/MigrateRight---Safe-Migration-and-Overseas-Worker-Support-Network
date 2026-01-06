@@ -83,7 +83,7 @@ const CountryGuideDetail = () => {
         <button className="back-button" onClick={() => navigate('/country-guides')}>
           ← {t?.back || 'Back'}
         </button>
-        
+
         <div className="header-content">
           <div className="header-title">
             <span className="header-flag">{guide.flagEmoji}</span>
@@ -92,7 +92,7 @@ const CountryGuideDetail = () => {
               <p className="header-region">{guide.region}</p>
             </div>
           </div>
-          
+
           {!guide.isUpToDate?.() && (
             <div className="update-warning">
               ⚠️ {t?.infoMayBeOutdated || 'Information may be outdated. Please verify with official sources.'}
@@ -126,6 +126,18 @@ const CountryGuideDetail = () => {
           onClick={() => scrollToSection('legal')}
         >
           {t?.legalRights || 'Legal Rights'}
+        </button>
+        <button
+          className={activeSection === 'civilian' ? 'active' : ''}
+          onClick={() => scrollToSection('civilian')}
+        >
+          {t?.civilianRules || 'Civilian Rules'}
+        </button>
+        <button
+          className={activeSection === 'driving' ? 'active' : ''}
+          onClick={() => scrollToSection('driving')}
+        >
+          {t?.drivingGuidelines || 'Driving'}
         </button>
         <button
           className={activeSection === 'emergency' ? 'active' : ''}
@@ -174,7 +186,7 @@ const CountryGuideDetail = () => {
         {/* Culture Section */}
         <section id="culture" className="content-section">
           <h2>{t?.cultureAndCustoms || 'Culture & Customs'}</h2>
-          
+
           {guide.culture?.language && (
             <div className="culture-subsection">
               <h3>{t?.languages || 'Languages'}</h3>
@@ -204,7 +216,7 @@ const CountryGuideDetail = () => {
           {guide.culture?.customs && (
             <div className="culture-subsection">
               <h3>{t?.customsAndEtiquette || 'Customs & Etiquette'}</h3>
-              
+
               {guide.culture.customs.dressCode?.[language] && (
                 <div className="custom-item">
                   <h4>{t?.dressCode || 'Dress Code'}</h4>
@@ -258,11 +270,11 @@ const CountryGuideDetail = () => {
         {/* Legal Rights Section */}
         <section id="legal" className="content-section">
           <h2>{t?.legalRightsAndProtections || 'Legal Rights & Protections'}</h2>
-          
+
           {guide.legalRights?.laborLaws && (
             <div className="legal-subsection">
               <h3>{t?.laborLaws || 'Labor Laws'}</h3>
-              
+
               <div className="legal-grid">
                 {guide.legalRights.laborLaws.workingHours && (
                   <div className="legal-card">
@@ -340,14 +352,109 @@ const CountryGuideDetail = () => {
           )}
         </section>
 
+        {/* Civilian Rules Section */}
+        <section id="civilian" className="content-section">
+          <h2>⚖️ {t?.civilianRulesAndLaws || 'Civilian Rules & Laws'}</h2>
+
+          {guide.civilianRules?.prohibitedItems?.length > 0 && (
+            <div className="civilian-subsection">
+              <h3>{t?.prohibitedItems || 'Prohibited Items & Substances'}</h3>
+              <div className="prohibited-items-grid">
+                {guide.civilianRules.prohibitedItems.map((item, idx) => (
+                  <div key={idx} className={`prohibited-item severity-${item.severity}`}>
+                    <h4>🚫 {item.item?.[language]}</h4>
+                    <p className="penalty"><strong>{t?.penalty || 'Penalty'}:</strong> {item.penalty?.[language]}</p>
+                    <span className={`severity-badge ${item.severity}`}>
+                      {item.severity === 'critical' && '🔴 Critical'}
+                      {item.severity === 'high' && '🟠 High'}
+                      {item.severity === 'medium' && '🟡 Medium'}
+                      {item.severity === 'low' && '🟢 Low'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {guide.civilianRules?.photographyRestrictions?.[language] && (
+            <div className="civilian-subsection">
+              <h3>📸 {t?.photographyRestrictions || 'Photography Restrictions'}</h3>
+              <p>{guide.civilianRules.photographyRestrictions[language]}</p>
+            </div>
+          )}
+
+          {guide.civilianRules?.internetLaws?.[language] && (
+            <div className="civilian-subsection">
+              <h3>🌐 {t?.internetLaws || 'Internet & Social Media Laws'}</h3>
+              <p>{guide.civilianRules.internetLaws[language]}</p>
+            </div>
+          )}
+        </section>
+
+        {/* Driving Guidelines Section */}
+        <section id="driving" className="content-section">
+          <h2>🚗 {t?.drivingGuidelines || 'Driving Guidelines'}</h2>
+
+          {guide.drivingGuidelines && (
+            <>
+              <div className="driving-basics">
+                <div className="driving-card">
+                  <h3>{t?.licenseRequirements || 'License Requirements'}</h3>
+                  <p><strong>{t?.localLicense || 'Local License Required'}:</strong> {guide.drivingGuidelines.licenseRequired ? t?.yes || 'Yes' : t?.no || 'No'}</p>
+                  <p><strong>{t?.internationalLicense || 'International License Accepted'}:</strong> {guide.drivingGuidelines.internationalLicenseAccepted ? t?.yes || 'Yes' : t?.no || 'No'}</p>
+                  {guide.drivingGuidelines.drivingSide && (
+                    <p><strong>{t?.drivingSide || 'Driving Side'}:</strong> {guide.drivingGuidelines.drivingSide === 'right' ? t?.rightSide || 'Right' : t?.leftSide || 'Left'}</p>
+                  )}
+                </div>
+
+                {guide.drivingGuidelines.speedLimits && (
+                  <div className="driving-card">
+                    <h3>{t?.speedLimits || 'Speed Limits'}</h3>
+                    {guide.drivingGuidelines.speedLimits.urban && (
+                      <p>🏙️ <strong>{t?.urban || 'Urban'}:</strong> {guide.drivingGuidelines.speedLimits.urban} {guide.drivingGuidelines.speedLimits.unit}</p>
+                    )}
+                    {guide.drivingGuidelines.speedLimits.highway && (
+                      <p>🛣️ <strong>{t?.highway || 'Highway'}:</strong> {guide.drivingGuidelines.speedLimits.highway} {guide.drivingGuidelines.speedLimits.unit}</p>
+                    )}
+                  </div>
+                )}
+
+                {guide.drivingGuidelines.bloodAlcoholLimit && (
+                  <div className="driving-card warning">
+                    <h3>⚠️ {t?.bloodAlcoholLimit || 'Blood Alcohol Limit'}</h3>
+                    <p><strong>{guide.drivingGuidelines.bloodAlcoholLimit.limit}%</strong></p>
+                    {guide.drivingGuidelines.bloodAlcoholLimit.notes?.[language] && (
+                      <p className="note">{guide.drivingGuidelines.bloodAlcoholLimit.notes[language]}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {guide.drivingGuidelines.penalties?.length > 0 && (
+                <div className="driving-penalties">
+                  <h3>{t?.commonViolations || 'Common Violations & Penalties'}</h3>
+                  <div className="penalties-grid">
+                    {guide.drivingGuidelines.penalties.map((penalty, idx) => (
+                      <div key={idx} className={`penalty-item severity-${penalty.severity}`}>
+                        <h4>{penalty.violation?.[language]}</h4>
+                        <p>{penalty.penalty?.[language]}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </section>
+
         {/* Emergency Contacts Section */}
         <section id="emergency" className="content-section emergency-section">
           <h2>🆘 {t?.emergencyContacts || 'Emergency Contacts'}</h2>
-          
+
           {guide.emergencyContacts?.bangladeshiEmbassy && (
             <div className="emergency-card highlight">
               <h3>🇧🇩 {guide.emergencyContacts.bangladeshiEmbassy.name?.[language] || t?.bangladeshiEmbassy || 'Bangladeshi Embassy'}</h3>
-              
+
               {guide.emergencyContacts.bangladeshiEmbassy.phone?.length > 0 && (
                 <p>
                   <strong>📞 {t?.phone || 'Phone'}:</strong>{' '}
@@ -458,7 +565,7 @@ const CountryGuideDetail = () => {
         {/* Living Costs Section */}
         <section id="living" className="content-section">
           <h2>💰 {t?.estimatedLivingCosts || 'Estimated Living Costs'}</h2>
-          
+
           {guide.livingCosts && (
             <div className="living-costs-grid">
               {guide.livingCosts.accommodation && (
