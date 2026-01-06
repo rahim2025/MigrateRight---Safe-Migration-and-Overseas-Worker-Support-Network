@@ -23,6 +23,9 @@ import CostCalculator from '@pages/CostCalculator';
 // Worker Dashboard page
 import WorkerDashboard from '@pages/WorkerDashboard';
 
+// Emergency SOS page
+import EmergencySOS from '@pages/EmergencySOS/EmergencySOS';
+
 // Agency Dashboard page
 import AgencyDashboard from '@pages/AgencyDashboard/AgencyDashboard';
 
@@ -41,6 +44,7 @@ import CountryGuideForm from '@pages/Admin/CountryGuides/CountryGuideForm';
 import AdminUserList from '@pages/Admin/Users/AdminUserList';
 import AdminAgencyList from '@pages/Admin/Agencies/AdminAgencyList';
 import AdminComplaintList from '@pages/Admin/Complaints/AdminComplaintList';
+import AdminEmergencyAlerts from '@pages/Admin/EmergencyAlerts/AdminEmergencyAlerts';
 
 import ProtectedRoute from './ProtectedRoute';
 
@@ -91,6 +95,16 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <AgencyDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Emergency SOS Route (Protected - All users) */}
+        <Route
+          path="emergency-sos"
+          element={
+            <ProtectedRoute>
+              <EmergencySOS />
             </ProtectedRoute>
           }
         />
@@ -150,6 +164,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <AdminComplaintList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/emergencies"
+          element={
+            <ProtectedRoute>
+              <AdminEmergencyAlerts />
             </ProtectedRoute>
           }
         />

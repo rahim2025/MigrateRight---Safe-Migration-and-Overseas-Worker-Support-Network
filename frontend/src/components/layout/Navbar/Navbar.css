@@ -79,6 +79,108 @@
   color: var(--danger-color);
 }
 
+/* Emergency SOS Button Styling */
+.nav-link.emergency-btn {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: white;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+  animation: pulse-red 2s ease-in-out infinite;
+}
+
+.nav-link.emergency-btn:hover {
+  background: linear-gradient(135deg, #b91c1c, #991b1b);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.5);
+}
+
+@keyframes pulse-red {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(220, 38, 38, 0.6);
+  }
+}
+
+.mobile-nav-link.emergency-btn {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: white;
+  font-weight: 700;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  text-align: center;
+  border: none;
+}
+
+/* Admin Emergency Alerts Link */
+.nav-link.admin-emergency {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+  position: relative;
+}
+
+.nav-link.admin-emergency:hover {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+}
+
+.mobile-nav-link.admin-emergency {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  font-weight: 600;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  text-align: center;
+  border: none;
+  position: relative;
+}
+
+/* Notification Badge */
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #dc2626;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 12px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.mobile-nav-link .notification-badge {
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+}
+
 .mobile-menu-btn {
   display: none;
   background: none;

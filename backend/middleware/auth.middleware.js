@@ -41,16 +41,6 @@ const authenticate = asyncHandler(async (req, res, next) => {
       throw new UnauthorizedError('User not found');
     }
     
-    // Check account status
-    if (user.accountStatus !== 'active' && user.accountStatus !== 'pending') {
-      logger.warn('Authentication failed - Account inactive', {
-        userId: user._id,
-        status: user.accountStatus,
-        ip: req.ip,
-      });
-      throw new UnauthorizedError(`Account is ${user.accountStatus}`);
-    }
-    
     // Check if password changed after token issued
     if (user.changedPasswordAfter && user.changedPasswordAfter(decoded.iat)) {
       logger.warn('Authentication failed - Password changed', {
@@ -105,7 +95,7 @@ const optionalAuth = asyncHandler(async (req, res, next) => {
   try {
     const decoded = verifyAccessToken(token);
     const user = await User.findById(decoded.id).select('-password');
-    if (user && user.accountStatus === 'active') {
+    if (user) {
       req.user = user;
       req.userId = user._id;
     }
@@ -141,41 +131,8 @@ const authorize = (...allowedRoles) => {
   });
 };
 
-/**
- * Verify Account Status - Ensure account is active
- * Use after authenticate for strict routes
- */
-const requireActiveAccount = asyncHandler(async (req, res, next) => {
-  if (!req.user) {
-    throw new UnauthorizedError('Authentication required');
-  }
-  
-  if (req.user.accountStatus !== 'active') {
-    throw new UnauthorizedError('Account must be active to access this resource');
-  }
-  
-  next();
-});
-
-/**
- * Verify Email - Ensure email is verified
- */
-const requireVerifiedEmail = asyncHandler(async (req, res, next) => {
-  if (!req.user) {
-    throw new UnauthorizedError('Authentication required');
-  }
-  
-  if (!req.user.verification?.isEmailVerified) {
-    throw new UnauthorizedError('Email verification required');
-  }
-  
-  next();
-});
-
 module.exports = {
   authenticate,
   optionalAuth,
   authorize,
-  requireActiveAccount,
-  requireVerifiedEmail,
 };

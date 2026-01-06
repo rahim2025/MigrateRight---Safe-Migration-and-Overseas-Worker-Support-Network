@@ -34,18 +34,7 @@ const register = asyncHandler(async (req, res) => {
   // Create user
   const user = await User.create({
     email, password, phoneNumber, role, fullName, dateOfBirth, gender, location, migrationStatus,
-    accountStatus: 'pending',
   });
-
-  // Generate verification token
-  const verificationToken = crypto.randomBytes(32).toString('hex');
-  user.emailVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
-  user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  await user.save({ validateBeforeSave: false });
-
-  // Send verification email
-  const verificationUrl = `${config.frontendUrl}/verify-email/${verificationToken}`;
-  await emailService.sendEmailVerificationEmail(user.email, verificationToken, verificationUrl);
 
   // Generate tokens
   const tokens = generateTokenPair(user);
@@ -56,7 +45,7 @@ const register = asyncHandler(async (req, res) => {
 
   res.status(201).json({
     success: true,
-    message: 'Registration successful. Please verify your email.',
+    message: 'Registration successful.',
     data: { user, token: tokens.accessToken, refreshToken: tokens.refreshToken },
   });
 });
@@ -149,7 +138,6 @@ const registerAgency = asyncHandler(async (req, res) => {
     },
     dateOfBirth: new Date('2000-01-01'), // Placeholder for agency
     gender: 'other',
-    accountStatus: 'pending',
   });
 
   // Create agency details
@@ -177,7 +165,6 @@ const registerAgency = asyncHandler(async (req, res) => {
       expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
       isValid: true,
     },
-    isVerified: false, // Will be verified by admin
     location: {
       address: businessAddress,
       city: city,
@@ -311,37 +298,6 @@ const resetPassword = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Verify email
- * @route   GET /api/auth/verify-email/:token
- * @access  Public
- */
-const verifyEmail = asyncHandler(async (req, res) => {
-  const { token } = req.params;
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
-  const user = await User.findOne({
-    emailVerificationToken: hashedToken,
-    emailVerificationExpires: { $gt: Date.now() },
-  });
-
-  if (!user) {
-    throw new BadRequestError('Invalid or expired verification token');
-  }
-
-  user.verification.isEmailVerified = true;
-  user.emailVerificationToken = undefined;
-  user.emailVerificationExpires = undefined;
-  if (user.accountStatus === 'pending') {
-    user.accountStatus = 'active';
-  }
-  await user.save();
-
-  logger.info('Email verified', { userId: user._id });
-
-  res.status(200).json({ success: true, message: 'Email verified successfully' });
-});
-
-/**
  * @desc    Refresh token
  * @route   POST /api/auth/refresh-token
  * @access  Public
@@ -356,7 +312,7 @@ const refreshToken = asyncHandler(async (req, res) => {
   const decoded = verifyRefreshToken(refreshToken);
   const user = await User.findById(decoded.id);
 
-  if (!user || user.accountStatus !== 'active') {
+  if (!user) {
     throw new UnauthorizedError('Invalid refresh token');
   }
 
@@ -409,6 +365,5 @@ module.exports = {
   getCurrentUser,
   forgotPassword,
   resetPassword,
-  verifyEmail,
   refreshToken,
 };

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../../context/AuthContext';
-import { LanguageContext } from '../../context/LanguageContext';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import {
   triggerSOS,
   getNearestContacts,
@@ -14,8 +14,8 @@ import {
 import './EmergencySOS.css';
 
 const EmergencySOS = () => {
-  const { user } = useContext(AuthContext);
-  const { t } = useContext(LanguageContext);
+  const { user } = useAuth();
+  const { t } = useLanguage();
 
   // State management
   const [loading, setLoading] = useState(false);
@@ -32,6 +32,13 @@ const EmergencySOS = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [locationWatchId, setLocationWatchId] = useState(null);
   const [isUpdatingLocation, setIsUpdatingLocation] = useState(false);
+  
+  // Manual location state
+  const [useManualLocation, setUseManualLocation] = useState(false);
+  const [manualCountry, setManualCountry] = useState('');
+  const [manualCity, setManualCity] = useState('');
+  const [manualAddress, setManualAddress] = useState('');
+  const [manualLandmark, setManualLandmark] = useState('');
 
   // Emergency type options
   const emergencyTypes = [
@@ -92,8 +99,15 @@ const EmergencySOS = () => {
   const handleTriggerSOS = async (e) => {
     e.preventDefault();
 
-    if (!currentLocation) {
-      alert(t?.emergencySOS?.errors?.noLocation || 'Please enable location access first');
+    // Check location - either automatic or manual
+    if (!useManualLocation && !currentLocation) {
+      alert(t?.emergencySOS?.errors?.noLocation || 'Please enable location access or enter location manually');
+      return;
+    }
+
+    // Validate manual location if using manual mode
+    if (useManualLocation && (!manualCountry.trim() || !manualCity.trim())) {
+      alert('Please enter at least country and city for manual location');
       return;
     }
 
@@ -105,17 +119,41 @@ const EmergencySOS = () => {
     setLoading(true);
 
     try {
-      const sosData = {
-        location: {
+      // Build location data - use automatic or manual
+      let locationData;
+      let locationDetailsData;
+
+      if (useManualLocation) {
+        // For manual location, use a default coordinate (0, 0) and rely on text description
+        // In production, you could use a geocoding API to convert address to coordinates
+        locationData = {
+          type: 'Point',
+          coordinates: [0, 0], // Placeholder coordinates for manual entry
+        };
+        locationDetailsData = {
+          country: manualCountry.trim(),
+          city: manualCity.trim(),
+          address: manualAddress.trim() || undefined,
+          landmark: manualLandmark.trim() || undefined,
+          isManualEntry: true,
+        };
+      } else {
+        locationData = {
           type: 'Point',
           coordinates: currentLocation.coordinates,
-        },
+        };
+        locationDetailsData = {
+          accuracy: currentLocation.accuracy,
+          isManualEntry: false,
+        };
+      }
+
+      const sosData = {
+        location: locationData,
         emergencyType,
         description,
         severity,
-        locationDetails: {
-          accuracy: currentLocation.accuracy,
-        },
+        locationDetails: locationDetailsData,
         deviceInfo: {
           userAgent: navigator.userAgent,
           platform: navigator.platform,
@@ -126,10 +164,12 @@ const EmergencySOS = () => {
       
       setSosTriggered(true);
       setActiveEmergency(response.data);
-      setNearestContacts(response.data.nearestContacts || []);
+      setNearestContacts(response.data?.nearestContacts || []);
 
-      // Start watching location for continuous updates
-      startLocationWatch(response.data._id);
+      // Start watching location for continuous updates (only if using automatic location)
+      if (!useManualLocation && response.data?.eventId) {
+        startLocationWatch(response.data?.eventId);
+      }
 
       // Reload history
       loadSOSHistory();
@@ -270,29 +310,119 @@ const EmergencySOS = () => {
             {/* Location Status */}
             <div className="location-status">
               <h2>{t?.emergencySOS?.locationTitle || 'Your Location'}</h2>
-              {locationLoading ? (
-                <p className="loading-text">{t?.emergencySOS?.gettingLocation || 'Getting your location...'}</p>
-              ) : currentLocation ? (
-                <div className="location-info">
-                  <p className="location-success">
-                    ✓ {t?.emergencySOS?.locationFound || 'Location found'}
-                  </p>
-                  <p className="location-coords">
-                    {currentLocation.coordinates[1].toFixed(6)}, {currentLocation.coordinates[0].toFixed(6)}
-                  </p>
-                  <p className="location-accuracy">
-                    {t?.emergencySOS?.accuracy || 'Accuracy'}: ±{currentLocation.accuracy.toFixed(0)}m
-                  </p>
-                  <button onClick={handleGetLocation} className="btn-secondary" disabled={locationLoading}>
-                    {t?.emergencySOS?.refreshLocation || 'Refresh Location'}
-                  </button>
-                </div>
+              
+              {/* Toggle for manual location */}
+              <div className="location-toggle">
+                <label className="toggle-label">
+                  <input
+                    type="checkbox"
+                    checked={useManualLocation}
+                    onChange={(e) => setUseManualLocation(e.target.checked)}
+                  />
+                  <span className="toggle-text">
+                    {t?.emergencySOS?.enterManually || 'Enter location manually'}
+                  </span>
+                </label>
+              </div>
+
+              {!useManualLocation ? (
+                // Automatic GPS location
+                <>
+                  {locationLoading ? (
+                    <p className="loading-text">{t?.emergencySOS?.gettingLocation || 'Getting your location...'}</p>
+                  ) : currentLocation ? (
+                    <div className="location-info">
+                      <p className="location-success">
+                        ✓ {t?.emergencySOS?.locationFound || 'Location found'}
+                      </p>
+                      <p className="location-coords">
+                        {currentLocation.coordinates[1].toFixed(6)}, {currentLocation.coordinates[0].toFixed(6)}
+                      </p>
+                      <p className="location-accuracy">
+                        {t?.emergencySOS?.accuracy || 'Accuracy'}: ±{currentLocation.accuracy.toFixed(0)}m
+                      </p>
+                      <button onClick={handleGetLocation} className="btn-secondary" disabled={locationLoading}>
+                        {t?.emergencySOS?.refreshLocation || 'Refresh Location'}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="location-error">
+                      <p className="error-text">{locationError || t?.emergencySOS?.noLocation || 'Location not available'}</p>
+                      <button onClick={handleGetLocation} className="btn-primary" disabled={locationLoading}>
+                        {t?.emergencySOS?.getLocation || 'Get My Location'}
+                      </button>
+                      <p className="manual-hint">
+                        {t?.emergencySOS?.orEnterManually || "Or check the box above to enter location manually"}
+                      </p>
+                    </div>
+                  )}
+                </>
               ) : (
-                <div className="location-error">
-                  <p className="error-text">{locationError || t?.emergencySOS?.noLocation || 'Location not available'}</p>
-                  <button onClick={handleGetLocation} className="btn-primary" disabled={locationLoading}>
-                    {t?.emergencySOS?.getLocation || 'Get My Location'}
-                  </button>
+                // Manual location input
+                <div className="manual-location-form">
+                  <p className="manual-location-note">
+                    {t?.emergencySOS?.manualLocationNote || 'Please provide your location details as accurately as possible.'}
+                  </p>
+                  
+                  <div className="form-row">
+                    <div className="form-group half">
+                      <label htmlFor="manualCountry">
+                        {t?.emergencySOS?.country || 'Country'} *
+                      </label>
+                      <input
+                        type="text"
+                        id="manualCountry"
+                        value={manualCountry}
+                        onChange={(e) => setManualCountry(e.target.value)}
+                        placeholder={t?.emergencySOS?.countryPlaceholder || 'e.g., Saudi Arabia'}
+                        className="form-input"
+                        required={useManualLocation}
+                      />
+                    </div>
+                    
+                    <div className="form-group half">
+                      <label htmlFor="manualCity">
+                        {t?.emergencySOS?.city || 'City'} *
+                      </label>
+                      <input
+                        type="text"
+                        id="manualCity"
+                        value={manualCity}
+                        onChange={(e) => setManualCity(e.target.value)}
+                        placeholder={t?.emergencySOS?.cityPlaceholder || 'e.g., Riyadh'}
+                        className="form-input"
+                        required={useManualLocation}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="manualAddress">
+                      {t?.emergencySOS?.address || 'Address / Street'}
+                    </label>
+                    <input
+                      type="text"
+                      id="manualAddress"
+                      value={manualAddress}
+                      onChange={(e) => setManualAddress(e.target.value)}
+                      placeholder={t?.emergencySOS?.addressPlaceholder || 'e.g., King Fahd Road, Building 123'}
+                      className="form-input"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="manualLandmark">
+                      {t?.emergencySOS?.landmark || 'Nearby Landmark'}
+                    </label>
+                    <input
+                      type="text"
+                      id="manualLandmark"
+                      value={manualLandmark}
+                      onChange={(e) => setManualLandmark(e.target.value)}
+                      placeholder={t?.emergencySOS?.landmarkPlaceholder || 'e.g., Near Al-Faisaliah Tower, opposite the main market'}
+                      className="form-input"
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -356,7 +486,7 @@ const EmergencySOS = () => {
               <button
                 type="submit"
                 className="btn-sos"
-                disabled={loading || !currentLocation || locationLoading}
+                disabled={loading || locationLoading || (!useManualLocation && !currentLocation) || (useManualLocation && (!manualCountry.trim() || !manualCity.trim()))}
               >
                 {loading ? (
                   t?.emergencySOS?.sendingSOS || 'Sending SOS...'

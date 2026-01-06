@@ -66,6 +66,10 @@ const emergencyEventSchema = new mongoose.Schema(
       city: String,
       address: String,
       landmark: String,
+      isManualEntry: {
+        type: Boolean,
+        default: false,
+      },
     },
     locationAccuracy: Number, // in meters
 
@@ -317,13 +321,20 @@ emergencyEventSchema.methods.isStale = function () {
 /**
  * Get active emergencies
  */
-emergencyEventSchema.statics.getActive = function () {
-  return this.find({
+emergencyEventSchema.statics.getActive = async function () {
+  console.log('[EmergencyEvent.getActive] Fetching active emergencies...');
+  
+  const emergencies = await this.find({
     status: { $in: ['active', 'in_progress'] },
   })
     .sort({ severity: -1, createdAt: -1 })
-    .populate('userId', 'firstName lastName phone email')
-    .populate('nearestContacts.contactId');
+    .populate('userId', 'fullName phoneNumber email')
+    .populate('nearestContacts.contactId')
+    .lean();
+  
+  console.log(`[EmergencyEvent.getActive] Found ${emergencies.length} active emergencies`);
+  
+  return emergencies;
 };
 
 /**
@@ -406,7 +417,7 @@ emergencyEventSchema.statics.autoCancelStale = async function (hoursThreshold = 
 };
 
 // Pre-save middleware
-emergencyEventSchema.pre('save', function (next) {
+emergencyEventSchema.pre('save', function () {
   // Ensure timeline has initial entry
   if (this.isNew && this.timeline.length === 0) {
     this.timeline.push({
@@ -414,7 +425,6 @@ emergencyEventSchema.pre('save', function (next) {
       description: 'Emergency SOS activated',
     });
   }
-  next();
 });
 
 const EmergencyEvent = mongoose.model('EmergencyEvent', emergencyEventSchema);

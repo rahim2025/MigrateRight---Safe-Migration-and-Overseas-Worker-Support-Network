@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext';
 import { useLanguage } from '@context/LanguageContext';
 import LanguageSwitcher from '@components/common/LanguageSwitcher/LanguageSwitcher';
+import { getUnreadCount } from '@services/notificationService';
 import './Navbar.css';
 
 /**
@@ -14,6 +15,30 @@ const Navbar = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Check if user is an admin (any admin role)
+  const isAdmin = user?.role === 'platform_admin' || user?.role === 'admin' || user?.role === 'recruitment_admin';
+
+  // Fetch unread notification count for admins
+  useEffect(() => {
+    if (isAuthenticated && isAdmin) {
+      fetchUnreadCount();
+      
+      // Poll for new notifications every 30 seconds
+      const interval = setInterval(fetchUnreadCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated, user, isAdmin]);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const count = await getUnreadCount();
+      setUnreadCount(count);
+    } catch (error) {
+      console.error('Error fetching notification count:', error);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -50,6 +75,9 @@ const Navbar = () => {
 
           {isAuthenticated && (
             <>
+              <Link to="/emergency-sos" className="nav-link emergency-btn">
+                🚨 SOS
+              </Link>
               <Link to="/records" className="nav-link">
                 📁 My Records
               </Link>
@@ -57,10 +85,18 @@ const Navbar = () => {
                 💰 Salary Tracker
               </Link>
               {/* Admin Panel - only for platform admins */}
-              {user?.role === 'platform_admin' && (
-                <Link to="/admin/dashboard" className="nav-link">
-                  ⚙️ Admin Panel
-                </Link>
+              {isAdmin && (
+                <>
+                  <Link to="/admin/emergencies" className="nav-link admin-emergency">
+                    🚨 Emergency Alerts
+                    {unreadCount > 0 && (
+                      <span className="notification-badge">{unreadCount}</span>
+                    )}
+                  </Link>
+                  <Link to="/admin/dashboard" className="nav-link">
+                    ⚙️ Admin Panel
+                  </Link>
+                </>
               )}
             </>
           )}
@@ -113,6 +149,9 @@ const Navbar = () => {
 
           {isAuthenticated && (
             <>
+              <Link to="/emergency-sos" className="mobile-nav-link emergency-btn" onClick={toggleMobileMenu}>
+                🚨 Emergency SOS
+              </Link>
               <Link to="/records" className="mobile-nav-link" onClick={toggleMobileMenu}>
                 📁 My Records
               </Link>
@@ -120,10 +159,18 @@ const Navbar = () => {
                 💰 Salary Tracker
               </Link>
               {/* Admin Panel - only for platform admins */}
-              {user?.role === 'platform_admin' && (
-                <Link to="/admin/dashboard" className="mobile-nav-link" onClick={toggleMobileMenu}>
-                  ⚙️ Admin Panel
-                </Link>
+              {isAdmin && (
+                <>
+                  <Link to="/admin/emergencies" className="mobile-nav-link admin-emergency" onClick={toggleMobileMenu}>
+                    🚨 Emergency Alerts
+                    {unreadCount > 0 && (
+                      <span className="notification-badge">{unreadCount}</span>
+                    )}
+                  </Link>
+                  <Link to="/admin/dashboard" className="mobile-nav-link" onClick={toggleMobileMenu}>
+                    ⚙️ Admin Panel
+                  </Link>
+                </>
               )}
             </>
           )}

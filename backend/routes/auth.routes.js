@@ -12,7 +12,6 @@ const {
   getCurrentUser,
   forgotPassword,
   resetPassword,
-  verifyEmail,
   refreshToken,
 } = require('../controllers/auth.controller');
 const {
@@ -54,9 +53,6 @@ router.post('/forgot-password', passwordResetLimiter, validateForgotPassword, fo
 
 // POST /api/auth/reset-password/:token
 router.post('/reset-password/:token', validateResetPassword, resetPassword);
-
-// GET /api/auth/verify-email/:token
-router.get('/verify-email/:token', verifyEmail);
 
 // POST /api/auth/refresh-token
 router.post('/refresh-token', refreshToken);

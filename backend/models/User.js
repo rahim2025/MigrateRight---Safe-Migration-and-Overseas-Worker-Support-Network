@@ -34,11 +34,6 @@ const userSchema = new mongoose.Schema({
     required: [true, 'User role is required'],
     default: 'user'
   },
-  accountStatus: {
-    type: String,
-    enum: ['active', 'suspended', 'pending', 'deactivated'],
-    default: 'pending'
-  },
   
   // ==================== Personal Information ====================
   fullName: {
@@ -152,43 +147,6 @@ const userSchema = new mongoose.Schema({
     default: 'not_applicable'
   },
   
-  // ==================== Verification & Trust ====================
-  verification: {
-    isEmailVerified: {
-      type: Boolean,
-      default: false
-    },
-    isPhoneVerified: {
-      type: Boolean,
-      default: false
-    },
-    isIdentityVerified: {
-      type: Boolean,
-      default: false
-    },
-    verifiedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    verificationDate: Date,
-    verificationDocuments: [{
-      documentType: {
-        type: String,
-        enum: ['national_id', 'passport', 'work_permit', 'visa', 'other']
-      },
-      documentUrl: String,
-      uploadedAt: {
-        type: Date,
-        default: Date.now
-      },
-      verificationStatus: {
-        type: String,
-        enum: ['pending', 'approved', 'rejected'],
-        default: 'pending'
-      }
-    }]
-  },
-  
   // ==================== Agency Association ====================
   associatedAgency: {
     type: mongoose.Schema.Types.ObjectId,
@@ -226,8 +184,6 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
-  emailVerificationToken: String,
-  emailVerificationExpires: Date,
   
   lastLogin: Date,
   loginAttempts: {
@@ -253,7 +209,7 @@ const userSchema = new mongoose.Schema({
 
 // ==================== Indexes ====================
 // Compound index for search and filtering
-userSchema.index({ role: 1, accountStatus: 1 });
+userSchema.index({ role: 1 });
 userSchema.index({ 'location.bangladeshAddress.district': 1, role: 1 });
 userSchema.index({ email: 1, phoneNumber: 1 });
 userSchema.index({ migrationStatus: 1 });

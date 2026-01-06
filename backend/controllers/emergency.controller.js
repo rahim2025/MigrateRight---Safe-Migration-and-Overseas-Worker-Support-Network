@@ -1,6 +1,7 @@
 const EmergencyEvent = require('../models/EmergencyEvent.model');
 const EmergencyContact = require('../models/EmergencyContact.model');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 const { AppError, NotFoundError, BadRequestError } = require('../utils/errors');
 const logger = require('../utils/logger');
 
@@ -34,7 +35,7 @@ const triggerSOS = asyncHandler(async (req, res) => {
   const [longitude, latitude] = location.coordinates;
 
   // Get worker info
-  const worker = await User.findById(req.userId).populate('familyMembers');
+  const worker = await User.findById(req.userId);
   if (!worker) {
     throw new NotFoundError('Worker not found');
   }
@@ -65,26 +66,14 @@ const triggerSOS = asyncHandler(async (req, res) => {
     notified: false,
   }));
 
-  // Prepare family notifications data
+  // Prepare family notifications data (empty for now - can be extended later)
   const familyNotificationsData = [];
-  if (worker.familyMembers && worker.familyMembers.length > 0) {
-    for (const familyMember of worker.familyMembers) {
-      familyNotificationsData.push({
-        familyMemberId: familyMember._id,
-        name: `${familyMember.firstName} ${familyMember.lastName}`,
-        relationship: familyMember.relationship || 'Family',
-        phone: familyMember.phone,
-        email: familyMember.email,
-        notified: false,
-      });
-    }
-  }
 
   // Create emergency event
   const emergencyEvent = await EmergencyEvent.create({
     userId: req.userId,
-    workerName: `${worker.firstName} ${worker.lastName}`,
-    workerPhone: worker.phone,
+    workerName: `${worker.fullName.firstName} ${worker.fullName.lastName}`,
+    workerPhone: worker.phoneNumber,
     workerPassport: worker.passportNumber,
     emergencyType: emergencyType || 'other',
     description,
@@ -97,7 +86,7 @@ const triggerSOS = asyncHandler(async (req, res) => {
     timeline: [
       {
         action: 'sos_triggered',
-        description: `SOS triggered by ${worker.firstName} ${worker.lastName}`,
+        description: `SOS triggered by ${worker.fullName.firstName} ${worker.fullName.lastName}`,
       },
     ],
   });
@@ -107,6 +96,28 @@ const triggerSOS = asyncHandler(async (req, res) => {
 
   // Notify nearest contacts (simulated)
   await notifyEmergencyContacts(emergencyEvent, nearestContactsData);
+
+  // Create notifications for all platform admins
+  try {
+    const adminNotifications = await Notification.createForAllAdmins({
+      type: 'emergency_sos',
+      title: `🚨 ${emergencyEvent.severity.toUpperCase()} Emergency SOS`,
+      message: `${worker.fullName.firstName} ${worker.fullName.lastName} triggered an emergency SOS alert (${emergencyEvent.emergencyType.replace('_', ' ')})`,
+      severity: emergencyEvent.severity,
+      relatedId: emergencyEvent._id,
+      relatedModel: 'EmergencyEvent',
+      actionUrl: `/admin/emergencies`,
+      metadata: {
+        workerName: `${worker.fullName.firstName} ${worker.fullName.lastName}`,
+        emergencyType: emergencyEvent.emergencyType,
+        location: emergencyEvent.locationDetails?.city || 'Unknown location',
+      },
+    });
+    
+    logger.info(`✅ Created ${adminNotifications.length} admin notification(s) for emergency ${emergencyEvent._id}`);
+  } catch (notifError) {
+    logger.error(`❌ Failed to create admin notifications for emergency ${emergencyEvent._id}:`, notifError);
+  }
 
   logger.warn(`🆘 EMERGENCY SOS TRIGGERED`, {
     eventId: emergencyEvent._id,
@@ -330,7 +341,23 @@ const getContactsByCountry = asyncHandler(async (req, res) => {
  * @access  Private/Admin
  */
 const getActiveEmergencies = asyncHandler(async (req, res) => {
+  logger.info('Fetching active emergencies', { 
+    userId: req.userId, 
+    userRole: req.user?.role 
+  });
+  
   const activeEmergencies = await EmergencyEvent.getActive();
+  
+  logger.info('Active emergencies found', { 
+    count: activeEmergencies.length,
+    emergencies: activeEmergencies.map(e => ({
+      id: e._id,
+      worker: e.workerName,
+      type: e.emergencyType,
+      status: e.status,
+      severity: e.severity
+    }))
+  });
 
   res.status(200).json({
     success: true,
@@ -398,7 +425,7 @@ async function notifyFamilyMembers(emergencyEvent, worker) {
       
       logger.info(`📧 [SIMULATED] Notifying family member: ${familyNotification.email}`, {
         eventId: emergencyEvent._id,
-        workerName: worker.firstName,
+        workerName: worker.fullName.firstName,
         emergencyType: emergencyEvent.emergencyType,
       });
 

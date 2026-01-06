@@ -18,6 +18,7 @@ const userRoutes = require('./routes/user.routes');
 const calculatorRoutes = require('./routes/calculator.routes');
 const countryGuideRoutes = require('./routes/countryGuide.routes');
 const emergencyRoutes = require('./routes/emergency.routes');
+const notificationRoutes = require('./routes/notification.routes');
 const salaryRoutes = require('./routes/salary.routes');
 const salaryTrackerRoutes = require('./routes/salaryTracker.routes');
 const workerRoutes = require('./src/routes/workerProfile.routes');
@@ -148,6 +149,9 @@ app.use('/api/workers', workerRoutes);
 
 // Emergency SOS Routes
 app.use('/api/emergency', emergencyRoutes);
+
+// Notification Routes
+app.use('/api/notifications', notificationRoutes);
 
 // Salary Tracker Routes (Wage Mismatch Detection)
 app.use('/api/salary-tracker', salaryTrackerRoutes);
