@@ -379,6 +379,13 @@ const agencySchema = new mongoose.Schema(
       default: true,
       index: true,
     },
+
+    // Owner/User Reference (Link to user account)
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true,
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields
@@ -585,6 +592,89 @@ agencySchema.statics.findByApprovalStatus = function (status) {
 };
 
 /**
+ * Recalculate rating from actual reviews in database
+ * This ensures rating data is always accurate and up-to-date
+ * @returns {Promise<void>}
+ */
+agencySchema.methods.recalculateRatingFromReviews = async function () {
+  const Review = require('./Review.model');
+  
+  // Get all active reviews for this agency
+  const reviews = await Review.find({ agency: this._id, isActive: true });
+  
+  if (reviews.length === 0) {
+    // No reviews, reset to defaults
+    this.rating = {
+      average: 0,
+      count: 0,
+      breakdown: {
+        communication: 0,
+        transparency: 0,
+        support: 0,
+        documentation: 0,
+        jobQuality: 0,
+      },
+      distribution: {
+        fiveStar: 0,
+        fourStar: 0,
+        threeStar: 0,
+        twoStar: 0,
+        oneStar: 0,
+      },
+    };
+    return;
+  }
+  
+  // Calculate totals
+  let totalRating = 0;
+  let totalCommunication = 0;
+  let totalTransparency = 0;
+  let totalSupport = 0;
+  let totalDocumentation = 0;
+  let totalJobQuality = 0;
+  
+  const distribution = { oneStar: 0, twoStar: 0, threeStar: 0, fourStar: 0, fiveStar: 0 };
+  
+  reviews.forEach(review => {
+    totalRating += review.rating;
+    totalCommunication += review.breakdown?.communication || review.rating;
+    totalTransparency += review.breakdown?.transparency || review.rating;
+    totalSupport += review.breakdown?.support || review.rating;
+    totalDocumentation += review.breakdown?.documentation || review.rating;
+    totalJobQuality += review.breakdown?.jobQuality || review.rating;
+    
+    // Count distribution (exact rating, not rounded)
+    const distributionKey = {
+      1: 'oneStar',
+      2: 'twoStar', 
+      3: 'threeStar',
+      4: 'fourStar',
+      5: 'fiveStar'
+    }[review.rating];
+    
+    if (distributionKey) {
+      distribution[distributionKey]++;
+    }
+  });
+  
+  const count = reviews.length;
+  
+  // Update agency rating
+  this.rating = {
+    average: Math.round((totalRating / count) * 10) / 10, // Round to 1 decimal
+    count: count,
+    breakdown: {
+      communication: Math.round((totalCommunication / count) * 10) / 10,
+      transparency: Math.round((totalTransparency / count) * 10) / 10,
+      support: Math.round((totalSupport / count) * 10) / 10,
+      documentation: Math.round((totalDocumentation / count) * 10) / 10,
+      jobQuality: Math.round((totalJobQuality / count) * 10) / 10,
+    },
+    distribution: distribution,
+  };
+};
+
+/**
  * Update rating after new review
  * Called after a new review is submitted
  * @param {Number} newRating - New rating value (1-5)
@@ -592,52 +682,8 @@ agencySchema.statics.findByApprovalStatus = function (status) {
  * @returns {Promise<Agency>}
  */
 agencySchema.methods.updateRating = async function (newRating, breakdown = {}) {
-  const currentAvg = this.rating.average;
-  const currentCount = this.rating.count;
-
-  // Calculate new average
-  const newAvg = ((currentAvg * currentCount) + newRating) / (currentCount + 1);
-
-  // Update rating distribution
-  const starKey = `${Math.round(newRating)}Star`;
-  const distributionKey = {
-    '1': 'oneStar',
-    '2': 'twoStar',
-    '3': 'threeStar',
-    '4': 'fourStar',
-    '5': 'fiveStar',
-  }[Math.round(newRating)];
-
-  if (distributionKey) {
-    this.rating.distribution[distributionKey] += 1;
-  }
-
-  // Update breakdown averages
-  if (breakdown.communication) {
-    this.rating.breakdown.communication = 
-      ((this.rating.breakdown.communication * currentCount) + breakdown.communication) / (currentCount + 1);
-  }
-  if (breakdown.transparency) {
-    this.rating.breakdown.transparency = 
-      ((this.rating.breakdown.transparency * currentCount) + breakdown.transparency) / (currentCount + 1);
-  }
-  if (breakdown.support) {
-    this.rating.breakdown.support = 
-      ((this.rating.breakdown.support * currentCount) + breakdown.support) / (currentCount + 1);
-  }
-  if (breakdown.documentation) {
-    this.rating.breakdown.documentation = 
-      ((this.rating.breakdown.documentation * currentCount) + breakdown.documentation) / (currentCount + 1);
-  }
-  if (breakdown.jobQuality) {
-    this.rating.breakdown.jobQuality = 
-      ((this.rating.breakdown.jobQuality * currentCount) + breakdown.jobQuality) / (currentCount + 1);
-  }
-
-  // Update rating
-  this.rating.average = newAvg;
-  this.rating.count = currentCount + 1;
-
+  // Use the more accurate recalculation method instead
+  await this.recalculateRatingFromReviews();
   return this.save();
 };
 
@@ -792,11 +838,10 @@ agencySchema.statics.findTopRated = function (limit = 10) {
 // ==================== MIDDLEWARE ====================
 
 // Pre-save middleware to update verification date
-agencySchema.pre('save', function (next) {
+agencySchema.pre('save', function () {
   if (this.isModified('isVerified') && this.isVerified) {
     this.verificationDate = new Date();
   }
-  next();
 });
 
 // ==================== EXPORT ====================

@@ -17,12 +17,13 @@ const {
 } = require('../controllers/auth.controller');
 const {
   validateRegister,
+  validateAgencyRegister,
   validateLogin,
   validateForgotPassword,
   validateResetPassword,
 } = require('../middleware/validation.middleware');
 const { authenticate } = require('../middleware/auth.middleware');
-const { authLimiter, passwordResetLimiter } = require('../middleware/rateLimiter.middleware');
+const { passwordResetLimiter } = require('../middleware/rateLimiter.middleware');
 
 // Handle OPTIONS requests for CORS preflight (must be before other routes)
 router.options('*', (req, res) => {
@@ -34,13 +35,13 @@ router.options('*', (req, res) => {
 });
 
 // POST /api/auth/register
-router.post('/register', authLimiter, validateRegister, register);
+router.post('/register', validateRegister, register);
 
 // POST /api/auth/register-agency
-router.post('/register-agency', authLimiter, registerAgency);
+router.post('/register-agency', validateAgencyRegister, registerAgency);
 
 // POST /api/auth/login
-router.post('/login', authLimiter, validateLogin, login);
+router.post('/login', validateLogin, login);
 
 // POST /api/auth/logout (Protected)
 router.post('/logout', authenticate, logout);

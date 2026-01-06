@@ -21,7 +21,6 @@ const emergencyRoutes = require('./routes/emergency.routes');
 const salaryRoutes = require('./routes/salary.routes');
 const salaryTrackerRoutes = require('./routes/salaryTracker.routes');
 const workerRoutes = require('./src/routes/workerProfile.routes');
-const agencyReviewRoutes = require('./src/routes/agencyReview.routes');
 const agencyComplaintRoutes = require('./src/routes/agencyComplaint.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
 const { errorHandler, notFound } = require('./middleware/error.middleware');
@@ -134,9 +133,6 @@ app.use('/api/agencies', agencyRoutes);
 
 // Agency Management Routes (New - for agency dashboard)
 app.use('/api/agency-management', agencyManagementRoutes);
-
-// Agency Review Routes (extends /api/agencies/:id/reviews)
-app.use('/api/agencies', agencyReviewRoutes);
 
 // Agency Complaint Routes (extends /api/agencies/:id/complaints)
 app.use('/api/agencies', agencyComplaintRoutes);

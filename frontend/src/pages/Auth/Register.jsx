@@ -48,7 +48,13 @@ const Register = () => {
   });
 
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showAgencyPassword, setShowAgencyPassword] = useState(false);
+  const [showAgencyConfirmPassword, setShowAgencyConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -93,22 +99,49 @@ const Register = () => {
     setError('');
   };
 
+  const getFieldError = (fieldName) => {
+    return fieldErrors[fieldName];
+  };
+
+  const getInputClassName = (fieldName) => {
+    return fieldErrors[fieldName] ? 'form-input error' : 'form-input';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setFieldErrors({});
+    setSuccess('');
 
     try {
       if (registrationType === 'agency') {
         // Validate passwords match for agency
+        console.log('Agency Frontend validation - Password:', agencyFormData.password);
+        console.log('Agency Frontend validation - Confirm Password:', agencyFormData.confirmPassword);
+        console.log('Agency Frontend validation - Passwords match:', agencyFormData.password === agencyFormData.confirmPassword);
+        
         if (agencyFormData.password !== agencyFormData.confirmPassword) {
           setError('Passwords do not match');
           setLoading(false);
           return;
         }
 
+        // Client-side validation for agency
+        const requiredFields = ['email', 'password', 'companyName', 'tradeLicenseNumber', 'tinNumber', 'contactPersonName', 'businessAddress', 'phoneNumber'];
+        const missingFields = requiredFields.filter(field => !agencyFormData[field]?.trim());
+        
+        if (missingFields.length > 0) {
+          setError(`Please fill in all required fields: ${missingFields.join(', ')}`);
+          setLoading(false);
+          return;
+        }
+
         // Prepare agency data for API
-        const { confirmPassword, ...registrationData } = agencyFormData;
+        // Keep confirmPassword for backend validation, it will be removed in the controller
+        const registrationData = { ...agencyFormData };
+        
+        console.log('Sending agency registration data:', registrationData);
 
         // Call agency registration endpoint
         const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/register-agency`, {
@@ -122,9 +155,30 @@ const Register = () => {
         const data = await response.json();
 
         if (!response.ok) {
+          console.log('API Error Response:', data);
+          // Handle validation errors
+          if (data.errors && Array.isArray(data.errors)) {
+            console.log('Processing validation errors:', data.errors);
+            const fieldErrorMap = {};
+            const errorMessages = [];
+            
+            data.errors.forEach(error => {
+              console.log('Processing error:', error);
+              if (error.field || error.param) {
+                const fieldName = error.field || error.param;
+                fieldErrorMap[fieldName] = error.message || error.msg;
+              }
+              errorMessages.push(error.message || error.msg || 'Unknown error');
+            });
+            
+            setFieldErrors(fieldErrorMap);
+            setError(`Please correct the following errors: ${errorMessages.join(', ')}`);
+          }
           throw new Error(data.message || 'Agency registration failed');
         }
 
+        setSuccess('Agency registration successful! Please check your email to verify your account.');
+        
         // Store tokens
         if (data.data?.token) {
           localStorage.setItem('authToken', data.data.token);
@@ -133,24 +187,91 @@ const Register = () => {
           localStorage.setItem('refreshToken', data.data.refreshToken);
         }
 
-        // Redirect to agency dashboard
-        navigate('/agency-dashboard');
+        // Redirect to agency dashboard after a short delay
+        setTimeout(() => {
+          navigate('/agency-dashboard');
+        }, 2000);
       } else {
         // Validate passwords match for user
+        console.log('Frontend validation - Password:', formData.password);
+        console.log('Frontend validation - Confirm Password:', formData.confirmPassword);
+        console.log('Frontend validation - Passwords match:', formData.password === formData.confirmPassword);
+        
         if (formData.password !== formData.confirmPassword) {
           setError('Passwords do not match');
           setLoading(false);
           return;
         }
 
-        // Prepare user data for API
-        const { confirmPassword, ...registrationData } = formData;
+        // Client-side validation for user
+        const requiredFields = {
+          email: formData.email,
+          password: formData.password,
+          phoneNumber: formData.phoneNumber,
+          'fullName.firstName': formData.fullName?.firstName,
+          'fullName.lastName': formData.fullName?.lastName,
+          dateOfBirth: formData.dateOfBirth,
+          gender: formData.gender,
+          'location.bangladeshAddress.district': formData.location?.bangladeshAddress?.district,
+        };
+        
+        console.log('Checking required fields:', requiredFields);
+        
+        const missingFields = Object.entries(requiredFields)
+          .filter(([key, value]) => !value?.toString().trim())
+          .map(([key]) => key);
+        
+        console.log('Missing fields:', missingFields);
+        
+        if (missingFields.length > 0) {
+          setError(`Please fill in all required fields: ${missingFields.join(', ')}`);
+          setLoading(false);
+          return;
+        }
 
-        await register(registrationData);
-        navigate('/');
+        // Prepare user data for API
+        // Keep confirmPassword for backend validation, it will be removed in the controller
+        const registrationData = { ...formData };
+        
+        console.log('Sending registration data:', registrationData);
+
+        const response = await register(registrationData);
+        setSuccess('Registration successful! Please check your email to verify your account.');
+        
+        // Redirect to home page after a short delay
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
       }
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      console.error('Registration error:', err);
+      
+      // Handle different types of errors
+      if (err.errors && Array.isArray(err.errors) && err.errors.length > 0) {
+        const fieldErrorMap = {};
+        const errorMessages = [];
+        
+        err.errors.forEach(error => {
+          console.log('Processing error:', error);
+          if (error.field || error.param) {
+            const fieldName = error.field || error.param;
+            fieldErrorMap[fieldName] = error.message || error.msg;
+          }
+          errorMessages.push(error.message || error.msg || 'Unknown error');
+        });
+        
+        setFieldErrors(fieldErrorMap);
+        
+        if (Object.keys(fieldErrorMap).length > 0) {
+          setError(`Please correct the following errors: ${errorMessages.join(', ')}`);
+        } else {
+          setError(`Validation errors: ${errorMessages.join(', ')}`);
+        }
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError('Registration failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -164,6 +285,33 @@ const Register = () => {
           <p className="auth-subtitle">Create your MigrateRight account</p>
 
           {error && <div className="error-message">{error}</div>}
+          {success && <div className="success-message" style={{ 
+            backgroundColor: '#d4edda', 
+            color: '#155724', 
+            border: '1px solid #c3e6cb', 
+            padding: '0.75rem', 
+            marginBottom: '1rem', 
+            borderRadius: '4px' 
+          }}>{success}</div>}
+          
+          {/* Debug: Show field errors if any exist */}
+          {Object.keys(fieldErrors).length > 0 && (
+            <div className="debug-errors" style={{
+              backgroundColor: '#fff3cd',
+              border: '1px solid #ffeaa7',
+              padding: '0.75rem',
+              borderRadius: '4px',
+              marginBottom: '1rem',
+              fontSize: '0.875rem'
+            }}>
+              <strong>Field Validation Errors:</strong>
+              <ul style={{ margin: '0.5rem 0', paddingLeft: '1.5rem' }}>
+                {Object.entries(fieldErrors).map(([field, message]) => (
+                  <li key={field}><strong>{field}:</strong> {message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Registration Type Selector */}
           <div className="registration-type-selector" style={{ marginBottom: '2rem' }}>
@@ -210,8 +358,9 @@ const Register = () => {
                     value={formData.fullName?.firstName || ''}
                     onChange={handleChange}
                     required
-                    className="form-input"
+                    className={getInputClassName('fullName.firstName')}
                   />
+                  {getFieldError('fullName.firstName') && <div className="field-error" style={{color: '#dc3545', fontSize: '0.875rem', marginTop: '0.25rem'}}>{getFieldError('fullName.firstName')}</div>}
                 </div>
 
                 <div className="form-group">
@@ -223,8 +372,9 @@ const Register = () => {
                     value={formData.fullName?.lastName || ''}
                     onChange={handleChange}
                     required
-                    className="form-input"
+                    className={getInputClassName('fullName.lastName')}
                   />
+                  {getFieldError('fullName.lastName') && <div className="field-error" style={{color: '#dc3545', fontSize: '0.875rem', marginTop: '0.25rem'}}>{getFieldError('fullName.lastName')}</div>}
                 </div>
               </div>
 
@@ -237,8 +387,9 @@ const Register = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="form-input"
+                  className={getInputClassName('email')}
                 />
+                {getFieldError('email') && <div className="field-error" style={{color: '#dc3545', fontSize: '0.875rem', marginTop: '0.25rem'}}>{getFieldError('email')}</div>}
               </div>
 
               <div className="form-group">
@@ -251,37 +402,80 @@ const Register = () => {
                   onChange={handleChange}
                   required
                   placeholder="+8801712345678"
-                  className="form-input"
+                  className={getInputClassName('phoneNumber')}
                 />
+                {getFieldError('phoneNumber') && <div className="field-error" style={{color: '#dc3545', fontSize: '0.875rem', marginTop: '0.25rem'}}>{getFieldError('phoneNumber')}</div>}
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="password">Password *</label>
-                  <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    minLength="8"
-                    className="form-input"
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      id="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                      minLength="8"
+                      className={getInputClassName('password')}
+                      style={{ paddingRight: '2.5rem' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '0.5rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        color: '#666'
+                      }}
+                    >
+                      {showPassword ? '👁️' : '👁️‍🗨️'}
+                    </button>
+                  </div>
+                  {getFieldError('password') && <div className="field-error" style={{color: '#dc3545', fontSize: '0.875rem', marginTop: '0.25rem'}}>{getFieldError('password')}</div>}
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="confirmPassword">Confirm Password *</label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                    minLength="8"
-                    className="form-input"
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      required
+                      minLength="8"
+                      className={getInputClassName('confirmPassword')}
+                      style={{ paddingRight: '2.5rem' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '0.5rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        color: '#666'
+                      }}
+                    >
+                      {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                    </button>
+                  </div>
+                  {getFieldError('confirmPassword') && <div className="field-error" style={{color: '#dc3545', fontSize: '0.875rem', marginTop: '0.25rem'}}>{getFieldError('confirmPassword')}</div>}
                 </div>
               </div>
 
@@ -416,30 +610,70 @@ const Register = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="password">Password *</label>
-                  <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    value={agencyFormData.password}
-                    onChange={handleChange}
-                    required
-                    minLength="8"
-                    className="form-input"
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showAgencyPassword ? 'text' : 'password'}
+                      id="password"
+                      name="password"
+                      value={agencyFormData.password}
+                      onChange={handleChange}
+                      required
+                      minLength="8"
+                      className="form-input"
+                      style={{ paddingRight: '2.5rem' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowAgencyPassword(!showAgencyPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '0.5rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        color: '#666'
+                      }}
+                    >
+                      {showAgencyPassword ? '👁️' : '👁️‍🗨️'}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="confirmPassword">Confirm Password *</label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={agencyFormData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                    minLength="8"
-                    className="form-input"
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showAgencyConfirmPassword ? 'text' : 'password'}
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      value={agencyFormData.confirmPassword}
+                      onChange={handleChange}
+                      required
+                      minLength="8"
+                      className="form-input"
+                      style={{ paddingRight: '2.5rem' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowAgencyConfirmPassword(!showAgencyConfirmPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '0.5rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        color: '#666'
+                      }}
+                    >
+                      {showAgencyConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                    </button>
+                  </div>
                 </div>
               </div>
 

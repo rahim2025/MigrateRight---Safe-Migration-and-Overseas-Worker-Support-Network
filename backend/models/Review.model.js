@@ -479,7 +479,7 @@ reviewSchema.statics.getAgencyRatingStats = async function (agencyId) {
   const stats = await this.aggregate([
     {
       $match: {
-        agency: mongoose.Types.ObjectId(agencyId),
+        agency: new mongoose.Types.ObjectId(agencyId),
         status: 'Approved',
         isActive: true,
       },
@@ -542,48 +542,55 @@ reviewSchema.statics.findFlagged = function () {
 // ==================== MIDDLEWARE ====================
 
 // Pre-save: Calculate overall rating from breakdown
-reviewSchema.pre('save', function (next) {
+reviewSchema.pre('save', function () {
   if (this.isModified('breakdown')) {
     const { communication, transparency, support, documentation, jobQuality } = this.breakdown;
     this.rating = Math.round(
       (communication + transparency + support + documentation + jobQuality) / 5
     );
   }
-  next();
 });
 
 // Post-save: Update agency rating
 reviewSchema.post('save', async function (doc) {
-  if (doc.status === 'Approved' && doc.isActive) {
-    const Agency = mongoose.model('Agency');
-    const agency = await Agency.findById(doc.agency);
-    
-    if (agency) {
-      await agency.updateRating(doc.rating, doc.breakdown);
+  try {
+    if (doc.status === 'Approved' && doc.isActive) {
+      const Agency = mongoose.model('Agency');
+      const agency = await Agency.findById(doc.agency);
+      
+      if (agency) {
+        await agency.updateRating(doc.rating, doc.breakdown);
+      }
     }
+  } catch (error) {
+    console.error('Error in post-save middleware:', error);
   }
 });
 
 // Post-delete: Update agency rating
 reviewSchema.post('remove', async function (doc) {
-  const Agency = mongoose.model('Agency');
-  const agency = await Agency.findById(doc.agency);
-  
-  if (agency && doc.status === 'Approved') {
-    // Recalculate rating without this review
-    const stats = await this.constructor.getAgencyRatingStats(doc.agency);
+  try {
+    const Agency = mongoose.model('Agency');
+    const agency = await Agency.findById(doc.agency);
     
-    if (stats) {
-      agency.rating.average = stats.averageRating;
-      agency.rating.count = stats.totalReviews;
-      agency.rating.breakdown.communication = stats.avgCommunication;
-      agency.rating.breakdown.transparency = stats.avgTransparency;
-      agency.rating.breakdown.support = stats.avgSupport;
-      agency.rating.breakdown.documentation = stats.avgDocumentation;
-      agency.rating.breakdown.jobQuality = stats.avgJobQuality;
+    if (agency && doc.status === 'Approved') {
+      // Recalculate rating without this review
+      const stats = await this.constructor.getAgencyRatingStats(doc.agency);
       
-      await agency.save();
+      if (stats) {
+        agency.rating.average = stats.averageRating;
+        agency.rating.count = stats.totalReviews;
+        agency.rating.breakdown.communication = stats.avgCommunication;
+        agency.rating.breakdown.transparency = stats.avgTransparency;
+        agency.rating.breakdown.support = stats.avgSupport;
+        agency.rating.breakdown.documentation = stats.avgDocumentation;
+        agency.rating.breakdown.jobQuality = stats.avgJobQuality;
+        
+        await agency.save();
+      }
     }
+  } catch (error) {
+    console.error('Error in post-remove middleware:', error);
   }
 });
 

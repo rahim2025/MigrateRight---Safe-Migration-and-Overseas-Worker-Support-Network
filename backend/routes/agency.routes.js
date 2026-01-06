@@ -16,6 +16,12 @@ const {
 } = require('../controllers/agency.controller');
 const { authenticate, authorize, requireVerifiedEmail } = require('../middleware/auth.middleware');
 
+// Import review routes
+const reviewRoutes = require('./review.routes');
+
+// Use review routes for /api/agencies/:agencyId/reviews
+router.use('/:agencyId/reviews', reviewRoutes);
+
 // ==================== PUBLIC ROUTES ====================
 
 /**

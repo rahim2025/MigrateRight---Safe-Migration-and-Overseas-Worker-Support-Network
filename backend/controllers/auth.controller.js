@@ -8,6 +8,7 @@ const { asyncHandler } = require('../middleware/error.middleware');
 const { BadRequestError, UnauthorizedError } = require('../utils/errors');
 const { generateTokenPair, verifyRefreshToken, generateAccessToken, blacklistToken } = require('../utils/jwt.utils');
 const User = require('../models/User');
+const Agency = require('../models/Agency.model');
 const AgencyDetails = require('../models/AgencyDetails.model');
 const emailService = require('../services/email.service');
 const config = require('../config/env');
@@ -20,6 +21,9 @@ const logger = require('../utils/logger');
  */
 const register = asyncHandler(async (req, res) => {
   const { email, password, phoneNumber, role, fullName, dateOfBirth, gender, location, migrationStatus } = req.body;
+
+  // Remove confirmPassword from req.body after validation
+  delete req.body.confirmPassword;
 
   // Check existing user
   const existingUser = await User.findOne({ $or: [{ email }, { phoneNumber }] });
@@ -112,6 +116,9 @@ const registerAgency = asyncHandler(async (req, res) => {
     phoneNumber 
   } = req.body;
 
+  // Remove confirmPassword from req.body after validation
+  delete req.body.confirmPassword;
+
   // Check existing user
   const existingUser = await User.findOne({ $or: [{ email }, { phoneNumber }] });
   if (existingUser) {
@@ -127,14 +134,18 @@ const registerAgency = asyncHandler(async (req, res) => {
   }
 
   // Create user account with agency role
+  const nameParts = contactPersonName.trim().split(' ');
+  const firstName = nameParts[0] || contactPersonName;
+  const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : firstName;
+  
   const user = await User.create({
     email,
     password,
     phoneNumber,
     role: 'agency',
     fullName: {
-      firstName: contactPersonName.split(' ')[0] || contactPersonName,
-      lastName: contactPersonName.split(' ').slice(1).join(' ') || contactPersonName
+      firstName: firstName,
+      lastName: lastName
     },
     dateOfBirth: new Date('2000-01-01'), // Placeholder for agency
     gender: 'other',
@@ -153,15 +164,61 @@ const registerAgency = asyncHandler(async (req, res) => {
     phoneNumber
   });
 
+  // Parse business address to extract city (format: "Address, City" or just use as is)
+  const addressParts = businessAddress.split(',').map(part => part.trim());
+  const city = addressParts.length > 1 ? addressParts[addressParts.length - 1] : addressParts[0];
+
+  // Create agency entry for searchable listings
+  const agency = await Agency.create({
+    name: companyName,
+    license: {
+      number: tradeLicenseNumber,
+      issueDate: new Date(),
+      expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+      isValid: true,
+    },
+    isVerified: false, // Will be verified by admin
+    location: {
+      address: businessAddress,
+      city: city,
+      district: city,
+      country: 'Bangladesh',
+    },
+    destinationCountries: [], // Can be updated later
+    contact: {
+      phone: phoneNumber,
+      email: email,
+    },
+    rating: {
+      average: 0,
+      count: 0,
+    },
+    specialization: [],
+    description: `Professional recruitment agency based in ${city}.`,
+    establishedYear: new Date().getFullYear(),
+    totalPlacements: 0,
+    isActive: true,
+    owner: user._id, // Link to user account
+  });
+
   // Generate verification token
   const verificationToken = crypto.randomBytes(32).toString('hex');
   user.emailVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
   user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
   await user.save({ validateBeforeSave: false });
 
-  // Send verification email
-  const verificationUrl = `${config.frontendUrl}/verify-email/${verificationToken}`;
-  await emailService.sendEmailVerificationEmail(user.email, verificationToken, verificationUrl);
+  // Send verification email (non-blocking)
+  try {
+    const verificationUrl = `${config.frontendUrl}/verify-email/${verificationToken}`;
+    await emailService.sendEmailVerificationEmail(user.email, verificationToken, verificationUrl);
+  } catch (emailError) {
+    logger.warn('Failed to send verification email', { 
+      userId: user._id, 
+      email: user.email, 
+      error: emailError.message 
+    });
+    // Continue with registration even if email fails
+  }
 
   // Generate tokens
   const tokens = generateTokenPair(user);
@@ -176,6 +233,7 @@ const registerAgency = asyncHandler(async (req, res) => {
     data: { 
       user, 
       agencyDetails,
+      agency,
       token: tokens.accessToken, 
       refreshToken: tokens.refreshToken 
     },

@@ -28,8 +28,7 @@ const getAgencies = asyncHandler(async (req, res) => {
 
   // Build query object
   const query = {
-    isVerified: true,
-    isActive: true,
+    isActive: true, // Only show active agencies (verified or not)
   };
 
   // Add filters if provided
@@ -145,6 +144,10 @@ const getAgencyById = asyncHandler(async (req, res) => {
   if (!agency.isActive) {
     throw new NotFoundError('Agency', 'Agency is no longer active');
   }
+
+  // Recalculate rating from actual reviews to ensure accuracy
+  await agency.recalculateRatingFromReviews();
+  await agency.save();
 
   // Return success response
   res.status(200).json({
