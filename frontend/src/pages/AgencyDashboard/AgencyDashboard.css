@@ -1,6 +1,16 @@
 .agency-dashboard {
   min-height: 100vh;
   background-color: #f5f7fa;
+  margin: 0;
+  padding: 0;
+  margin-top: -70px;
+  padding-top: 0;
+}
+
+@media (max-width: 767px) {
+  .agency-dashboard {
+    margin-top: -56px;
+  }
 }
 
 .dashboard-header {
@@ -10,6 +20,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 0;
 }
 
 .dashboard-header h1 {

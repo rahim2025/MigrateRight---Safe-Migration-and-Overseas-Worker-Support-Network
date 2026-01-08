@@ -298,19 +298,23 @@ const AgencyDashboard = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
     try {
       if (editingStoryId) {
         await agencyManagementService.updateSuccessStory(editingStoryId, storyForm);
         setSuccess('Success story updated!');
+        setTimeout(() => setSuccess(''), 3000);
       } else {
         await agencyManagementService.createSuccessStory(storyForm);
         setSuccess('Success story created!');
+        setTimeout(() => setSuccess(''), 3000);
       }
       setStoryForm({ title: '', content: '', workerName: '', destinationCountry: '', imageUrl: '' });
       setEditingStoryId(null);
-      loadData();
+      fetchData();
     } catch (err) {
       setError(err.message || 'Operation failed');
+      setTimeout(() => setError(''), 3000);
     } finally {
       setLoading(false);
     }
@@ -332,7 +336,7 @@ const AgencyDashboard = () => {
     try {
       await agencyManagementService.deleteSuccessStory(id);
       setSuccess('Story deleted!');
-      loadData();
+      fetchData();
     } catch (err) {
       setError(err.message || 'Delete failed');
     }
@@ -353,7 +357,7 @@ const AgencyDashboard = () => {
       }
       setFeeForm({ country: '', serviceType: '', amount: '', isLegal: true, description: '' });
       setEditingFeeId(null);
-      loadData();
+      fetchData();
     } catch (err) {
       setError(err.message || 'Operation failed');
     } finally {
@@ -377,7 +381,7 @@ const AgencyDashboard = () => {
     try {
       await agencyManagementService.deleteFeeStructure(id);
       setSuccess('Fee structure deleted!');
-      loadData();
+      fetchData();
     } catch (err) {
       setError(err.message || 'Delete failed');
     }
@@ -398,7 +402,7 @@ const AgencyDashboard = () => {
       }
       setTrainingForm({ programName: '', description: '', duration: '', scheduleDate: '', location: '', capacity: '' });
       setEditingTrainingId(null);
-      loadData();
+      fetchData();
     } catch (err) {
       setError(err.message || 'Operation failed');
     } finally {
@@ -423,7 +427,7 @@ const AgencyDashboard = () => {
     try {
       await agencyManagementService.deleteTrainingRecord(id);
       setSuccess('Training record deleted!');
-      loadData();
+      fetchData();
     } catch (err) {
       setError(err.message || 'Delete failed');
     }
@@ -1139,7 +1143,6 @@ const AgencyDashboard = () => {
                       <th>Email</th>
                       <th>Location</th>
                       <th>Submitted</th>
-                      <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1150,11 +1153,6 @@ const AgencyDashboard = () => {
                         <td>{worker.userId?.email}</td>
                         <td>{worker.userId?.location?.bangladeshAddress?.district}</td>
                         <td>{new Date(worker.createdAt).toLocaleDateString()}</td>
-                        <td>
-                          <span className={`status-badge status-${worker.status}`}>
-                            {worker.status}
-                          </span>
-                        </td>
                       </tr>
                     ))}
                   </tbody>

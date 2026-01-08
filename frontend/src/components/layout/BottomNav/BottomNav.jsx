@@ -13,6 +13,11 @@ const BottomNav = () => {
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
+  
+  // Hide bottom nav on agency dashboard
+  if (location.pathname === '/agency-dashboard') {
+    return null;
+  }
 
   return (
     <nav className="bottom-nav" role="navigation" aria-label="Bottom navigation">

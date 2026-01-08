@@ -18,6 +18,14 @@ const AgencyDetails = () => {
   const [error, setError] = useState('');
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  const [successStories, setSuccessStories] = useState([]);
+  const [storiesLoading, setStoriesLoading] = useState(false);
+  const [feeStructures, setFeeStructures] = useState([]);
+  const [feesLoading, setFeesLoading] = useState(false);
+  const [trainingRecords, setTrainingRecords] = useState([]);
+  const [trainingsLoading, setTrainingsLoading] = useState(false);
+  const [isInterested, setIsInterested] = useState(false);
+  const [interestLoading, setInterestLoading] = useState(false);
 
   // Fetch agency details
   useEffect(() => {
@@ -40,6 +48,10 @@ const AgencyDetails = () => {
       
       if (result.success) {
         setAgency(result.data);
+        // Fetch success stories using the agency ID from the URL
+        fetchSuccessStories(id);
+        fetchFeeStructures(id);
+        fetchTrainingRecords(id);
       } else {
         throw new Error(result.message || 'Failed to load agency details');
       }
@@ -48,6 +60,75 @@ const AgencyDetails = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSuccessStories = async (agencyId) => {
+    try {
+      setStoriesLoading(true);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      console.log('Fetching success stories for agencyId:', agencyId);
+      const url = `${API_URL}/agency-management/success-stories-by-agency/${agencyId}`;
+      console.log('Request URL:', url);
+      
+      const response = await fetch(url);
+      console.log('Response status:', response.status);
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Success stories result:', result);
+        if (result.success) {
+          setSuccessStories(result.data || []);
+        }
+      } else {
+        console.error('Failed to fetch success stories:', response.status, response.statusText);
+      }
+    } catch (err) {
+      console.error('Error fetching success stories:', err);
+    } finally {
+      setStoriesLoading(false);
+    }
+  };
+
+  const fetchFeeStructures = async (agencyId) => {
+    try {
+      setFeesLoading(true);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const url = `${API_URL}/agency-management/fee-structures-by-agency/${agencyId}`;
+      
+      const response = await fetch(url);
+      
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setFeeStructures(result.data || []);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching fee structures:', err);
+    } finally {
+      setFeesLoading(false);
+    }
+  };
+
+  const fetchTrainingRecords = async (agencyId) => {
+    try {
+      setTrainingsLoading(true);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const url = `${API_URL}/agency-management/training-records-by-agency/${agencyId}`;
+      
+      const response = await fetch(url);
+      
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setTrainingRecords(result.data || []);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching training records:', err);
+    } finally {
+      setTrainingsLoading(false);
     }
   };
 
@@ -62,6 +143,57 @@ const AgencyDetails = () => {
   const handleRatingSubmit = () => {
     setShowRatingModal(false);
     fetchAgencyDetails(); // Refresh data
+  };
+
+  const handleExpressInterest = async () => {
+    if (!isAuthenticated) {
+      alert('Please login to express interest in this agency');
+      navigate('/login');
+      return;
+    }
+
+    // Check if user is an agency
+    console.log('Current user:', user);
+    console.log('User role:', user?.role);
+    
+    if (user?.role === 'agency') {
+      alert('Agencies cannot express interest in other agencies. Please login as a regular user.');
+      return;
+    }
+
+    try {
+      setInterestLoading(true);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const token = localStorage.getItem('authToken');
+      
+      console.log('Sending request with agencyId:', id, 'agencyName:', agency?.name);
+      
+      const response = await fetch(`${API_URL}/agency-management/interested`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          agencyId: id,
+          agencyName: agency.name
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setIsInterested(true);
+        alert('✓ Interest expressed successfully! The agency will be notified.');
+      } else {
+        alert(result.message || 'Failed to express interest');
+      }
+    } catch (err) {
+      console.error('Error expressing interest:', err);
+      alert('Failed to express interest. Please try again.');
+    } finally {
+      setInterestLoading(false);
+    }
   };
 
   if (loading) {
@@ -185,10 +317,35 @@ const AgencyDetails = () => {
                   </div>
                 </div>
                 
-                <button onClick={handleRateAgency} className="rate-button">
-                  <span>⭐</span>
-                  Rate This Agency
-                </button>
+                <div className="action-buttons">
+                  <button 
+                    onClick={handleExpressInterest} 
+                    className={`interested-button ${isInterested ? 'interested-active' : ''}`}
+                    disabled={interestLoading || isInterested}
+                  >
+                    {interestLoading ? (
+                      <>
+                        <span>⏳</span>
+                        Processing...
+                      </>
+                    ) : isInterested ? (
+                      <>
+                        <span>✓</span>
+                        Interest Sent
+                      </>
+                    ) : (
+                      <>
+                        <span>👍</span>
+                        I'm Interested
+                      </>
+                    )}
+                  </button>
+                  
+                  <button onClick={handleRateAgency} className="rate-button">
+                    <span>⭐</span>
+                    Rate This Agency
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -215,6 +372,12 @@ const AgencyDetails = () => {
             onClick={() => setActiveTab('services')}
           >
             Services
+          </button>
+          <button 
+            className={`tab ${activeTab === 'stories' ? 'active' : ''}`}
+            onClick={() => setActiveTab('stories')}
+          >
+            Success Stories
           </button>
           <button 
             className={`tab ${activeTab === 'reviews' ? 'active' : ''}`}
@@ -361,71 +524,144 @@ const AgencyDetails = () => {
           {/* Services Tab */}
           {activeTab === 'services' && (
             <div className="tab-content">
-              {/* Destination Countries */}
+              {/* Fee Structures */}
               <div className="info-card">
-                <h2>Destination Countries</h2>
-                <p className="section-description">Countries where this agency provides recruitment services</p>
-                {agency.destinationCountries && agency.destinationCountries.length > 0 ? (
-                  <div className="services-grid">
-                    {agency.destinationCountries.map((country, index) => (
-                      <div key={index} className="service-item destination-item">
-                        <div className="service-icon">🌍</div>
-                        <div className="service-name">{country}</div>
+                <h2>Fee Structure</h2>
+                <p className="section-description">Transparent pricing for recruitment services</p>
+                
+                {feesLoading ? (
+                  <div className="loading-state">
+                    <div className="loading-spinner"></div>
+                    <p>Loading fee structures...</p>
+                  </div>
+                ) : feeStructures.length > 0 ? (
+                  <div className="fee-list">
+                    {feeStructures.map((fee) => (
+                      <div key={fee._id} className="fee-item">
+                        <div className="fee-header">
+                          <h4>{fee.country} - {fee.serviceType}</h4>
+                          <span className={`fee-badge ${fee.isLegal ? 'legal' : 'warning'}`}>
+                            {fee.isLegal ? '✓ Within Legal Limits' : '⚠ Check Carefully'}
+                          </span>
+                        </div>
+                        <div className="fee-amount">{fee.amount} BDT</div>
+                        {fee.description && <p className="fee-description">{fee.description}</p>}
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="no-data">No destination countries specified.</p>
+                  <p className="no-data">No fee structure information available.</p>
                 )}
               </div>
 
-              {/* Specializations */}
+              {/* Training Records */}
               <div className="info-card">
-                <h2>Industry Specializations</h2>
-                <p className="section-description">Job sectors and industries this agency specializes in</p>
-                {agency.specialization && agency.specialization.length > 0 ? (
-                  <div className="services-grid">
-                    {agency.specialization.map((specialization, index) => (
-                      <div key={index} className="service-item specialization-item">
-                        <div className="service-icon">🔧</div>
-                        <div className="service-name">{specialization}</div>
+                <h2>Training Programs</h2>
+                <p className="section-description">Pre-departure training programs offered by this agency</p>
+                
+                {trainingsLoading ? (
+                  <div className="loading-state">
+                    <div className="loading-spinner"></div>
+                    <p>Loading training records...</p>
+                  </div>
+                ) : trainingRecords.length > 0 ? (
+                  <div className="training-list">
+                    {trainingRecords.map((training) => (
+                      <div key={training._id} className="training-item">
+                        <h4 className="training-name">{training.programName}</h4>
+                        <p className="training-description">{training.description}</p>
+                        <div className="training-details">
+                          {training.duration && (
+                            <div className="training-detail">
+                              <span className="detail-icon">⏱️</span>
+                              <span>{training.duration}</span>
+                            </div>
+                          )}
+                          {training.location && (
+                            <div className="training-detail">
+                              <span className="detail-icon">📍</span>
+                              <span>{training.location}</span>
+                            </div>
+                          )}
+                          {training.scheduleDate && (
+                            <div className="training-detail">
+                              <span className="detail-icon">📅</span>
+                              <span>{new Date(training.scheduleDate).toLocaleDateString()}</span>
+                            </div>
+                          )}
+                          {training.capacity && (
+                            <div className="training-detail">
+                              <span className="detail-icon">👥</span>
+                              <span>{training.capacity} participants</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="no-data">No specialization information available.</p>
+                  <p className="no-data">No training programs available.</p>
                 )}
               </div>
+            </div>
+          )}
 
-              {/* Total Placements if available */}
-              {agency.totalPlacements !== undefined && agency.totalPlacements > 0 && (
-                <div className="info-card">
-                  <h2>Track Record</h2>
-                  <div className="placement-stats">
-                    <div className="placement-number">{agency.totalPlacements.toLocaleString()}</div>
-                    <div className="placement-label">Total Workers Placed</div>
+          {/* Success Stories Tab */}
+          {activeTab === 'stories' && (
+            <div className="tab-content">
+              <div className="info-card">
+                <h2>Success Stories</h2>
+                <p className="section-description">Real experiences from workers placed by this agency</p>
+                
+                {storiesLoading ? (
+                  <div className="loading-state">
+                    <div className="loading-spinner"></div>
+                    <p>Loading success stories...</p>
                   </div>
-                </div>
-              )}
-
-              {/* Established Year if available */}
-              {agency.establishedYear && (
-                <div className="info-card">
-                  <h2>Experience</h2>
-                  <div className="experience-info">
-                    <div className="experience-year">
-                      <span className="year-label">Established in</span>
-                      <span className="year-value">{agency.establishedYear}</span>
-                    </div>
-                    <div className="experience-duration">
-                      <span className="duration-value">
-                        {new Date().getFullYear() - agency.establishedYear}
-                      </span>
-                      <span className="duration-label">years in business</span>
-                    </div>
+                ) : successStories.length > 0 ? (
+                  <div className="stories-grid">
+                    {successStories.map((story) => (
+                      <div key={story._id} className="story-card">
+                        {story.imageUrl && (
+                          <div className="story-image">
+                            <img src={story.imageUrl} alt={story.title} />
+                          </div>
+                        )}
+                        <div className="story-content">
+                          <h3 className="story-title">{story.title}</h3>
+                          <p className="story-text">{story.content}</p>
+                          <div className="story-meta">
+                            {story.workerName && (
+                              <div className="story-meta-item">
+                                <span className="meta-icon">👤</span>
+                                <span className="meta-text">{story.workerName}</span>
+                              </div>
+                            )}
+                            {story.destinationCountry && (
+                              <div className="story-meta-item">
+                                <span className="meta-icon">🌍</span>
+                                <span className="meta-text">{story.destinationCountry}</span>
+                              </div>
+                            )}
+                            <div className="story-meta-item">
+                              <span className="meta-icon">📅</span>
+                              <span className="meta-text">
+                                {new Date(story.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <div className="no-data">
+                    <div className="no-data-icon">📖</div>
+                    <h3>No Success Stories Yet</h3>
+                    <p>This agency hasn't shared any success stories yet.</p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

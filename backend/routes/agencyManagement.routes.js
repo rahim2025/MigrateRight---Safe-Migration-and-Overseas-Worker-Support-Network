@@ -12,6 +12,7 @@ router.put('/details', authenticate, agencyController.updateAgencyDetails);
 router.post('/success-stories', authenticate, agencyController.createSuccessStory);
 router.get('/success-stories', authenticate, agencyController.getSuccessStories);
 router.get('/success-stories/:agencyId', agencyController.getSuccessStories);
+router.get('/success-stories-by-agency/:agencyModelId', agencyController.getSuccessStoriesByAgencyModelId);
 router.get('/success-story/:id', agencyController.getSuccessStoryById);
 router.put('/success-stories/:id', authenticate, agencyController.updateSuccessStory);
 router.delete('/success-stories/:id', authenticate, agencyController.deleteSuccessStory);
@@ -20,6 +21,7 @@ router.delete('/success-stories/:id', authenticate, agencyController.deleteSucce
 router.post('/fee-structures', authenticate, agencyController.createFeeStructure);
 router.get('/fee-structures', authenticate, agencyController.getFeeStructures);
 router.get('/fee-structures/:agencyId', agencyController.getFeeStructures);
+router.get('/fee-structures-by-agency/:agencyModelId', agencyController.getFeeStructuresByAgencyModelId);
 router.get('/fee-structure/:id', agencyController.getFeeStructureById);
 router.put('/fee-structures/:id', authenticate, agencyController.updateFeeStructure);
 router.delete('/fee-structures/:id', authenticate, agencyController.deleteFeeStructure);
@@ -28,6 +30,7 @@ router.delete('/fee-structures/:id', authenticate, agencyController.deleteFeeStr
 router.post('/training-records', authenticate, agencyController.createTrainingRecord);
 router.get('/training-records', authenticate, agencyController.getTrainingRecords);
 router.get('/training-records/:agencyId', agencyController.getTrainingRecords);
+router.get('/training-records-by-agency/:agencyModelId', agencyController.getTrainingRecordsByAgencyModelId);
 router.get('/training-record/:id', agencyController.getTrainingRecordById);
 router.put('/training-records/:id', authenticate, agencyController.updateTrainingRecord);
 router.delete('/training-records/:id', authenticate, agencyController.deleteTrainingRecord);

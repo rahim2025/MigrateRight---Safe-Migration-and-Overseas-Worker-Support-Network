@@ -1,4 +1,5 @@
 const AgencyDetails = require('../models/AgencyDetails.model');
+const Agency = require('../models/Agency.model');
 const SuccessStory = require('../models/SuccessStory.model');
 const FeeStructure = require('../models/FeeStructure.model');
 const TrainingRecord = require('../models/TrainingRecord.model');
@@ -164,6 +165,74 @@ exports.getSuccessStories = async (req, res) => {
   }
 };
 
+// New endpoint to get success stories by old Agency model ID
+exports.getSuccessStoriesByAgencyModelId = async (req, res) => {
+  try {
+    const { agencyModelId } = req.params;
+    
+    // The agencyModelId from the URL is the Agency collection's _id
+    // But SuccessStory stores agencyId which is the User's _id (agency user account)
+    // We need to find which user "owns" or is linked to this Agency
+    
+    // Check if the Agency model has any field linking to User
+    const Agency = require('../models/Agency.model');
+    const agency = await Agency.findById(agencyModelId);
+    
+    if (!agency) {
+      return res.status(404).json({
+        success: false,
+        message: 'Agency not found'
+      });
+    }
+    
+    // Find AgencyDetails that might link this agency to a user
+    // Or find success stories where the agency user might have tagged this agency
+    // For now, let's try to find stories by searching for the agency name or other identifiers
+    
+    // Best approach: Search for the user who created this agency profile
+    // If Agency has userId field, use it; otherwise search AgencyDetails
+    const AgencyDetails = require('../models/AgencyDetails.model');
+    
+    // Try to find agency details with matching company name
+    const agencyDetails = await AgencyDetails.findOne({
+      companyName: agency.name
+    });
+    
+    let userId = null;
+    if (agencyDetails) {
+      userId = agencyDetails.userId;
+    }
+    
+    if (!userId) {
+      // No linking found, return empty array
+      return res.status(200).json({
+        success: true,
+        count: 0,
+        data: []
+      });
+    }
+    
+    // Fetch success stories by the user ID
+    const successStories = await SuccessStory.find({ 
+      agencyId: userId,
+      isPublished: true 
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: successStories.length,
+      data: successStories
+    });
+  } catch (error) {
+    logger.error('Error fetching success stories by agency model ID:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch success stories',
+      error: error.message
+    });
+  }
+};
+
 exports.getSuccessStoryById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -305,6 +374,112 @@ exports.getFeeStructures = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch fee structures',
+      error: error.message
+    });
+  }
+};
+
+// Public endpoint to get fee structures by Agency model ID
+exports.getFeeStructuresByAgencyModelId = async (req, res) => {
+  try {
+    const { agencyModelId } = req.params;
+    
+    const Agency = require('../models/Agency.model');
+    const agency = await Agency.findById(agencyModelId);
+    
+    if (!agency) {
+      return res.status(404).json({
+        success: false,
+        message: 'Agency not found'
+      });
+    }
+    
+    const AgencyDetails = require('../models/AgencyDetails.model');
+    const agencyDetails = await AgencyDetails.findOne({
+      companyName: agency.name
+    });
+    
+    let userId = null;
+    if (agencyDetails) {
+      userId = agencyDetails.userId;
+    }
+    
+    if (!userId) {
+      return res.status(200).json({
+        success: true,
+        count: 0,
+        data: []
+      });
+    }
+    
+    const feeStructures = await FeeStructure.find({ 
+      agencyId: userId,
+      isActive: true 
+    }).sort({ country: 1 });
+
+    res.status(200).json({
+      success: true,
+      count: feeStructures.length,
+      data: feeStructures
+    });
+  } catch (error) {
+    logger.error('Error fetching fee structures by agency model ID:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch fee structures',
+      error: error.message
+    });
+  }
+};
+
+// Public endpoint to get training records by Agency model ID
+exports.getTrainingRecordsByAgencyModelId = async (req, res) => {
+  try {
+    const { agencyModelId } = req.params;
+    
+    const Agency = require('../models/Agency.model');
+    const agency = await Agency.findById(agencyModelId);
+    
+    if (!agency) {
+      return res.status(404).json({
+        success: false,
+        message: 'Agency not found'
+      });
+    }
+    
+    const AgencyDetails = require('../models/AgencyDetails.model');
+    const agencyDetails = await AgencyDetails.findOne({
+      companyName: agency.name
+    });
+    
+    let userId = null;
+    if (agencyDetails) {
+      userId = agencyDetails.userId;
+    }
+    
+    if (!userId) {
+      return res.status(200).json({
+        success: true,
+        count: 0,
+        data: []
+      });
+    }
+    
+    const trainingRecords = await TrainingRecord.find({ 
+      agencyId: userId,
+      isActive: true 
+    }).sort({ scheduleDate: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: trainingRecords.length,
+      data: trainingRecords
+    });
+  } catch (error) {
+    logger.error('Error fetching training records by agency model ID:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch training records',
       error: error.message
     });
   }
@@ -555,27 +730,38 @@ exports.deleteTrainingRecord = async (req, res) => {
 exports.expressInterest = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { agencyId } = req.body;
+    const { agencyId, agencyName } = req.body;
 
-    // Check if user role is user (not agency)
-    if (req.user.role !== 'user') {
+    // Check if user role is not agency (allow aspiring_migrant, user, etc.)
+    if (req.user.role === 'agency' || req.user.role === 'admin') {
+      logger.warn(`Interest blocked - User role is '${req.user.role}'`);
       return res.status(403).json({
         success: false,
-        message: 'Only users can express interest in agencies'
+        message: 'Only job seekers can express interest in agencies'
       });
     }
 
-    // Check if agency exists
-    const agency = await User.findOne({ _id: agencyId, role: 'agency' });
-    if (!agency) {
+    // Find the agency user by matching company name
+    const agencyPublicProfile = await Agency.findById(agencyId);
+    if (!agencyPublicProfile) {
       return res.status(404).json({
         success: false,
         message: 'Agency not found'
       });
     }
 
+    const agencyDetails = await AgencyDetails.findOne({ companyName: agencyPublicProfile.name });
+    if (!agencyDetails) {
+      return res.status(404).json({
+        success: false,
+        message: 'Agency details not found'
+      });
+    }
+
+    const agencyUserId = agencyDetails.userId;
+
     // Check if user already expressed interest
-    const existingInterest = await InterestedWorker.findOne({ agencyId, userId });
+    const existingInterest = await InterestedWorker.findOne({ agencyId: agencyUserId, userId });
     if (existingInterest) {
       return res.status(400).json({
         success: false,
@@ -584,11 +770,11 @@ exports.expressInterest = async (req, res) => {
     }
 
     const interestedWorker = await InterestedWorker.create({
-      agencyId,
+      agencyId: agencyUserId,
       userId
     });
 
-    logger.info(`User ${userId} expressed interest in agency ${agencyId}`);
+    logger.info(`User ${userId} expressed interest in agency ${agencyUserId} (${agencyPublicProfile.name})`);
 
     res.status(201).json({
       success: true,

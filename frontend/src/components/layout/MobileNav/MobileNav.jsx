@@ -30,6 +30,11 @@ const MobileNav = () => {
   };
 
   const isActive = (path) => location.pathname === path;
+  
+  // Hide mobile nav on agency dashboard
+  if (location.pathname === '/agency-dashboard') {
+    return null;
+  }
 
   return (
     <nav className="mobile-nav" role="navigation" aria-label="Main navigation">

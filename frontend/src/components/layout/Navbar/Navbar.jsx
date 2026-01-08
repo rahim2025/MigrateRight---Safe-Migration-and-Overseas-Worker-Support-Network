@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext';
 import { useLanguage } from '@context/LanguageContext';
 import LanguageSwitcher from '@components/common/LanguageSwitcher/LanguageSwitcher';
@@ -14,11 +14,17 @@ const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   // Check if user is an admin (any admin role)
   const isAdmin = user?.role === 'platform_admin' || user?.role === 'admin' || user?.role === 'recruitment_admin';
+  
+  // Hide navbar on agency dashboard
+  if (location.pathname === '/agency-dashboard') {
+    return null;
+  }
 
   // Fetch unread notification count for admins
   useEffect(() => {
