@@ -161,14 +161,16 @@ const EmergencySOS = () => {
       };
 
       const response = await triggerSOS(sosData);
-      
+      const eventPayload = response?.data || response;
+      const eventId = eventPayload?.eventId || eventPayload?._id;
+
       setSosTriggered(true);
-      setActiveEmergency(response.data);
-      setNearestContacts(response.data?.nearestContacts || []);
+      setActiveEmergency({ ...eventPayload, _id: eventId });
+      setNearestContacts(eventPayload?.nearestContacts || []);
 
       // Start watching location for continuous updates (only if using automatic location)
-      if (!useManualLocation && response.data?.eventId) {
-        startLocationWatch(response.data?.eventId);
+      if (!useManualLocation && eventId) {
+        startLocationWatch(eventId);
       }
 
       // Reload history
@@ -225,7 +227,8 @@ const EmergencySOS = () => {
     setLoading(true);
 
     try {
-      await updateEmergencyStatus(activeEmergency._id, 'resolved', 'Resolved by user');
+      const eventId = activeEmergency._id || activeEmergency.eventId;
+      await updateEmergencyStatus(eventId, 'resolved', 'Resolved by user');
       
       // Stop location watch
       if (locationWatchId) {
@@ -261,7 +264,8 @@ const EmergencySOS = () => {
     setLoading(true);
 
     try {
-      await updateEmergencyStatus(activeEmergency._id, 'cancelled', 'Cancelled by user');
+      const eventId = activeEmergency._id || activeEmergency.eventId;
+      await updateEmergencyStatus(eventId, 'cancelled', 'Cancelled by user');
       
       // Stop location watch
       if (locationWatchId) {

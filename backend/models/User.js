@@ -146,6 +146,29 @@ const userSchema = new mongoose.Schema({
     enum: ['planning', 'in_process', 'abroad', 'returned', 'not_applicable'],
     default: 'not_applicable'
   },
+
+  // ==================== Family & Emergency Contacts ====================
+  familyMembers: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      name: String,
+      relationship: String,
+      phone: String,
+      email: String,
+      notificationMethod: {
+        type: String,
+        enum: ['email', 'app', 'both'],
+        default: 'both'
+      },
+      primary: {
+        type: Boolean,
+        default: false
+      }
+    }
+  ],
   
   // ==================== Agency Association ====================
   associatedAgency: {

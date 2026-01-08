@@ -12,6 +12,8 @@ import ProfileCompletionBanner from './components/ProfileCompletionBanner';
 import QuickActionsButton from './components/QuickActionsButton';
 import DashboardTutorial from './components/DashboardTutorial';
 import workerService from '../../services/workerService';
+import notificationService from '../../services/notificationService';
+import { useSocket } from '../../context/SocketContext';
 import './WorkerDashboard.css';
 
 /**
@@ -22,6 +24,7 @@ const WorkerDashboard = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { socket, connected: socketConnected } = useSocket();
 
   // Dashboard state
   const [profile, setProfile] = useState(null);
@@ -132,8 +135,9 @@ const WorkerDashboard = () => {
     setErrors(prev => ({ ...prev, notifications: null }));
 
     try {
-      const response = await workerService.getNotifications({ limit: 5 });
-      setNotifications(response.data || response.notifications || []);
+      const response = await notificationService.getNotifications(5, false);
+      const list = response.data || response.notifications || response?.data?.data || response || [];
+      setNotifications(Array.isArray(list.data) ? list.data : Array.isArray(list) ? list : []);
     } catch (error) {
       console.error('Error fetching notifications:', error);
       setErrors(prev => ({ ...prev, notifications: error.message }));
@@ -143,6 +147,21 @@ const WorkerDashboard = () => {
       setLoading(prev => ({ ...prev, notifications: false }));
     }
   }, [language]);
+
+  // Live notifications via socket for SOS/family alerts
+  useEffect(() => {
+    if (!socket || !socketConnected) return;
+
+    const handleNewNotification = (notification) => {
+      setNotifications((prev) => {
+        const next = [notification, ...prev];
+        return next.slice(0, 5);
+      });
+    };
+
+    socket.on('new_notification', handleNewNotification);
+    return () => socket.off('new_notification', handleNewNotification);
+  }, [socket, socketConnected]);
 
   // Fetch activities
   const fetchActivities = useCallback(async () => {

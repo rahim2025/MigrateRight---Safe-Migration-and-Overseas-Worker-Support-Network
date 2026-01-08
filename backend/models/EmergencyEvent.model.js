@@ -248,13 +248,16 @@ emergencyEventSchema.methods.addTimelineEntry = function (action, description, u
     description,
     performedBy: userId,
   });
-  return this.save();
+  return this;
 };
 
 /**
  * Mark family member as notified
  */
 emergencyEventSchema.methods.markFamilyNotified = function (familyMemberId) {
+  if (!familyMemberId) {
+    return this.save();
+  }
   const notification = this.familyNotifications.find(
     (n) => n.familyMemberId.toString() === familyMemberId.toString()
   );
@@ -291,8 +294,12 @@ emergencyEventSchema.methods.updateStatus = function (newStatus, userId = null, 
     this.resolutionNotes = notes;
   }
 
-  this.addTimelineEntry('status_updated', `Status changed to ${newStatus}`, userId);
-  
+  this.timeline.push({
+    action: 'status_updated',
+    description: `Status changed to ${newStatus}`,
+    performedBy: userId,
+  });
+
   return this.save();
 };
 

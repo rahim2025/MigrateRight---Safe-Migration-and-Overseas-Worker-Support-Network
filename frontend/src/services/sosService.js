@@ -22,7 +22,7 @@ const SOS_BASE_URL = '/emergency';
 export const triggerSOS = async (sosData) => {
   try {
     const response = await api.post(`${SOS_BASE_URL}/sos`, sosData);
-    return response.data;
+    return response?.data || response;
   } catch (error) {
     console.error('Error triggering SOS:', error);
     throw error;
@@ -50,7 +50,7 @@ export const getNearestContacts = async (longitude, latitude, maxDistance = 1000
     }
 
     const response = await api.get(`${SOS_BASE_URL}/contacts/nearest`, { params });
-    return response.data;
+    return response?.data || response;
   } catch (error) {
     console.error('Error fetching nearest contacts:', error);
     throw error;
@@ -67,7 +67,7 @@ export const getContactsByCountry = async (country, type = null) => {
   try {
     const params = type ? { type } : {};
     const response = await api.get(`${SOS_BASE_URL}/contacts/country/${country}`, { params });
-    return response.data;
+    return response?.data || response;
   } catch (error) {
     console.error('Error fetching contacts by country:', error);
     throw error;
@@ -83,7 +83,7 @@ export const getSOSHistory = async (limit = 10) => {
   try {
     const params = limit ? { limit } : {};
     const response = await api.get(`${SOS_BASE_URL}/history`, { params });
-    return response.data;
+    return response?.data || response;
   } catch (error) {
     console.error('Error fetching SOS history:', error);
     throw error;
@@ -98,7 +98,7 @@ export const getSOSHistory = async (limit = 10) => {
 export const getEmergencyEvent = async (eventId) => {
   try {
     const response = await api.get(`${SOS_BASE_URL}/${eventId}`);
-    return response.data;
+    return response?.data || response;
   } catch (error) {
     console.error('Error fetching emergency event:', error);
     throw error;
@@ -120,7 +120,7 @@ export const updateEmergencyStatus = async (eventId, status, notes = null) => {
     }
 
     const response = await api.patch(`${SOS_BASE_URL}/${eventId}/status`, data);
-    return response.data;
+    return response?.data || response;
   } catch (error) {
     console.error('Error updating emergency status:', error);
     throw error;
@@ -143,7 +143,7 @@ export const updateEmergencyLocation = async (eventId, location, locationDetails
     };
 
     const response = await api.patch(`${SOS_BASE_URL}/${eventId}/location`, data);
-    return response.data;
+    return response?.data || response;
   } catch (error) {
     console.error('Error updating emergency location:', error);
     throw error;
@@ -157,7 +157,7 @@ export const updateEmergencyLocation = async (eventId, location, locationDetails
 export const getActiveEmergencies = async () => {
   try {
     const response = await api.get(`${SOS_BASE_URL}/admin/active`);
-    return response.data;
+    return response?.data || response;
   } catch (error) {
     console.error('Error fetching active emergencies:', error);
     throw error;
@@ -172,7 +172,7 @@ export const getActiveEmergencies = async () => {
 export const getEmergenciesBySeverity = async (severity) => {
   try {
     const response = await api.get(`${SOS_BASE_URL}/admin/severity/${severity}`);
-    return response.data;
+    return response?.data || response;
   } catch (error) {
     console.error('Error fetching emergencies by severity:', error);
     throw error;
@@ -188,7 +188,7 @@ export const getEmergenciesBySeverity = async (severity) => {
 export const addSupportNote = async (eventId, note) => {
   try {
     const response = await api.post(`${SOS_BASE_URL}/${eventId}/note`, { note });
-    return response.data;
+    return response?.data || response;
   } catch (error) {
     console.error('Error adding support note:', error);
     throw error;

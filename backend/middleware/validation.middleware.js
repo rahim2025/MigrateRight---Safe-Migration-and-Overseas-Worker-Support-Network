@@ -115,6 +115,12 @@ const validateUpdateProfile = [
   body('fullName.firstName').optional().trim().isLength({ min: 1, max: 50 }),
   body('fullName.lastName').optional().trim().isLength({ min: 1, max: 50 }),
   body('phoneNumber').optional().matches(/^(\+880|880|0)?1[3-9]\d{8}$/),
+  body('familyMembers').optional().isArray(),
+  body('familyMembers.*.user').optional().isMongoId(),
+  body('familyMembers.*.relationship').optional().isString().trim().isLength({ min: 0, max: 50 }),
+  body('familyMembers.*.notificationMethod')
+    .optional()
+    .isIn(['email', 'app', 'both']),
   handleValidationErrors,
 ];
 

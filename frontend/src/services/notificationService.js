@@ -24,7 +24,8 @@ export const getNotifications = async (limit = 20, unreadOnly = false, type = nu
       params.type = type;
     }
     const response = await api.get(NOTIFICATION_BASE_URL, { params });
-    return response.data;
+    // axios interceptor already unwraps to payload
+    return response.data || response;
   } catch (error) {
     console.error('Error fetching notifications:', error);
     throw error;
@@ -38,8 +39,8 @@ export const getNotifications = async (limit = 20, unreadOnly = false, type = nu
 export const getUnreadCount = async () => {
   try {
     const response = await api.get(`${NOTIFICATION_BASE_URL}/unread-count`);
-    // Handle different response structures
-    return response.data?.data?.count ?? response.data?.count ?? 0;
+    const payload = response.data || response;
+    return payload?.data?.count ?? payload?.count ?? 0;
   } catch (error) {
     console.error('Error fetching unread count:', error);
     // Return 0 instead of throwing to prevent UI errors
@@ -55,7 +56,7 @@ export const getUnreadCount = async () => {
 export const markAsRead = async (notificationId) => {
   try {
     const response = await api.patch(`${NOTIFICATION_BASE_URL}/${notificationId}/read`);
-    return response.data;
+    return response.data || response;
   } catch (error) {
     console.error('Error marking notification as read:', error);
     throw error;
@@ -69,7 +70,7 @@ export const markAsRead = async (notificationId) => {
 export const markAllAsRead = async () => {
   try {
     const response = await api.patch(`${NOTIFICATION_BASE_URL}/mark-all-read`);
-    return response.data;
+    return response.data || response;
   } catch (error) {
     console.error('Error marking all as read:', error);
     throw error;
@@ -84,7 +85,7 @@ export const markAllAsRead = async () => {
 export const deleteNotification = async (notificationId) => {
   try {
     const response = await api.delete(`${NOTIFICATION_BASE_URL}/${notificationId}`);
-    return response.data;
+    return response.data || response;
   } catch (error) {
     console.error('Error deleting notification:', error);
     throw error;

@@ -2,7 +2,7 @@ const EmergencyEvent = require('../models/EmergencyEvent.model');
 const EmergencyContact = require('../models/EmergencyContact.model');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
-const { AppError, NotFoundError, BadRequestError } = require('../utils/errors');
+const { ForbiddenError, NotFoundError, BadRequestError } = require('../utils/errors');
 const logger = require('../utils/logger');
 
 /**
@@ -66,8 +66,18 @@ const triggerSOS = asyncHandler(async (req, res) => {
     notified: false,
   }));
 
-  // Prepare family notifications data (empty for now - can be extended later)
-  const familyNotificationsData = [];
+  // Prepare family notifications data from linked family members on the worker profile
+  const familyNotificationsData = (worker.familyMembers || [])
+    .filter((member) => member && (member.user || member._id))
+    .map((member) => ({
+      familyMemberId: member.user || member._id,
+      name: member.name,
+      relationship: member.relationship || 'family',
+      phone: member.phone,
+      email: member.email,
+      notificationMethod: member.notificationMethod || 'both',
+      notified: false,
+    }));
 
   // Create emergency event
   const emergencyEvent = await EmergencyEvent.create({
@@ -92,7 +102,7 @@ const triggerSOS = asyncHandler(async (req, res) => {
   });
 
   // Notify family members (simulated - in production, send actual emails/push notifications)
-  await notifyFamilyMembers(emergencyEvent, worker);
+  await notifyFamilyMembers(emergencyEvent, worker, req.io);
 
   // Notify nearest contacts (simulated)
   await notifyEmergencyContacts(emergencyEvent, nearestContactsData);
@@ -220,7 +230,7 @@ const getEmergencyEvent = asyncHandler(async (req, res) => {
 
   // Check if user owns this event or is admin
   if (event.userId._id.toString() !== req.userId && req.user.role !== 'platform_admin') {
-    throw new AppError('Access denied', 403);
+    throw new ForbiddenError('Access denied');
   }
 
   res.status(200).json({
@@ -248,9 +258,15 @@ const updateEmergencyStatus = asyncHandler(async (req, res) => {
     throw new NotFoundError('Emergency event not found');
   }
 
-  // Check permissions
-  if (event.userId.toString() !== req.userId && req.user.role !== 'platform_admin') {
-    throw new AppError('Access denied', 403);
+  // Check permissions (owner, platform admin, or linked family member)
+  const isOwner = event.userId.toString() === req.userId.toString();
+  const isPlatformAdmin = req.user.role === 'platform_admin';
+  const isFamilyMember = (event.familyNotifications || []).some((fn) =>
+    fn.familyMemberId && fn.familyMemberId.toString() === req.userId.toString()
+  );
+
+  if (!isOwner && !isPlatformAdmin && !isFamilyMember) {
+    throw new ForbiddenError('Access denied');
   }
 
   await event.updateStatus(status, req.userId, notes);
@@ -284,8 +300,12 @@ const updateLocation = asyncHandler(async (req, res) => {
     throw new NotFoundError('Emergency event not found');
   }
 
-  if (event.userId.toString() !== req.userId) {
-    throw new AppError('Access denied', 403);
+  const isOwner = event.userId.toString() === req.userId.toString();
+  const isFamilyMember = (event.familyNotifications || []).some((fn) =>
+    fn.familyMemberId && fn.familyMemberId.toString() === req.userId.toString()
+  );
+  if (!isOwner && !isFamilyMember) {
+    throw new ForbiddenError('Access denied');
   }
 
   event.location = location;
@@ -415,27 +435,52 @@ const addSupportNote = asyncHandler(async (req, res) => {
 /**
  * Notify family members (simulated - replace with actual notification service)
  */
-async function notifyFamilyMembers(emergencyEvent, worker) {
+async function notifyFamilyMembers(emergencyEvent, worker, io) {
   for (const familyNotification of emergencyEvent.familyNotifications) {
     try {
-      // Simulated notification - in production, integrate with:
-      // - Email service (SendGrid, AWS SES)
-      // - Push notification service (Firebase, OneSignal)
-      // - SMS service (Twilio)
-      
-      logger.info(`📧 [SIMULATED] Notifying family member: ${familyNotification.email}`, {
+      if (!familyNotification.email && !familyNotification.phone) {
+        continue;
+      }
+
+      // Create in-app notification for linked user accounts
+      if (familyNotification.familyMemberId) {
+        const descriptionText = emergencyEvent.description || 'No additional description provided';
+        const notification = await Notification.create({
+          userId: familyNotification.familyMemberId,
+          type: 'emergency_sos',
+          title: `🚨 ${emergencyEvent.severity.toUpperCase()} SOS Alert`,
+          message: `${worker.fullName.firstName} ${worker.fullName.lastName} triggered SOS (${emergencyEvent.emergencyType.replace('_', ' ')}) — ${descriptionText.substring(0, 140)}`,
+          severity: emergencyEvent.severity,
+          relatedId: emergencyEvent._id,
+          relatedModel: 'EmergencyEvent',
+          actionUrl: `/emergency/${emergencyEvent._id}`,
+          metadata: {
+            workerName: `${worker.fullName.firstName} ${worker.fullName.lastName}`,
+            relationship: familyNotification.relationship,
+            location: emergencyEvent.locationDetails?.city,
+            description: descriptionText,
+            emergencyType: emergencyEvent.emergencyType,
+          },
+        });
+
+        // Emit real-time notification when socket available
+        if (io) {
+          io.to(familyNotification.familyMemberId.toString()).emit('new_notification', notification);
+        }
+
+        await emergencyEvent.markFamilyNotified(familyNotification.familyMemberId);
+      }
+
+      // Simulated delivery for email/SMS until providers are wired up
+      logger.info(`📧 [SIMULATED] Notifying family member: ${familyNotification.email || familyNotification.phone}`, {
         eventId: emergencyEvent._id,
         workerName: worker.fullName.firstName,
         emergencyType: emergencyEvent.emergencyType,
       });
 
-      // Mark as notified
-      await emergencyEvent.markFamilyNotified(familyNotification.familyMemberId);
-      
-      // Add timeline entry
       await emergencyEvent.addTimelineEntry(
         'family_notified',
-        `Family member ${familyNotification.name} notified via email`
+        `Family member ${familyNotification.name} notified via in-app${familyNotification.email ? ' + email' : ''}`
       );
     } catch (error) {
       logger.error(`Failed to notify family member ${familyNotification.email}`, error);

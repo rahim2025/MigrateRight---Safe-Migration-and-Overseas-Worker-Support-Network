@@ -160,6 +160,9 @@ const NotificationsFeed = ({
               
               <div className="notification-content">
                 <p className="notification-message">{notification.message}</p>
+                {notification.metadata?.description && (
+                  <p className="notification-detail">{notification.metadata.description}</p>
+                )}
                 <span className="notification-time">
                   {formatTimeAgo(notification.timestamp || notification.createdAt)}
                 </span>

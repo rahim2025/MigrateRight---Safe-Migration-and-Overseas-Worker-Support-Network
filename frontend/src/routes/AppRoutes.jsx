@@ -25,6 +25,7 @@ import WorkerDashboard from '@pages/WorkerDashboard';
 
 // Emergency SOS page
 import EmergencySOS from '@pages/EmergencySOS/EmergencySOS';
+import Notifications from '@pages/Notifications/Notifications';
 
 // Agency Dashboard page
 import AgencyDashboard from '@pages/AgencyDashboard/AgencyDashboard';
@@ -126,6 +127,15 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Messages />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="notifications"
+          element={
+            <ProtectedRoute>
+              <Notifications />
             </ProtectedRoute>
           }
         />

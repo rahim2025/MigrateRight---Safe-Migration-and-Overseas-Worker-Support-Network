@@ -8,6 +8,7 @@ const {
   getCurrentUser,
   updateCurrentUser,
   getUserById,
+  searchUsers,
 } = require('../controllers/user.controller');
 const { authenticate } = require('../middleware/auth.middleware');
 const { validateUpdateProfile, validateObjectId } = require('../middleware/validation.middleware');
@@ -26,6 +27,9 @@ router.get('/me', authenticate, getCurrentUser);
 
 // PATCH /api/users/me - Update current user profile
 router.patch('/me', authenticate, validateUpdateProfile, updateCurrentUser);
+
+// GET /api/users/search - Search existing users (for linking)
+router.get('/search', authenticate, searchUsers);
 
 // GET /api/users/:id - Get public user profile by ID
 router.get('/:id', validateObjectId('id'), getUserById);

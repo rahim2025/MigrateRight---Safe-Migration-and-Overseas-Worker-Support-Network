@@ -20,6 +20,31 @@ const UserProfile = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({});
+  const [familySearch, setFamilySearch] = useState('');
+  const [familyResults, setFamilyResults] = useState([]);
+  const [searchingFamily, setSearchingFamily] = useState(false);
+  const [familySearchError, setFamilySearchError] = useState('');
+
+  const buildUpdatePayload = (data) => {
+    const allowed = [
+      'fullName',
+      'phoneNumber',
+      'dateOfBirth',
+      'gender',
+      'location',
+      'profilePicture',
+      'language',
+      'notifications',
+      'migrationStatus',
+      'familyMembers',
+    ];
+    return allowed.reduce((payload, key) => {
+      if (data[key] !== undefined) {
+        payload[key] = data[key];
+      }
+      return payload;
+    }, {});
+  };
 
   useEffect(() => {
     fetchProfile();
@@ -32,7 +57,18 @@ const UserProfile = () => {
     try {
       const profileData = await userService.getProfile();
       setProfile(profileData);
-      setFormData(profileData);
+      setFormData({
+        fullName: profileData.fullName || { firstName: '', lastName: '' },
+        phoneNumber: profileData.phoneNumber || '',
+        dateOfBirth: profileData.dateOfBirth || '',
+        gender: profileData.gender || '',
+        location: profileData.location || {},
+        profilePicture: profileData.profilePicture || '',
+        language: profileData.language || 'bn',
+        notifications: profileData.notifications || {},
+        migrationStatus: profileData.migrationStatus || '',
+        familyMembers: profileData.familyMembers || [],
+      });
     } catch (err) {
       setError(err.message || 'Failed to load profile');
     } finally {
@@ -69,7 +105,8 @@ const UserProfile = () => {
     setSuccess('');
 
     try {
-      const updatedProfile = await userService.updateProfile(formData);
+      const payload = buildUpdatePayload(formData);
+      const updatedProfile = await userService.updateProfile(payload);
       setProfile(updatedProfile);
       setEditing(false);
       setSuccess('Profile updated successfully!');
@@ -81,9 +118,69 @@ const UserProfile = () => {
   };
 
   const handleCancel = () => {
-    setFormData(profile);
+    setFormData({
+      ...profile,
+      familyMembers: profile.familyMembers || [],
+    });
     setEditing(false);
     setError('');
+  };
+
+  const handleAddFamilyMember = (userId) => {
+    // Add selected user from search results
+    const found = familyResults.find((u) => u._id === (userId || familySearch));
+    if (!found) return;
+
+    const exists = (formData.familyMembers || []).some((m) => m.user?.toString() === found._id);
+    if (exists) {
+      setFamilySearchError('User already added as family contact');
+      return;
+    }
+
+    const next = formData.familyMembers ? [...formData.familyMembers] : [];
+    next.push({
+      user: found._id,
+      name: found.fullNameString || `${found.fullName?.firstName || ''} ${found.fullName?.lastName || ''}`.trim(),
+      relationship: '',
+      phone: found.phoneNumber,
+      email: found.email,
+      notificationMethod: 'both',
+    });
+    setFormData({ ...formData, familyMembers: next });
+    setFamilySearch('');
+    setFamilyResults([]);
+    setFamilySearchError('');
+  };
+
+  const handleFamilyChange = (index, field, value) => {
+    const next = (formData.familyMembers || []).map((member, i) =>
+      i === index ? { ...member, [field]: value } : member
+    );
+    setFormData({ ...formData, familyMembers: next });
+  };
+
+  const handleRemoveFamilyMember = (index) => {
+    const next = (formData.familyMembers || []).filter((_, i) => i !== index);
+    setFormData({ ...formData, familyMembers: next });
+  };
+
+  const handleSearchFamily = async (e) => {
+    e.preventDefault();
+    setFamilySearchError('');
+    if (!familySearch.trim()) {
+      setFamilyResults([]);
+      return;
+    }
+
+    try {
+      setSearchingFamily(true);
+      const results = await userService.searchUsers(familySearch.trim());
+      setFamilyResults(results || []);
+    } catch (err) {
+      setFamilySearchError(err.message || 'Failed to search users');
+    } finally {
+      setSearchingFamily(false);
+    }
   };
 
   if (loading && !profile) {
@@ -214,6 +311,123 @@ const UserProfile = () => {
                 </div>
               </section>
             )}
+
+            {/* Family Contacts for SOS */}
+            <section className="form-section">
+              <h3>Family Contacts (SOS Notifications)</h3>
+              <p className="form-hint">Link existing site users so they can receive SOS alerts.</p>
+
+              {editing && (
+                <form className="family-search" onSubmit={handleSearchFamily}>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Find user (email / phone / name)</label>
+                      <input
+                        type="text"
+                        value={familySearch}
+                        onChange={(e) => setFamilySearch(e.target.value)}
+                        className="form-input"
+                        placeholder="Type to search existing users"
+                      />
+                    </div>
+                    <div className="form-group form-group-inline">
+                      <label>&nbsp;</label>
+                      <button type="submit" className="btn btn-secondary" disabled={searchingFamily}>
+                        {searchingFamily ? 'Searching...' : 'Search'}
+                      </button>
+                    </div>
+                  </div>
+                  {familySearchError && <div className="error-message">{familySearchError}</div>}
+                  {familyResults.length > 0 && (
+                    <div className="family-search-results">
+                      {familyResults.map((u) => (
+                        <div key={u._id} className="family-search-item">
+                          <div>
+                            <div className="family-name">{u.fullNameString || `${u.fullName?.firstName || ''} ${u.fullName?.lastName || ''}`.trim()}</div>
+                            <div className="family-meta">
+                              <span>{u.email}</span>
+                              {u.phoneNumber && <span>• {u.phoneNumber}</span>}
+                              <span>• Role: {u.role}</span>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            className="btn btn-outline"
+                            onClick={() => handleAddFamilyMember(u._id)}
+                          >
+                            Add
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </form>
+              )}
+
+              {editing ? (
+                <>
+                  {(formData.familyMembers || []).map((member, index) => (
+                    <div key={member.user || index} className="family-member-card">
+                      <div className="family-name">{member.name}</div>
+                      <div className="family-meta">
+                        {member.email && <span>{member.email}</span>}
+                        {member.phone && <span>• {member.phone}</span>}
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Relationship</label>
+                          <input
+                            type="text"
+                            value={member.relationship || ''}
+                            onChange={(e) => handleFamilyChange(index, 'relationship', e.target.value)}
+                            className="form-input"
+                            placeholder="e.g., Mother, Brother"
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Notification Method</label>
+                          <select
+                            value={member.notificationMethod || 'both'}
+                            onChange={(e) => handleFamilyChange(index, 'notificationMethod', e.target.value)}
+                            className="form-input"
+                          >
+                            <option value="both">Email & App</option>
+                            <option value="email">Email</option>
+                            <option value="app">App Only</option>
+                          </select>
+                        </div>
+                        <div className="form-group form-group-inline">
+                          <label>&nbsp;</label>
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={() => handleRemoveFamilyMember(index)}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <div className="family-list">
+                  {(profile.familyMembers || []).length === 0 && <p>No family contacts added yet.</p>}
+                  {(profile.familyMembers || []).map((member, index) => (
+                    <div key={index} className="family-member-view">
+                      <div className="family-name">{member.name || 'Unnamed contact'}</div>
+                      <div className="family-meta">
+                        <span>{member.relationship || 'Relationship not set'}</span>
+                        {member.phone && <span>• {member.phone}</span>}
+                        {member.email && <span>• {member.email}</span>}
+                        <span>• Prefers {member.notificationMethod || 'both'}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
 
             <form onSubmit={handleSubmit}>
               {/* Personal Information */}

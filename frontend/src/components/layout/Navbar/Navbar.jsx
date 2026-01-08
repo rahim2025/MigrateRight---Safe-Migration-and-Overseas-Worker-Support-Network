@@ -4,6 +4,7 @@ import { useAuth } from '@context/AuthContext';
 import { useLanguage } from '@context/LanguageContext';
 import LanguageSwitcher from '@components/common/LanguageSwitcher/LanguageSwitcher';
 import { getUnreadCount } from '@services/notificationService';
+import { useSocket } from '@context/SocketContext';
 import './Navbar.css';
 
 /**
@@ -15,22 +16,28 @@ const Navbar = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
+  const { socket, connected: socketConnected } = useSocket();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Check if user is an admin (any admin role)
-  const isAdmin = user?.role === 'platform_admin' || user?.role === 'admin' || user?.role === 'recruitment_admin';
-
-  // Fetch unread notification count for admins
+  // Fetch unread notification count for any authenticated user (family alerts included)
   useEffect(() => {
-    if (isAuthenticated && isAdmin) {
+    if (isAuthenticated) {
       fetchUnreadCount();
       
       // Poll for new notifications every 30 seconds
       const interval = setInterval(fetchUnreadCount, 30000);
       return () => clearInterval(interval);
     }
-  }, [isAuthenticated, user, isAdmin]);
+  }, [isAuthenticated, user]);
+
+  // Bump badge on real-time notifications
+  useEffect(() => {
+    if (!socket || !socketConnected) return;
+    const handleNewNotification = () => setUnreadCount((c) => c + 1);
+    socket.on('new_notification', handleNewNotification);
+    return () => socket.off('new_notification', handleNewNotification);
+  }, [socket, socketConnected]);
   
   // Hide navbar on agency dashboard (must be after all hooks)
   if (location.pathname === '/agency-dashboard') {
@@ -93,19 +100,17 @@ const Navbar = () => {
               <Link to="/salary-tracker" className="nav-link">
                  Money Tracker
               </Link>
+              <Link to="/notifications" className="nav-link">
+                🔔 Notifications
+                {unreadCount > 0 && (
+                  <span className="notification-badge">{unreadCount}</span>
+                )}
+              </Link>
               {/* Admin Panel - only for platform admins */}
-              {isAdmin && (
-                <>
-                  <Link to="/admin/emergencies" className="nav-link admin-emergency">
-                    🚨 Emergency Alerts
-                    {unreadCount > 0 && (
-                      <span className="notification-badge">{unreadCount}</span>
-                    )}
-                  </Link>
-                  <Link to="/admin/dashboard" className="nav-link">
-                    ⚙️ Admin Panel
-                  </Link>
-                </>
+              {(user?.role === 'platform_admin' || user?.role === 'admin' || user?.role === 'recruitment_admin') && (
+                <Link to="/admin/dashboard" className="nav-link">
+                  ⚙️ Admin Panel
+                </Link>
               )}
             </>
           )}

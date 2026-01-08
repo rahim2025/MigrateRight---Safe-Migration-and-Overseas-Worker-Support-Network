@@ -460,6 +460,83 @@
   display: block;
 }
 
+/* Family contacts */
+.family-member-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #f9fafb;
+}
+
+.family-member-card .family-name {
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.family-member-card .family-meta {
+  color: #4a5568;
+  font-size: 0.9rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.family-search {
+  margin-bottom: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  background: #f8fbff;
+}
+
+.family-search-results {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.family-search-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  border: 1px dashed #cbd5e0;
+  border-radius: 10px;
+  background: white;
+}
+
+.family-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.family-member-view {
+  padding: 0.85rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f9fafb;
+}
+
+.family-name {
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.family-meta {
+  color: #4a5568;
+  font-size: 0.9rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn.btn-outline {
+  background: transparent;
+  border: 1px dashed #a0aec0;
+  color: #4a5568;
+  padding: 0.7rem 1.1rem;
+}
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .profile-content {

@@ -11,7 +11,7 @@ const userService = {
   getProfile: async () => {
     try {
       const response = await api.get('/users/me');
-      return response.data.user;
+      return response.data.user || response.data.data?.user;
     } catch (error) {
       throw error;
     }
@@ -23,7 +23,19 @@ const userService = {
   updateProfile: async (profileData) => {
     try {
       const response = await api.patch('/users/me', profileData);
-      return response.data.user;
+      return response.data.user || response.data.data?.user;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Search existing users (by email/phone/name)
+   */
+  searchUsers: async (query) => {
+    try {
+      const response = await api.get('/users/search', { params: { q: query } });
+      return response.data || response.users || response || [];
     } catch (error) {
       throw error;
     }
