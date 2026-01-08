@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState(null);
 
   // Check if user is logged in on mount
   useEffect(() => {
@@ -25,6 +26,7 @@ export const AuthProvider = ({ children }) => {
         const userData = await authService.getCurrentUser();
         setUser(userData);
         setIsAuthenticated(true);
+        setToken(token);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
@@ -41,6 +43,9 @@ export const AuthProvider = ({ children }) => {
       if (response?.data?.user) {
         setUser(response.data.user);
         setIsAuthenticated(true);
+        if (response.data.token) {
+          setToken(response.data.token);
+        }
       }
       return response;
     } catch (error) {
@@ -55,6 +60,9 @@ export const AuthProvider = ({ children }) => {
       if (response?.data?.user) {
         setUser(response.data.user);
         setIsAuthenticated(true);
+        if (response.data.token) {
+          setToken(response.data.token);
+        }
       }
       return response;
     } catch (error) {
@@ -66,12 +74,14 @@ export const AuthProvider = ({ children }) => {
     authService.logout();
     setUser(null);
     setIsAuthenticated(false);
+    setToken(null);
   };
 
   const value = {
     user,
     loading,
     isAuthenticated,
+    token,
     login,
     register,
     logout,

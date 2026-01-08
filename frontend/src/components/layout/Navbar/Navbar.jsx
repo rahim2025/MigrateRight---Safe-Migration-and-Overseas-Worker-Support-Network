@@ -20,11 +20,6 @@ const Navbar = () => {
 
   // Check if user is an admin (any admin role)
   const isAdmin = user?.role === 'platform_admin' || user?.role === 'admin' || user?.role === 'recruitment_admin';
-  
-  // Hide navbar on agency dashboard
-  if (location.pathname === '/agency-dashboard') {
-    return null;
-  }
 
   // Fetch unread notification count for admins
   useEffect(() => {
@@ -36,6 +31,11 @@ const Navbar = () => {
       return () => clearInterval(interval);
     }
   }, [isAuthenticated, user, isAdmin]);
+  
+  // Hide navbar on agency dashboard (must be after all hooks)
+  if (location.pathname === '/agency-dashboard') {
+    return null;
+  }
 
   const fetchUnreadCount = async () => {
     try {
@@ -84,11 +84,14 @@ const Navbar = () => {
               <Link to="/emergency-sos" className="nav-link emergency-btn">
                 🚨 SOS
               </Link>
+              <Link to="/messages" className="nav-link">
+                💬 Messages
+              </Link>
               <Link to="/records" className="nav-link">
-                📁 My Records
+                 Documents
               </Link>
               <Link to="/salary-tracker" className="nav-link">
-                💰 Salary Tracker
+                 Money Tracker
               </Link>
               {/* Admin Panel - only for platform admins */}
               {isAdmin && (
@@ -157,6 +160,9 @@ const Navbar = () => {
             <>
               <Link to="/emergency-sos" className="mobile-nav-link emergency-btn" onClick={toggleMobileMenu}>
                 🚨 Emergency SOS
+              </Link>
+              <Link to="/messages" className="mobile-nav-link" onClick={toggleMobileMenu}>
+                💬 Messages
               </Link>
               <Link to="/records" className="mobile-nav-link" onClick={toggleMobileMenu}>
                 📁 My Records

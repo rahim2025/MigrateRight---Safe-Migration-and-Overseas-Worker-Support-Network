@@ -33,6 +33,9 @@ import AgencyDashboard from '@pages/AgencyDashboard/AgencyDashboard';
 import MyRecords from '@pages/Records/MyRecords';
 import SalaryTracker from '@pages/Records/SalaryTracker';
 
+// Messages
+import Messages from '@pages/Messages/Messages';
+
 // Placeholder pages for future features
 import SavedAgencies from '@pages/Placeholder/SavedAgencies';
 import Help from '@pages/Placeholder/Help';
@@ -105,6 +108,24 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <EmergencySOS />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Messages Route (Protected - All users) */}
+        <Route
+          path="messages"
+          element={
+            <ProtectedRoute>
+              <Messages />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="messages/:conversationId"
+          element={
+            <ProtectedRoute>
+              <Messages />
             </ProtectedRoute>
           }
         />

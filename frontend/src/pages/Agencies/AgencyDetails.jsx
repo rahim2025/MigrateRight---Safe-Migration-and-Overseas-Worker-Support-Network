@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import messageService from '../../services/messageService';
 import RatingModal from '../../components/RatingModal';
 import './AgencyDetails.css';
 
@@ -26,6 +27,7 @@ const AgencyDetails = () => {
   const [trainingsLoading, setTrainingsLoading] = useState(false);
   const [isInterested, setIsInterested] = useState(false);
   const [interestLoading, setInterestLoading] = useState(false);
+  const [messagingLoading, setMessagingLoading] = useState(false);
 
   // Fetch agency details
   useEffect(() => {
@@ -138,6 +140,31 @@ const AgencyDetails = () => {
       return;
     }
     setShowRatingModal(true);
+  };
+
+  const handleMessageAgency = async () => {
+    if (!isAuthenticated) {
+      alert('Please login to message this agency');
+      navigate('/login');
+      return;
+    }
+
+    // Check if user is an agency
+    if (user?.role === 'agency' || user?.role === 'recruitment_admin') {
+      alert('Agencies cannot message other agencies');
+      return;
+    }
+
+    try {
+      setMessagingLoading(true);
+      const { conversation } = await messageService.startConversation(id);
+      navigate(`/messages/${conversation._id}`);
+    } catch (error) {
+      console.error('Error starting conversation:', error);
+      alert('Failed to start conversation. Please try again.');
+    } finally {
+      setMessagingLoading(false);
+    }
   };
 
   const handleRatingSubmit = () => {
@@ -345,6 +372,26 @@ const AgencyDetails = () => {
                     <span>⭐</span>
                     Rate This Agency
                   </button>
+
+                  {user && user.role !== 'agency' && user.role !== 'recruitment_admin' && (
+                    <button 
+                      onClick={handleMessageAgency} 
+                      className="message-button"
+                      disabled={messagingLoading}
+                    >
+                      {messagingLoading ? (
+                        <>
+                          <span>⏳</span>
+                          Loading...
+                        </>
+                      ) : (
+                        <>
+                          <span>💬</span>
+                          Message Agency
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

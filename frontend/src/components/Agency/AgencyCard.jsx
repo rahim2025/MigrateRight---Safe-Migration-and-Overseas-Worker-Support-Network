@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import messageService from '../../services/messageService';
 import StarRating from './StarRating';
 import './AgencyCard.css';
 
@@ -9,6 +12,8 @@ import './AgencyCard.css';
  */
 const AgencyCard = ({ agency, language = 'en' }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [messagingLoading, setMessagingLoading] = useState(false);
 
   const translations = {
     en: {
@@ -18,6 +23,7 @@ const AgencyCard = ({ agency, language = 'en' }) => {
       basedOn: 'Based on',
       viewDetails: 'View Details',
       readReviews: 'Read Reviews',
+      messageAgency: 'Message Agency',
       goodStanding: 'Good Standing',
       warnings: 'Warnings',
       location: 'Location',
@@ -30,6 +36,7 @@ const AgencyCard = ({ agency, language = 'en' }) => {
       reviews: 'রিভিউ',
       basedOn: 'ভিত্তিতে',
       viewDetails: 'বিস্তারিত দেখুন',
+      messageAgency: 'এজেন্সিকে বার্তা পাঠান',
       readReviews: 'রিভিউ পড়ুন',
       goodStanding: 'ভাল অবস্থান',
       warnings: 'সতর্কতা',
@@ -75,7 +82,27 @@ const AgencyCard = ({ agency, language = 'en' }) => {
   };
 
   const handleReadReviews = (e) => {
+    
+
+  const handleMessageAgency = async (e) => {
     e.stopPropagation();
+    
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      setMessagingLoading(true);
+      const { conversation } = await messageService.startConversation(agencyId);
+      navigate(`/messages/${conversation._id}`);
+    } catch (error) {
+      console.error('Error starting conversation:', error);
+      alert('Failed to start conversation. Please try again.');
+    } finally {
+      setMessagingLoading(false);
+    }
+  };e.stopPropagation();
     navigate(`/agencies/${agencyId}?tab=reviews`);
   };
 

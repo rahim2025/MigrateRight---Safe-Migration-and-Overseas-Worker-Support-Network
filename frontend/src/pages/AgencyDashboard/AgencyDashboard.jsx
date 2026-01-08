@@ -439,6 +439,9 @@ const AgencyDashboard = () => {
         <h1>Agency Dashboard</h1>
         <div className="header-actions">
           <span>Welcome, {user?.email}</span>
+          <button onClick={() => navigate('/messages')} className="btn btn-primary" style={{ marginRight: '10px' }}>
+            💬 Messages
+          </button>
           <button onClick={logout} className="btn btn-secondary">Logout</button>
         </div>
       </header>

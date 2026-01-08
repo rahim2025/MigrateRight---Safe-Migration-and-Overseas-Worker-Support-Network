@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { SocketProvider } from './context/SocketContext';
 import './App.css';
 
 /**
@@ -14,7 +15,9 @@ function App() {
     <Router>
       <LanguageProvider>
         <AuthProvider>
-          <AppRoutes />
+          <SocketProvider>
+            <AppRoutes />
+          </SocketProvider>
         </AuthProvider>
       </LanguageProvider>
     </Router>

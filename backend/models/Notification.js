@@ -14,7 +14,7 @@ const notificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['emergency_sos', 'complaint', 'review', 'system', 'other'],
+      enum: ['emergency_sos', 'complaint', 'review', 'system', 'message', 'other'],
       required: true,
       index: true,
     },
@@ -39,7 +39,7 @@ const notificationSchema = new mongoose.Schema(
     },
     relatedModel: {
       type: String,
-      enum: ['EmergencyEvent', 'Complaint', 'Review', 'User', 'Agency'],
+      enum: ['EmergencyEvent', 'Complaint', 'Review', 'User', 'Agency', 'Conversation', 'Message'],
     },
     read: {
       type: Boolean,

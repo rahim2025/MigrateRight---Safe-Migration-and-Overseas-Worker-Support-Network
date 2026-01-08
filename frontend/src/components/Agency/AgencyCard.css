@@ -212,6 +212,24 @@
   background: #e2e8f0;
 }
 
+.agency-card-actions .btn-message {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.agency-card-actions .btn-message:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f8e 100%);
+}
+
+.agency-card-actions .btn-message:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .agency-card {

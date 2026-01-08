@@ -4,11 +4,14 @@
  */
 
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const helmet = require('helmet');
 const { connectDB } = require('./config/database');
+const { initializeSocketHandlers } = require('./config/socket');
 const logger = require('./utils/logger');
 const healthRoutes = require('./routes/health.routes');
 const agencyRoutes = require('./routes/agency.routes');
@@ -19,6 +22,7 @@ const calculatorRoutes = require('./routes/calculator.routes');
 const countryGuideRoutes = require('./routes/countryGuide.routes');
 const emergencyRoutes = require('./routes/emergency.routes');
 const notificationRoutes = require('./routes/notification.routes');
+const messageRoutes = require('./routes/message.routes');
 const salaryRoutes = require('./routes/salary.routes');
 const salaryTrackerRoutes = require('./routes/salaryTracker.routes');
 const workerRoutes = require('./src/routes/workerProfile.routes');
@@ -37,6 +41,33 @@ dotenv.config();
 
 // Initialize Express app
 const app = express();
+
+// Create HTTP server
+const server = http.createServer(app);
+
+// Initialize Socket.IO with CORS
+const io = new Server(server, {
+  cors: {
+    origin: [
+      process.env.FRONTEND_URL || 'http://localhost:3000',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+    ],
+    credentials: true,
+    methods: ['GET', 'POST'],
+  },
+});
+
+// Initialize Socket.IO handlers
+initializeSocketHandlers(io);
+
+// Make io accessible to routes via middleware
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 
 // Connect to MongoDB
 connectDB();
@@ -153,6 +184,9 @@ app.use('/api/emergency', emergencyRoutes);
 // Notification Routes
 app.use('/api/notifications', notificationRoutes);
 
+// Message Routes (Real-time Messaging)
+app.use('/api/messages', messageRoutes);
+
 // Salary Tracker Routes (Wage Mismatch Detection)
 app.use('/api/salary-tracker', salaryTrackerRoutes);
 
@@ -185,6 +219,8 @@ app.get('/', (req, res) => {
       countries: '/api/countries',
       workers: '/api/workers',
       emergency: '/api/emergency',
+      notifications: '/api/notifications',
+      messages: '/api/messages',
       salaryTracker: '/api/salary-tracker',
       salary: '/api/salary',
     },
@@ -203,7 +239,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
+server.listen(PORT, () => {
   logger.info(`MigrateRight API Server started`);
   logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
   logger.info(`Port: ${PORT}`);
