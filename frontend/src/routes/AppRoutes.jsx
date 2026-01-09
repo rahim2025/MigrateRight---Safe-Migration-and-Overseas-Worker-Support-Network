@@ -41,6 +41,7 @@ import Messages from '@pages/Messages/Messages';
 // Placeholder pages for future features
 import SavedAgencies from '@pages/Placeholder/SavedAgencies';
 import Help from '@pages/Placeholder/Help';
+import Articles from '@pages/Articles/Articles';
 
 // Admin Pages
 import AdminDashboard from '@pages/Admin/Dashboard/AdminDashboard';
@@ -50,6 +51,7 @@ import AdminUserList from '@pages/Admin/Users/AdminUserList';
 import AdminAgencyList from '@pages/Admin/Agencies/AdminAgencyList';
 import AdminComplaintList from '@pages/Admin/Complaints/AdminComplaintList';
 import AdminEmergencyAlerts from '@pages/Admin/EmergencyAlerts/AdminEmergencyAlerts';
+import ContentManagement from '@pages/Admin/Content/ContentManagement';
 
 import ProtectedRoute from './ProtectedRoute';
 
@@ -69,6 +71,7 @@ const AppRoutes = () => {
         <Route path="reset-password/:token" element={<ResetPassword />} />
         <Route path="agencies" element={<SearchAgencies />} />
         <Route path="agencies/:id" element={<AgencyDetails />} />
+        <Route path="articles" element={<Articles />} />
 
         {/* Country Guide Routes */}
         <Route path="countries" element={<CountryGuideList />} />
@@ -147,6 +150,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/content"
+          element={
+            <ProtectedRoute>
+              <ContentManagement />
             </ProtectedRoute>
           }
         />

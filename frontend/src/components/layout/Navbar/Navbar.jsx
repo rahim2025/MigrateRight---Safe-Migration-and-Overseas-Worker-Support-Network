@@ -19,6 +19,8 @@ const Navbar = () => {
   const { socket, connected: socketConnected } = useSocket();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const isAdmin =
+    user?.role === 'platform_admin' || user?.role === 'admin' || user?.role === 'recruitment_admin';
 
   // Define fetchUnreadCount before it's used in useEffect
   const fetchUnreadCount = async () => {
@@ -81,6 +83,9 @@ const Navbar = () => {
           </Link>
           <Link to="/countries" className="nav-link">
             {t('navigation.countryGuides')}
+          </Link>
+          <Link to="/articles" className="nav-link">
+            {t('navigation.articles')}
           </Link>
           <Link to="/calculator" className="nav-link">
             {t('navigation.calculator')}
@@ -159,6 +164,9 @@ const Navbar = () => {
           </Link>
           <Link to="/countries" className="mobile-nav-link" onClick={toggleMobileMenu}>
             {t('navigation.countryGuides')}
+          </Link>
+          <Link to="/articles" className="mobile-nav-link" onClick={toggleMobileMenu}>
+            {t('navigation.articles')}
           </Link>
           <Link to="/calculator" className="mobile-nav-link" onClick={toggleMobileMenu}>
             {t('navigation.calculator')}

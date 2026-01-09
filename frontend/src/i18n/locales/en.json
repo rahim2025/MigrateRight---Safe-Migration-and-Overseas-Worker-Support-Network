@@ -38,7 +38,8 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "budgetPlanner": "Budget Planner",
-    "budget": "Budget"
+    "budget": "Budget",
+    "articles": "Articles & News"
   },
   "auth": {
     "login": "Login",
@@ -128,6 +129,14 @@
       "contracts": "Employment Contracts"
     },
     "comingSoonMessage": "This feature is under development. Soon you'll be able to upload, store, and manage all your migration documents in one secure place."
+  },
+  "articles": {
+    "title": "Latest Articles & Updates",
+    "subtitle": "Platform announcements, safety news, and guidance published by admins.",
+    "empty": "No articles yet. Check back soon for updates from admins.",
+    "readMore": "Read more",
+    "published": "Published",
+    "by": "By {{author}}"
   },
   "savedAgencies": {
     "title": "Saved Agencies",

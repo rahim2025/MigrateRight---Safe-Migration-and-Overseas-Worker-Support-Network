@@ -29,6 +29,7 @@ const workerRoutes = require('./src/routes/workerProfile.routes');
 const agencyComplaintRoutes = require('./src/routes/agencyComplaint.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
 const budgetRoutes = require('./routes/budget.routes');
+const contentRoutes = require('./routes/content.routes');
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 const {
   requestLogger,
@@ -191,6 +192,9 @@ app.use('/api/notifications', notificationRoutes);
 
 // Message Routes (Real-time Messaging)
 app.use('/api/messages', messageRoutes);
+
+// Content Routes (Articles/News)
+app.use('/api/content', contentRoutes);
 
 // Salary Tracker Routes (Wage Mismatch Detection)
 app.use('/api/salary-tracker', salaryTrackerRoutes);

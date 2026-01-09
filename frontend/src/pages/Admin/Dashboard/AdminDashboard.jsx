@@ -201,15 +201,15 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                <div className="dashboard-card management-card" style={{ cursor: 'not-allowed', opacity: 0.7, borderLeft: '4px solid #718096' }}>
+                <div className="dashboard-card management-card" onClick={() => navigate('/admin/content')} style={{ cursor: 'pointer', borderLeft: '4px solid #4a5568' }}>
                     <div className="action-content">
                         <div className="metric-header">
                             <span className="metric-title">Content Management</span>
                             <span className="metric-icon">📰</span>
                         </div>
                         <h2 style={{ fontSize: '1.4rem', margin: '0.5rem 0' }}>General & News</h2>
-                        <p style={{ color: '#718096' }}>Publish articles, news, and safety updates (Coming Soon).</p>
-                        <button className="btn-link" style={{ marginTop: '1rem' }} disabled>Manage Articles →</button>
+                        <p style={{ color: '#718096' }}>Publish articles, news, and safety updates.</p>
+                        <button className="btn-link" style={{ marginTop: '1rem' }}>Manage Articles →</button>
                     </div>
                 </div>
             </div>
