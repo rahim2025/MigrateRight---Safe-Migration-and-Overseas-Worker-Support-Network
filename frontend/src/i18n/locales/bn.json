@@ -36,7 +36,9 @@
     "contact": "যোগাযোগ",
     "settings": "সেটিংস",
     "openMenu": "মেনু খুলুন",
-    "closeMenu": "মেনু বন্ধ করুন"
+    "closeMenu": "মেনু বন্ধ করুন",
+    "budgetPlanner": "বাজেট পরিকল্পনা",
+    "budget": "বাজেট"
   },
   "auth": {
     "login": "লগইন",
@@ -179,6 +181,37 @@
     "passwordTooShort": "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে",
     "passwordsDoNotMatch": "পাসওয়ার্ড মিলছে না",
     "phoneInvalid": "অনুগ্রহ করে একটি বৈধ ফোন নম্বর লিখুন"
+  },
+  "budget": {
+    "title": "বাজেট পরিকল্পনা",
+    "subtitle": "আপনার মাসিক রেমিট্যান্স বাজেট পরিচালনা করুন",
+    "monthYear": "মাস এবং বছর",
+    "createBudget": "বাজেট তৈরি করুন",
+    "updateBudget": "বাজেট আপডেট করুন",
+    "totalRemittance": "মোট রেমিট্যান্স",
+    "categories": {
+      "household": "গৃহস্থালী",
+      "education": "শিক্ষা",
+      "healthcare": "স্বাস্থ্যসেবা",
+      "savings": "সঞ্চয়",
+      "investments": "বিনিয়োগ"
+    },
+    "budgetOverview": "বাজেট সারসংক্ষেপ",
+    "categoryBreakdown": "বিভাগ অনুযায়ী ভাঙ্গন",
+    "totalBudget": "মোট বাজেট",
+    "totalSpent": "মোট ব্যয়",
+    "remaining": "অবশিষ্ট",
+    "addExpense": "খরচ যোগ করুন",
+    "expenseTracking": "খরচ ট্র্যাকিং",
+    "category": "বিভাগ",
+    "amount": "পরিমাণ",
+    "description": "বিবরণ",
+    "date": "তারিখ",
+    "delete": "মুছুন",
+    "noExpenses": "এখনো কোন খরচ রেকর্ড করা হয়নি",
+    "noBudgetMessage": "এই মাসের জন্য কোন বাজেট সেট করা হয়নি। শুরু করতে উপরে একটি তৈরি করুন!",
+    "overBudget": "বাজেট অতিক্রম করেছে!",
+    "currency": "টাকা"
   },
   "footer": {
     "aboutUs": "আমাদের সম্পর্কে",

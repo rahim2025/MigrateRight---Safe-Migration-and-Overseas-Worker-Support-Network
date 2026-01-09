@@ -20,6 +20,16 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // Define fetchUnreadCount before it's used in useEffect
+  const fetchUnreadCount = async () => {
+    try {
+      const count = await getUnreadCount();
+      setUnreadCount(count);
+    } catch (error) {
+      console.error('Error fetching notification count:', error);
+    }
+  };
+
   // Fetch unread notification count for any authenticated user (family alerts included)
   useEffect(() => {
     if (isAuthenticated) {
@@ -43,15 +53,6 @@ const Navbar = () => {
   if (location.pathname === '/agency-dashboard') {
     return null;
   }
-
-  const fetchUnreadCount = async () => {
-    try {
-      const count = await getUnreadCount();
-      setUnreadCount(count);
-    } catch (error) {
-      console.error('Error fetching notification count:', error);
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -99,6 +100,9 @@ const Navbar = () => {
               </Link>
               <Link to="/salary-tracker" className="nav-link">
                  Money Tracker
+              </Link>
+              <Link to="/budget-planner" className="nav-link">
+                💰 {t('navigation.budget')}
               </Link>
               <Link to="/notifications" className="nav-link">
                 🔔 Notifications
@@ -174,6 +178,9 @@ const Navbar = () => {
               </Link>
               <Link to="/salary-tracker" className="mobile-nav-link" onClick={toggleMobileMenu}>
                 💰 Salary Tracker
+              </Link>
+              <Link to="/budget-planner" className="mobile-nav-link" onClick={toggleMobileMenu}>
+                📊 {t('navigation.budgetPlanner')}
               </Link>
               {/* Admin Panel - only for platform admins */}
               {isAdmin && (

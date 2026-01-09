@@ -36,7 +36,9 @@
     "contact": "Contact",
     "settings": "Settings",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "budgetPlanner": "Budget Planner",
+    "budget": "Budget"
   },
   "auth": {
     "login": "Login",
@@ -179,6 +181,37 @@
     "passwordTooShort": "Password must be at least 8 characters",
     "passwordsDoNotMatch": "Passwords do not match",
     "phoneInvalid": "Please enter a valid phone number"
+  },
+  "budget": {
+    "title": "Budget Planner",
+    "subtitle": "Manage your monthly remittance budget",
+    "monthYear": "Month & Year",
+    "createBudget": "Create Budget",
+    "updateBudget": "Update Budget",
+    "totalRemittance": "Total Remittance",
+    "categories": {
+      "household": "Household",
+      "education": "Education",
+      "healthcare": "Healthcare",
+      "savings": "Savings",
+      "investments": "Investments"
+    },
+    "budgetOverview": "Budget Overview",
+    "categoryBreakdown": "Category Breakdown",
+    "totalBudget": "Total Budget",
+    "totalSpent": "Total Spent",
+    "remaining": "Remaining",
+    "addExpense": "Add Expense",
+    "expenseTracking": "Expense Tracking",
+    "category": "Category",
+    "amount": "Amount",
+    "description": "Description",
+    "date": "Date",
+    "delete": "Delete",
+    "noExpenses": "No expenses recorded yet",
+    "noBudgetMessage": "No budget set for this month. Create one above to get started!",
+    "overBudget": "Over Budget!",
+    "currency": "tk"
   },
   "footer": {
     "aboutUs": "About Us",

@@ -33,6 +33,7 @@ import AgencyDashboard from '@pages/AgencyDashboard/AgencyDashboard';
 // New Features: Records & Salary
 import MyRecords from '@pages/Records/MyRecords';
 import SalaryTracker from '@pages/Records/SalaryTracker';
+import BudgetPlanner from '@pages/BudgetPlanner/BudgetPlanner';
 
 // Messages
 import Messages from '@pages/Messages/Messages';
@@ -237,6 +238,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <SalaryTracker />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="budget-planner"
+          element={
+            <ProtectedRoute>
+              <BudgetPlanner />
             </ProtectedRoute>
           }
         />

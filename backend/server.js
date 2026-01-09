@@ -28,6 +28,7 @@ const salaryTrackerRoutes = require('./routes/salaryTracker.routes');
 const workerRoutes = require('./src/routes/workerProfile.routes');
 const agencyComplaintRoutes = require('./src/routes/agencyComplaint.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
+const budgetRoutes = require('./routes/budget.routes');
 const { errorHandler, notFound } = require('./middleware/error.middleware');
 const {
   requestLogger,
@@ -140,6 +141,10 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from uploads directory
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Custom Request Logger - Log all requests with timing
 app.use(requestLogger);
 
@@ -201,6 +206,9 @@ app.use('/api/salary-records', require('./routes/salaryRecord.routes'));
 
 // Dashboard Routes (New)
 app.use('/api/dashboard', dashboardRoutes);
+
+// Budget Routes (Budget Planner)
+app.use('/api/budget', budgetRoutes);
 
 // Welcome Route
 app.get('/', (req, res) => {
